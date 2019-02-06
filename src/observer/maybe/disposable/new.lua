@@ -45,15 +45,6 @@ return function (_, receiver)
         dispose(disposable)
     end 
 
-    local function isDisposed()
-        return disposable.isDisposed
-    end 
-
-    local function startHandler()
-        if(not disposable.isDisposed and recognizeStart) then 
-            onStart()
-        end 
-    end 
     
     local function successHandler(err)
         if(not disposable.isDisposed) then 

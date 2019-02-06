@@ -19,6 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
+local is = require "RxLua.src.observer.completable.disposable.is"
 local isDisposable = require "RxLua.src.disposable"
 local dispose = require "RxLua.src.disposable.dispose"
 

@@ -19,10 +19,12 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
+local is = require "RxLua.src.onSubscribe.maybe.is"
 local isMaybeEmitter = require "RxLua.src.emitter.maybe.is"
 
 return function (onSubscribe, emitter)
-    assert(isMaybeEmitter(emitter), "TypeError: emitter must be a MaybeEmitter")
+    assert(is(onSubscribe), "TypeError: emitter must be a MaybeOnSubscribe instance.")
+    assert(isMaybeEmitter(emitter), "TypeError: emitter must be a MaybeEmitter instance.")
     local handler = onSubscribe._handler
     if(type(handler) == "function") then 
         return handler(emitter)

@@ -39,14 +39,6 @@ return function (_, receiver)
     local recognizeComplete = type(onComplete) == "function"
     local recognizeSubscribe = type(onSubscribe) == "function"
 
-    local function internalDispose()
-        dispose(disposable)
-    end 
-
-    local function isDisposed()
-        return disposable.isDisposed
-    end 
-
     local function startHandler()
         if(not disposable.isDisposed and recognizeStart) then 
             onStart()

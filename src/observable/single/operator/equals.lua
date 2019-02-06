@@ -38,6 +38,8 @@ local function emptyHandler() end
 
 
 return function (first, second)
+    assert(is(first), "TypeError: first must be a Single instance.")
+    assert(is(second), "TypeError: second must be a Single instance.")
     return Single(_, SingleOnSubscribe(_, function (emitter)
         --[[
             Create a composite disposable

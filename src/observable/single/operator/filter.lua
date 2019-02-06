@@ -20,15 +20,16 @@
     SOFTWARE.
 ]]
 local Maybe = require "RxLua.src.observable.maybe.new"
-
 local MaybeOnSubscribe = require "RxLua.src.onSubscribe.maybe.new"
 
+local is = require "RxLua.src.observable.single.is"
 local subscribe = require "RxLua.src.observable.single.subscribe"
 local SingleObserver = require "RxLua.src.observer.single.new"
 
 local function emptyCriteria() return true end
 
 return function (single, criteria)
+    assert(is(single), "TypeError: single must be a Single instance.")
     criteria = (type(criteria) == "function" and criteria) or emptyCriteria
     return Maybe(_, MaybeOnSubscribe(_, function (emitter)
         return subscribe(single, SingleObserver(_, {

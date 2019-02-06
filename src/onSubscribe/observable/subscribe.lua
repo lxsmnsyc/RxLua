@@ -19,10 +19,12 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
+local is = require "RxLua.src.onSubscribe.observable.is"
 local isObservableEmitter = require "RxLua.src.emitter.observable.is"
 
 return function (onSubscribe, emitter)
-    assert(isObservableEmitter(emitter), "TypeError: emitter must be an ObservableEmitter")
+    assert(is(onSubscribe), "TypeError: emitter must be a ObservableOnSubscribe instance.")
+    assert(isObservableEmitter(emitter), "TypeError: emitter must be an ObservableEmitter instance.")
     local handler = onSubscribe._handler
     if(type(handler) == "function") then 
         return handler(emitter)

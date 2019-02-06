@@ -37,6 +37,7 @@ local function defaultPredicate(a, b)
 end 
 
 return function (single, value, bipredicate)
+    assert(is(single), "TypeError: single must be a Single instance.")
     --[[
         If the bipredicate is not a function, fallback to defaultPredicate
     ]]

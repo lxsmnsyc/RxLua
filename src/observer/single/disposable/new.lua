@@ -42,16 +42,6 @@ return function (_, receiver)
     local function internalDispose()
         dispose(disposable)
     end 
-
-    local function isDisposed()
-        return disposable.isDisposed
-    end 
-
-    local function startHandler()
-        if(not disposable.isDisposed and recognizeStart) then 
-            onStart()
-        end 
-    end 
     
     local function successHandler(err)
         if(not disposable.isDisposed) then 

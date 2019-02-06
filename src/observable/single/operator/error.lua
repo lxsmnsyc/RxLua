@@ -20,7 +20,6 @@
     SOFTWARE.
 ]]
 local Single = require "RxLua.src.observable.single.new"
-local is = require "RxLua.src.observable.single.is"
 local subscribe = require "RxLua.src.observable.single.subscribe"
 
 local SingleOnSubscribe = require "RxLua.src.onSubscribe.single.new"

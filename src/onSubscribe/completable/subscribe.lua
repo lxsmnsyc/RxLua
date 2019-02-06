@@ -19,10 +19,12 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
+local is = require "RxLua.src.onSubscribe.completable.is"
 local isCompletableEmitter = require "RxLua.src.emitter.completable.is"
 
 return function (onSubscribe, emitter)
-    assert(isCompletableEmitter(emitter), "TypeError: emitter must be a CompletableEmitter")
+    assert(is(onSubscribe), "TypeError: emitter must be a CompletableOnSubscribe instance.")
+    assert(isCompletableEmitter(emitter), "TypeError: emitter must be a CompletableEmitter instance.")
     local handler = onSubscribe._handler
     if(type(handler) == "function") then 
         return handler(emitter)

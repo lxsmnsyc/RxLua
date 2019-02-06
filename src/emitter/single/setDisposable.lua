@@ -19,10 +19,12 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
+local is = require "RxLua.src.emitter.single.is"
 local isDisposable = require "RxLua.src.disposable"
 local dispose = require "RxLua.src.disposable.dispose"
 
 return function (emitter, disposable)
+    assert(is(emitter), "TypeError: emitter must be a SingleEmitter instance.")
     local oldDisposable = emitter._disposable
 
     if(disposable and isDisposable(disposable) and not disposable.isDisposed) then 

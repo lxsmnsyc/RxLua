@@ -19,10 +19,12 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
+local is = require "RxLua.src.onSubscribe.single.is"
 local isSingleEmitter = require "RxLua.src.emitter.single.is"
 
 return function (onSubscribe, emitter)
-    assert(isSingleEmitter(emitter), "TypeError: emitter must be a SingleEmitter")
+    assert(is(onSubscribe), "TypeError: emitter must be a SingleOnSubscribe instance.")
+    assert(isSingleEmitter(emitter), "TypeError: emitter must be a SingleEmitter instance.")
     local handler = onSubscribe._handler
     if(type(handler) == "function") then 
         return handler(emitter)

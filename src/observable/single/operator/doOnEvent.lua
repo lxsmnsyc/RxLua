@@ -24,13 +24,12 @@ local is = require "RxLua.src.observable.single.is"
 local subscribe = require "RxLua.src.observable.single.subscribe"
 
 local SingleOnSubscribe = require "RxLua.src.onSubscribe.single.new"
-
 local SingleObserver = require "RxLua.src.observer.single.new"
-local isSingleEmitterDisposed = require "RxLua.src.emitter.single.isDisposed"
 
 local function emptyHandler() end 
 
 return function (single, onSuccess, onError)
+    assert(is(single), "TypeError: single must be a Single instance.")
     handler = type(handler) == "function" and handler or emptyHandler
     return Single(_, SingleOnSubscribe(_, function (emitter)
         return subscribe(single, SingleObserver(_, {

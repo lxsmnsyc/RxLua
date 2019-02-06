@@ -20,6 +20,8 @@
     SOFTWARE.
 ]]  
 
+local is = require "RxLua.src.observable.is"
+
 local Disposable = require "RxLua.src.disposable.new"
 local isDisposable = require "RxLua.src.disposable.is"
 local disposeDisposable = require "RxLua.src.disposable.dispose"
@@ -42,104 +44,109 @@ local isDisposableObserver = require "RxLua.src.observer.disposable.is"
 local function emptyHandler() end
 
 return function (observable, observer)
+    assert(is(observable), "TypeError: observable must be an Observable instance.")
     local disposableObserver = isDisposableObserver(observer)
     --[[
         Check if observer is a valid Observable observer
     ]]
-    if(observer and (isObserver(observer) or isDefaultObserver(observer) or disposableObserver)) then 
-        local subscriber = observable._subscriber 
+    assert(
+        observer and (isObserver(observer) or isDefaultObserver(observer)  or disposableObserver), 
+        "TypeError: observer must be either an Observer, a DefaultObserver or a DisposableMaybeObserver instance."
+    )
+    local subscriber = observable._subscriber 
+    --[[
+        Check if subscriber is an ObservableOnSubscribe instance
+    ]]
+    if(subscriber and isOnSubscribe(subscriber)) then 
         --[[
-            Check if subscriber is an ObservableOnSubscribe instance
+            Create the disposable
         ]]
-        if(subscriber and isOnSubscribe(subscriber)) then 
-            --[[
-                Create the disposable
-            ]]
-            local disposable = Disposable()
-            --[[
-                Create the emitter
-            ]]
-            local emitter = ObservableEmitter(_, {
-                onNext = observer.onNext, 
-                onError = observer.onError,
-                onComplete = observer.onComplete
-            })
-            --[[
-                Set the disposable for the emitter
-            ]]
-            setDisposable(emitter, disposable)
+        local disposable = Disposable()
+        --[[
+            Create the emitter
+        ]]
+        local emitter = ObservableEmitter(_, {
+            onNext = observer.onNext, 
+            onError = observer.onError,
+            onComplete = observer.onComplete
+        })
+        --[[
+            Set the disposable for the emitter
+        ]]
+        setDisposable(emitter, disposable)
 
-            --[[
-                Run handlers
-            ]]
-            local onSubscribe = observer.onSubscribe
+        --[[
+            Run handlers
+        ]]
+        local onSubscribe = observer.onSubscribe
 
-            if(type(onSubscribe) == "function") then 
-                onSubscribe(disposable)
+        if(type(onSubscribe) == "function") then 
+            onSubscribe(disposable)
+        end 
+
+        --[[
+            If the observer is a DisposableObserver instance,
+            run the onStart handler
+        ]]
+        if(disposableObserver) then 
+            local onStart = observer.onStart 
+            if(type(onStart) == "function") then 
+                onStart()
             end 
-
-            --[[
-                If the observer is a DisposableObserver instance,
-                run the onStart handler
-            ]]
-            if(disposableObserver) then 
-                local onStart = observer.onStart 
-                if(type(onStart) == "function") then 
-                    onStart()
-                end 
-            end 
-            --[[
-                Run the OnSubscribe
-            ]]
-            local status, result = pcall(function ()
-                return subscribe(subscriber, emitter)
-            end)
-            --[[
-                Customize the cleanup for the disposable
-            ]]
-            if(status) then 
-                if(result) then 
-                    local cleanup = emptyHandler
-                    --[[
-                        Check if the received result is a Disposable
-                    ]]
-                    if(isDisposable(result)) then 
-                        cleanup = function ()
-                            disposeDisposable(result)
-                        end 
-                    --[[
-                        or a CompositeDisposable
-                    ]]
-                    elseif(isCompositeDisposable(result)) then 
-                        cleanup = function ()
-                            disposeCompositeDisposable(result)
-                        end 
-                    --[[
-                        or a function
-                    ]]
-                    elseif(type(result) == "function") then
-                        cleanup = result
+        end 
+        --[[
+            Run the OnSubscribe
+        ]]
+        local status, result = pcall(function ()
+            return subscribe(subscriber, emitter)
+        end)
+        --[[
+            Customize the cleanup for the disposable
+        ]]
+        if(status) then 
+            if(result) then 
+                local cleanup = emptyHandler
+                --[[
+                    Check if the received result is a Disposable
+                ]]
+                if(isDisposable(result)) then 
+                    cleanup = function ()
+                        disposeDisposable(result)
                     end 
-
-                    --[[
-                        Dispose the observer if it is a DisposableObserver
-                    ]]
-                    if(disposableObserver) then 
-                        disposable.cleanup = function ()
-                            cleanup()
-
-                            disposeDisposableObserver(observer)
-                        end 
-                    end
+                --[[
+                    or a CompositeDisposable
+                ]]
+                elseif(isCompositeDisposable(result)) then 
+                    cleanup = function ()
+                        disposeCompositeDisposable(result)
+                    end 
+                --[[
+                    or a function
+                ]]
+                elseif(type(result) == "function") then
+                    cleanup = result
                 end 
-                return disposable
-            else 
-                local onError = observer.onError 
-                if(type(onError) == "function") then 
-                    onError(result)
-                end 
+
+                --[[
+                    Dispose the observer if it is a DisposableObserver
+                ]]
+                if(disposableObserver) then 
+                    disposable.cleanup = function ()
+                        cleanup()
+
+                        disposeDisposableObserver(observer)
+                    end 
+                end
             end 
-        end
-    end 
+            return disposable
+        else 
+            local onError = observer.onError 
+            if(type(onError) == "function") then 
+                onError(result)
+            end 
+        end 
+        disposeDisposable(disposable)
+        return disposable
+    end
     return nil
 end 
