@@ -21,11 +21,12 @@
 ]]  
 local M = require "RxLua.src.disposable.composite.M"
 
-local isDisposable = require "RxLua.src.disposable.is"
+local isDisposable = require "RxLua.src.global.disposable.is"
 
 return function (disposables)
     local composite = {
-        _className = "CompositeDisposable"
+        _className = "CompositeDisposable",
+        _disposed = false
     }
 
     local count = 0

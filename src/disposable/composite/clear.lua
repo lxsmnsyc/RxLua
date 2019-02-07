@@ -20,14 +20,39 @@
     SOFTWARE.
 ]]  
 
-local isDisposable = require "RxLua.src.disposable.is"
-local dispose = require "RxLua.src.disposable.dispose"
+local is = require "RxLua.src.disposable.composite.is"
+
+local isDisposable = require "RxLua.src.global.disposable.is"
+local dispose = require "RxLua.src.global.disposable.dispose"
+
+local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (composite)
+    --[[
+        Assert arguments
+    ]]
+    local context = debug.getinfo(1)
+    --[[
+        Argument #1: CompositeDisposable
+        Argument #2: Disposable
+    ]]
+    badArgument(is(composite), 1, context, "CompositeDisposable")
+    badArgument(isDisposable(disposable), 2, context, "Disposable")
 
+    --[[
+        If the composite is already disposed, exit
+    ]]
+    if(composite._disposed) then 
+        return
+    end 
+    --[[
+        Check if there are Disposables
+    ]]
     if(composite._size > 0) then 
         local list = composite._disposables
-
+        --[[
+            Dispose every Disposable
+        ]]
         for k, disposable in ipairs(list) do 
             dispose(disposable)
         end 

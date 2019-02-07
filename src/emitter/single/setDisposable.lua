@@ -24,7 +24,8 @@ local isDisposable = require "RxLua.src.disposable"
 local dispose = require "RxLua.src.disposable.dispose"
 
 return function (emitter, disposable)
-    assert(is(emitter), "TypeError: emitter must be a SingleEmitter instance.")
+    local fname = debug.getinfo(1).name
+    assert(is(emitter), "bad argument #1 to '"..fname.."' (SingleEmitter expected).")
     local oldDisposable = emitter._disposable
 
     if(disposable and isDisposable(disposable) and not disposable.isDisposed) then 

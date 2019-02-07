@@ -20,21 +20,33 @@
     SOFTWARE.
 ]]  
 local is = require "RxLua.src.disposable.composite.is"
-local dispose = require "RxLua.src.disposable.dispose"
-local isDisposed = require "RxLua.src.disposable.composite.isDisposed"
 
-local isDisposable = require "RxLua.src.disposable.is"
+local isDisposable = require "RxLua.src.global.disposable.is"
+local dispose = require "RxLua.src.global.disposable.dispose"
 
 local delete = require "RxLua.src.disposable.composite.delete"
 
-return function (composite, disposable)
-    local fname = debug.getinfo(1).name
-    assert(is(composite), "bad argument #1 to '"..fname.."' (CompositeDisposable expected).")
-    assert(isDisposable(disposable), "bad argument #2 to '"..fname.."'") 
+local badArgument = require "RxLua.src.asserts.badArgument"
 
-    if(isDisposed(composite)) then 
+return function (composite, disposable)
+    --[[
+        Assert arguments
+    ]]
+    local context = debug.getinfo(1)
+    --[[
+        Argument #1: CompositeDisposable
+        Argument #2: Disposable
+    ]]
+    badArgument(is(composite), 1, context, "CompositeDisposable")
+    badArgument(isDisposable(disposable), 2, context, "Disposable")
+    --[[
+        The composite is already disposed, exit.
+    ]]
+    if(composite._disposed) then 
         return false 
     end 
-
+    --[[
+        Dispose after a successful deletion.
+    ]]
     return delete(composite, disposable) and dispose(disposable)
 end

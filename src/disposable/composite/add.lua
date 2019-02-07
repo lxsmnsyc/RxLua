@@ -21,24 +21,42 @@
 ]]  
 local is = require "RxLua.src.disposable.composite.is"
 local dispose = require "RxLua.src.disposable.dispose"
-local isDisposed = require "RxLua.src.disposable.composite.isDisposed"
 
-local isDisposable = require "RxLua.src.disposable.is"
+local isDisposable = require "RxLua.src.global.disposable.is"
+
+local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (composite, ...)
-    assert(is(composite), "bad argument #1 to '"..debug.getinfo(1).name.."' (CompositeDisposable expected).")
-
-    local disposed = isDisposed(composite)
-
+    --[[
+        Check for initial valid argument
+    ]]
+    local context = debug.getinfo(1).name
+    badArgument(is(composite), 1, context, "CompositeDisposable")
+    --[[
+        Get the rest of the arguments assuming that 
+        all of it are of Disposable instance.
+    ]]
     local disposables = {...}
 
     local list = composite._disposables
     local indeces = composite._indeces 
     local count = composite._size
 
-    for k, disposable in ipairs(disposables) do 
-        assert(isDisposable(disposable), "bad argument #"..(k + 1).." to '"..debug.getinfo(1).name.." (Disposable expected).")
+    local disposed = composite._disposed
 
+    --[[
+        Iterate through the argument Disposables
+    ]]
+    for k, disposable in ipairs(disposables) do 
+        --[[
+            Assert: argument is a Disposable instance.
+        ]]
+        badArgument(isDisposable(disposable), k + 1, context, "Disposable")
+
+        --[[
+            If the composite is disposed, dispose the disposable that is
+            to be added, otherwise, add it to the list of disposables.
+        ]]
         if(disposed) then 
             count = count + 1
 
@@ -48,6 +66,8 @@ return function (composite, ...)
             dispose(disposable)
         end
     end
-
+    --[[
+        Save the new size
+    ]]
     composite._size = count
 end 

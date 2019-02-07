@@ -19,11 +19,32 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local is = require "RxLua.src.disposable.composite.is"
+
+local isDisposable = require "RxLua.src.is.disposable"
+
+local isDisposed = require "RxLua.src.global.disposable.isDisposed"
+
+local Disposable = require "RxLua.src.disposable.dispose"
+local CompositeDisposable = require "RxLua.src.disposable.composite.dispose"
+local DisposableObserver = require "RxLua.src.observer.disposable.dispose"
+local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.dispose"
+local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.dispose"
+local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-return function (composite)
-    badArgument(is(composite), 1, context, "CompositeDisposable")
-    return composite._disposed
-end
+return function (disposable)
+    local context = debug.getinfo(1).name
+    badArgument(isDisposable(disposable), 1, context, "Disposable")
+    
+    if(isDisposed(disposable)) then 
+        return false 
+    end
+
+    return Disposable(disposable)
+        or CompositeDisposable(disposable)
+        or DisposableObserver(disposable)
+        or DisposableMaybeObserver(disposable)
+        or DisposableCompletableObserver(disposable)
+        or DisposableSingleObserver(disposable)
+end 

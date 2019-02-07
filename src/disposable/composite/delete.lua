@@ -20,33 +20,50 @@
     SOFTWARE.
 ]]  
 local is = require "RxLua.src.disposable.composite.is"
-local dispose = require "RxLua.src.disposable.dispose"
-local isDisposed = require "RxLua.src.disposable.composite.isDisposed"
+local isDisposable = require "RxLua.src.global.disposable.is"
 
-local isDisposable = require "RxLua.src.disposable.is"
+local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (composite, disposable)
-    local fname = debug.getinfo(1).name
-    assert(is(composite), "bad argument #1 to '"..fname.."' (CompositeDisposable expected).")
-    assert(isDisposable(disposable), "bad argument #2 to '"..fname.."'")
+    --[[
+        Assert arguments
+    ]]
+    local context = debug.getinfo(1)
+    --[[
+        Argument #1: CompositeDisposable
+        Argument #2: Disposable
+    ]]
+    badArgument(is(composite), 1, context, "CompositeDisposable")
+    badArgument(isDisposable(disposable), 2, context, "Disposable")
 
-    if(isDisposed(composite)) then 
+    --[[
+        If the composite is already disposed, exit
+    ]]
+    if(composite._disposed) then 
         return false 
     end 
-    
+    --[[
+        Check if the Composite has some Disposables
+    ]]
     local count = composite._size
     if(count > 0) then 
         local list = composite._disposables
         local indeces = composite._indeces 
-
+        --[[
+            Check if the Disposable is in the Composite
+        ]]
         local index = indeces[disposable]
-
         if(index) then 
+            --[[
+                Remove the Disposable
+            ]]
             local lastDisposable = list[count]
             list[index] = lastDisposable
             indeces[lastDisposable] = index 
             count = count - 1
-
+            --[[
+                Successful deletion
+            ]]
             return true 
         end 
     end 
