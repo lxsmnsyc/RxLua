@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Single Observer
+    Reactive Extensions for Lua
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,15 +18,5 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]
-
-
-local MaybeObserver = require "RxLua.src.observer.maybe.is"
-local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.is"
-local CallbackMaybeObserver = require "RxLua.src.observer.maybe.callback.is"
-
-return function (observer)
-    return MaybeObserver(observer)
-        or DisposableMaybeObserver(observer)
-        or CallbackMaybeObserver(observer)
-end 
+]]  
+return {}

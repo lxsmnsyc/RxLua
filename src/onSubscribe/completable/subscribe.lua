@@ -20,11 +20,14 @@
     SOFTWARE.
 ]] 
 local is = require "RxLua.src.onSubscribe.completable.is"
-local isCompletableEmitter = require "RxLua.src.emitter.completable.is"
+local isEmitter = require "RxLua.src.emitter.completable.is"
+
+local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (onSubscribe, emitter)
-    assert(is(onSubscribe), "TypeError: emitter must be a CompletableOnSubscribe instance.")
-    assert(isCompletableEmitter(emitter), "TypeError: emitter must be a CompletableEmitter instance.")
+    local context = debug.getinfo(1).name
+    badArgument(is(onSubscribe), 1, context, "CompletableOnSubscribe")
+    badArgument(isEmitter(emitter), 2, context, "CompletableEmitter")
     local handler = onSubscribe._handler
     if(type(handler) == "function") then 
         return handler(emitter)

@@ -23,8 +23,7 @@
 local M = require "RxLua.src.emitter.maybe.M"
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-local isObserver = require "RxLua.src.observer.maybe.is"
-local isDisposableObserver = require "RxLua.src.observer.maybe.disposable.is"
+local isObserver = require "RxLua.src.observer.maybe.interface.is"
 
 local isDisposable = require "RxLua.src.disposable.interface.is"
 local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
@@ -32,9 +31,8 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 
 return function (_, observer)
     badArgument(
-        isObserver(observer) or 
-        isDisposableObserver(observer), 
-        1, debug.getinfo(1).name, "MaybeObserver or DisposableMaybeObserver"
+        isObserver(observer), 
+        1, debug.getinfo(1).name, "extends MaybeObserverInterface"
     )
     --[[
         Tells the observer that it can receive signals

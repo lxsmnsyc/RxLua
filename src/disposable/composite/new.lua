@@ -41,7 +41,7 @@ return function (_, disposables)
             --[[
                 Assert: argument is a Disposable instance.
             ]]
-            badArgument(isDisposable(disposable), k + 1, context, "Disposable")
+            badArgument(isDisposable(disposable), k + 1, context, "extends DisposableInterface")
             count = count + 1
 
             list[count] = disposable

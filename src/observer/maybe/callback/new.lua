@@ -19,7 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local M = require "RxLua.src.observer.completable.callback.M"
+local M = require "RxLua.src.observer.maybe.callback.M"
 
 local isDisposable = require "RxLua.src.disposable.is"
 local isDisposed = require "RxLua.src.disposable.isDisposed"
@@ -27,15 +27,24 @@ local dispose = require "RxLua.src.disposable.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-return function (_, onComplete, onError)
+return function (_, onSuccess, onError, onSuccess)
     badArgument(type(onComplete) == "function", 1, debug.getinfo(1).name, "function")
 
     local this = {
         _disposable = nil,
-        _className = "DisposableCompletableObserver",
+        _className = "CallbackMaybeObserver",
     }
 
     local recognizeError = type(onError) == "function"
+
+    this.onSuccess = function (x)
+        local status, result = pcall(onSuccess, x)
+
+        if(not status) then 
+            error(result)
+        end 
+        dispose(this._disposable)
+    end 
 
     this.onComplete = function ()
         local status, result = pcall(onComplete)

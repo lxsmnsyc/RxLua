@@ -20,11 +20,14 @@
     SOFTWARE.
 ]] 
 local is = require "RxLua.src.onSubscribe.observable.is"
-local isObservableEmitter = require "RxLua.src.emitter.observable.is"
+local isEmitter = require "RxLua.src.emitter.observable.is"
+
+local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (onSubscribe, emitter)
-    assert(is(onSubscribe), "TypeError: emitter must be a ObservableOnSubscribe instance.")
-    assert(isObservableEmitter(emitter), "TypeError: emitter must be an ObservableEmitter instance.")
+    local context = debug.getinfo(1).name
+    badArgument(is(onSubscribe), 1, context, "ObservableOnSubscribe")
+    badArgument(isEmitter(emitter), 2, context, "ObservableEmitter")
     local handler = onSubscribe._handler
     if(type(handler) == "function") then 
         return handler(emitter)

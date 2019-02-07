@@ -52,7 +52,7 @@ return function (composite, ...)
         --[[
             Assert: argument is a Disposable instance.
         ]]
-        badArgument(isDisposable(disposable), k + 1, context, "Disposable")
+        badArgument(isDisposable(disposable), k + 1, context, "extends DisposableInterface")
 
         --[[
             If the composite is disposed, dispose the disposable that is

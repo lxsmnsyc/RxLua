@@ -55,6 +55,7 @@ Rx.CompletableObserverInterface = load("observer.completable.interface")
 Rx.CompletableObserver = load("observer.completable")
 Rx.DisposableCompletableObserver = load("observer.completable.disposable")
 Rx.EmptyCompletableObserver = load("observer.completable.empty")
+Rx.CallbackCompletableObserver = load("observer.completable.callback")
 
 --[[
     Emitter

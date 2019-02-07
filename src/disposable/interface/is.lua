@@ -32,7 +32,11 @@ local DisposableCompletableObserver = require "RxLua.src.observer.completable.di
 local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.is"
 
 local LambdaObserver = require "RxLua.src.observer.lambda.is"
+
 local EmptyCompletableObserver = require "RxLua.src.observer.completable.empty.is"
+local CallbackCompletableObserver = require "RxLua.src.observer.completable.callback.is"
+
+local CallbackMaybeObserver = require "RxLua.src.observer.maybe.callback.is"
 
 local ObservableEmitter = require "RxLua.src.emitter.observable.is"
 local MaybeEmitter = require "RxLua.src.emitter.maybe.is"
@@ -49,7 +53,11 @@ return function (disposable)
         or DisposableSingleObserver(disposable)
 
         or LambdaObserver(disposable)
+        
         or EmptyCompletableObserver(disposable)  
+        or CallbackCompletableObserver(disposable)
+
+        or CallbackMaybeObserver(disposable)
 
         or ObservableEmitter(disposable)
         or MaybeEmitter(disposable)

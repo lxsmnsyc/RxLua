@@ -20,11 +20,14 @@
     SOFTWARE.
 ]]  
 local is = require "RxLua.src.onSubscribe.maybe.is"
-local isMaybeEmitter = require "RxLua.src.emitter.maybe.is"
+local isEmitter = require "RxLua.src.emitter.maybe.is"
+
+local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (onSubscribe, emitter)
-    assert(is(onSubscribe), "TypeError: emitter must be a MaybeOnSubscribe instance.")
-    assert(isMaybeEmitter(emitter), "TypeError: emitter must be a MaybeEmitter instance.")
+    local context = debug.getinfo(1).name
+    badArgument(is(onSubscribe), 1, context, "MaybeOnSubscribe")
+    badArgument(isEmitter(emitter), 2, context, "MaybeEmitter")
     local handler = onSubscribe._handler
     if(type(handler) == "function") then 
         return handler(emitter)

@@ -28,8 +28,8 @@ local isDisposed
 local notLoaded = true
 local function asyncLoad()
     if(notLoaded) then
-        isDisposable = isDisposable or require "RxLua.src.disposable.interface.is"
-        isDisposed = isDisposed or require "RxLua.src.disposable.interface.isDisposed"
+        isDisposable = require "RxLua.src.disposable.interface.is"
+        isDisposed = require "RxLua.src.disposable.interface.isDisposed"
         notLoaded = false 
     end
 end

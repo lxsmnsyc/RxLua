@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Single Observer
+    Reactive Extensions for Lua
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,15 +18,31 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]
+]]  
+local is = require "RxLua.src.observer.maybe.callback.is"  
+local badArgument = require "RxLua.src.asserts.badArgument"
 
+local isDisposable
+local isDisposed
 
-local MaybeObserver = require "RxLua.src.observer.maybe.is"
-local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.is"
-local CallbackMaybeObserver = require "RxLua.src.observer.maybe.callback.is"
+local notLoaded = true
+local function asyncLoad()
+    if(notLoaded) then
+        isDisposable = isDisposable or require "RxLua.src.disposable.is"
+        isDisposed = isDisposed or require "RxLua.src.disposable.isDisposed"
+        notLoaded = false 
+    end
+end
 
 return function (observer)
-    return MaybeObserver(observer)
-        or DisposableMaybeObserver(observer)
-        or CallbackMaybeObserver(observer)
+    badArgument(is(observer), 1, debug.getinfo(1).name, "CallbackMaybeObserver")
+    asyncLoad()
+
+    local disposable = observer._disposable
+
+    if(isDisposed(disposable)) then 
+        return false
+    end
+
+    return dispose(disposable)
 end 

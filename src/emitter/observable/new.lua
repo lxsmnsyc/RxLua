@@ -32,7 +32,7 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 return function (_, observer)
     badArgument(
         isObserver(observer), 
-        1, debug.getinfo(1).name, "ObserverInterface"
+        1, debug.getinfo(1).name, "extends ObserverInterface"
     )
     --[[
         Tells the observer that it can receive signals

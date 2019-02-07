@@ -24,13 +24,19 @@ local M = require "RxLua.src.observable.completable.M"
 local CompletableOnSubscribe = require "RxLua.src.onSubscribe.completable.new"
 local isOnSubscribe = require "RxLua.src.onSubscribe.completable.is"
 
+local badArgument = require "RxLua.src.asserts.badArgument"
+
+local function asis(observer) return observer end
+
 return function (_, subscriber)
-    if(type(subscriber) == "function") then 
+    local isFunction = type(subscriber) == "function"
+    badArgument(isFunction or isOnSubscribe(subscriber), 1, debug.getinfo(1).name , "CompletableOnSubscribe or function")
+
+    if(isFunction) then 
         subscriber = CompletableOnSubscribe(_, subscriber)
-    elseif(not isOnSubscribe(subscriber)) then 
-        error("TypeError: subscriber must be either a MaybeOnSubscribe instance or a function.")
     end
     return setmetatable({
+        _modify = asis,
         _subscriber = subscriber,
         _className = "Completable"
     }, M)

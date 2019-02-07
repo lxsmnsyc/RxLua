@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Single Observer
+    Reactive Extensions Callback Maybe Observer
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -20,13 +20,22 @@
     SOFTWARE.
 ]]
 
+local path = "RxLua.src.observer.maybe.callback"
 
-local MaybeObserver = require "RxLua.src.observer.maybe.is"
-local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.is"
-local CallbackMaybeObserver = require "RxLua.src.observer.maybe.callback.is"
-
-return function (observer)
-    return MaybeObserver(observer)
-        or DisposableMaybeObserver(observer)
-        or CallbackMaybeObserver(observer)
+local function load(name)
+    return require(path.."."..name)
 end 
+
+local M = load("M")
+
+local CallbackMaybeObserver = setmetatable({}, M)
+
+CallbackMaybeObserver.is = load("is")
+
+M.__call = load("new")
+M.__index = {
+    isDisposed = load("isDisposed"),
+    dispose = load("dispose")
+}
+
+return CallbackMaybeObserver

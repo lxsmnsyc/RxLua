@@ -20,11 +20,14 @@
     SOFTWARE.
 ]] 
 local is = require "RxLua.src.onSubscribe.single.is"
-local isSingleEmitter = require "RxLua.src.emitter.single.is"
+local isEmitter = require "RxLua.src.emitter.single.is"
+
+local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (onSubscribe, emitter)
-    assert(is(onSubscribe), "TypeError: emitter must be a SingleOnSubscribe instance.")
-    assert(isSingleEmitter(emitter), "TypeError: emitter must be a SingleEmitter instance.")
+    local context = debug.getinfo(1).name
+    badArgument(is(onSubscribe), 1, context, "SingleOnSubscribe")
+    badArgument(isEmitter(emitter), 2, context, "SingleEmitter")
     local handler = onSubscribe._handler
     if(type(handler) == "function") then 
         return handler(emitter)

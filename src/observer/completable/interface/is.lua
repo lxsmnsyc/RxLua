@@ -24,9 +24,11 @@
 local CompletableObserver = require "RxLua.src.observer.completable.is"
 local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.is"
 local EmptyCompletableObserver = require "RxLua.src.observer.completable.empty.is"
+local CallbackCompletableObserver = require "RxLua.src.observer.completable.callback.is"
 
 return function (observer)
     return CompletableObserver(observer)
         or DisposableCompletableObserver(observer)
         or EmptyCompletableObserver(observer)
+        or CallbackCompletableObserver(observer)
 end 

@@ -35,7 +35,7 @@ local function asyncLoad()
 end
 
 return function (observer)
-    badArgument(is(observer), 1, debug.getinfo(1).name, "DisposableObserver")
+    badArgument(is(observer), 1, debug.getinfo(1).name, "CallbackCompletableObserver")
     asyncLoad()
 
     local disposable = observer._disposable

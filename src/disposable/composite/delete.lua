@@ -35,7 +35,7 @@ return function (composite, disposable)
         Argument #2: Disposable
     ]]
     badArgument(is(composite), 1, context, "CompositeDisposable")
-    badArgument(isDisposable(disposable), 2, context, "DisposableInterface")
+    badArgument(isDisposable(disposable), 2, context, "extends DisposableInterface")
 
     --[[
         If the composite is already disposed, exit
