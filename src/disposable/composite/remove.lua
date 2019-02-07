@@ -22,17 +22,18 @@
 local is = require "RxLua.src.disposable.composite.is"
 
 local isDisposable = require "RxLua.src.disposable.is"
-local dispose = require "RxLua.src.disposable.dispose"
+local dispose
 
 local delete = require "RxLua.src.disposable.composite.delete"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (composite, disposable)
+    dispose = dispose or require "RxLua.src.disposable.dispose"
     --[[
         Assert arguments
     ]]
-    local context = debug.getinfo(1)
+    local context = debug.getinfo(1).name
     --[[
         Argument #1: CompositeDisposable
         Argument #2: Disposable

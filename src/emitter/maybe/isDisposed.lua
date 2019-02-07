@@ -19,12 +19,26 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local isDisposable = require "RxLua.src.disposable"
-local dispose = require "RxLua.src.disposable.dispose"
+local is = require "RxLua.src.emitter.maybe.is"
+local badArgument = require "RxLua.src.asserts.badArgument"
 
-return function (maybe)
-    local disposable = maybe._disposable
-    local active = maybe._active
+local isDisposable
+local isDisposed
 
-    return (disposable and isDisposable(disposable) and disposable.isDisposed) or (not active)
+local notLoaded = true
+local function asyncLoad()
+    if(notLoaded) then
+        isDisposable = isDisposable or require "RxLua.src.disposable.is"
+        isDisposed = isDisposed or require "RxLua.src.disposable.isDisposed"
+        notLoaded = false 
+    end
+end
+
+return function (emitter)
+    badArgument(is(emitter), 1, debug.getinfo(1).name, "MaybeEmitter")
+    asyncLoad()
+
+    local disposable = emitter._disposable
+
+    return isDisposable(disposable) and isDisposed(disposable)
 end 

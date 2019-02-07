@@ -21,13 +21,14 @@
 ]] 
 local M = require "RxLua.src.observer.maybe.disposable.M"
 
-local Disposable = require "RxLua.src.disposable.new"
+local isDisposable = require "RxLua.src.disposable.is"
+local isDisposed = require "RxLua.src.disposable.isDisposed"
 local dispose = require "RxLua.src.disposable.dispose"
 
-return function (_, receiver)
-    assert(type(receiver) == "table", "TypeError: receiver is not a table. (received: "..type("receiver")..")")
+local badArgument = require "RxLua.src.asserts.badArgument"
 
-    local disposable = Disposable()
+return function (_, receiver)
+    badArgument(type(receiver) == "table", 1, debug.getinfo(1).name, "table", type(receiver))
 
     local onStart = receiver.onStart
     local onSuccess = receiver.onSuccess 
@@ -45,52 +46,36 @@ return function (_, receiver)
         dispose(disposable)
     end 
 
-    
-    local function successHandler(err)
-        if(not disposable.isDisposed) then 
-            dispose(disposable)
-            if(recognizeSuccess) then 
-                onSuccess(x)
-            end
-        end 
+    local function internalIsDisposed()
+        return isDisposed(disposable)
     end 
 
-    local function errorHandler(err)
-        if(not disposable.isDisposed) then 
-            dispose(disposable)
+    return setmetatable({
+        onSubscribe = function (d)
+            badArgument(isDisposable(d), 1, debug.getinfo(1).name, "Disposable")
+            if(not (isDisposed(d) or disposable) and recognizeStart) then 
+                disposable = d
+                onStart()
+            end 
+        end,
+
+        onSuccess = function (x)
+            if(recognizeSuccess) then 
+                onSuccess(x, internalDispose, isDisposed)
+            end 
+        end,
+
+        onError = function (err)
             if(recognizeError) then 
                 onError(err)
             end
-        end 
-    end 
+        end,
 
-    local function completeHandler()
-        if(not disposable.isDisposed) then 
-            dispose(disposable)
+        onComplete = function ()
             if(recognizeComplete) then 
                 onComplete()
             end
-        end 
-    end 
-
-    local function subscribeHandler(d)
-        local cleanup = disposable.cleanup
-        disposable.cleanup = function ()
-            cleanup()
-
-            dispose(d)
-        end
-        if(not disposable.isDisposed and recognizeSubscribe) then 
-            onSubscribe(d)
-        end 
-    end
-
-    return setmetatable({
-        onStart = startHandler,
-        onSuccess = successHandler,
-        onError = errorHandler,
-        onComplete = completeHandler,
-        onSubscribe = subscribeHandler,
+        end,
         _disposable = disposable,
         _className = "DisposableMaybeObserver"
     }, M)

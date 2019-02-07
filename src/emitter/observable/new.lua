@@ -21,13 +21,23 @@
 ]]  
 
 local M = require "RxLua.src.emitter.observable.M"
+local badArgument = require "RxLua.src.asserts.badArgument"
 
-local Disposable = require "RxLua.src.disposable.new"
+local isObserver = require "RxLua.src.observer.is"
+local isDefaultObserver = require "RxLua.src.observer.default.is"
+local isDisposableObserver = require "RxLua.src.observer.disposable.is"
+
 local isDisposable = require "RxLua.src.disposable.is"
+local isDisposed = require "RxLua.src.disposable."
 local dispose = require "RxLua.src.disposable.dispose"
 
-return function (_, receiver)
-    assert(type(receiver) == "table", "TypeError: receiver is not a table. (received: "..type("receiver")..")")
+return function (_, observer)
+    badArgument(
+        isObserver(observer) or 
+        isDisposableObserver(observer) or
+        isDefaultObserver(observer), 
+        1, debug.getinfo(1).name, "Observer, DisposableObserver or DefaultObserver"
+    )
     --[[
         Tells the observer that it can receive signals
     ]]
@@ -36,53 +46,29 @@ return function (_, receiver)
         _className = "ObservableEmitter"
     }
 
-    local onNext = receiver.onNext 
-    local onError = receiver.onError
-    local onComplete = receiver.onComplete
-    
-    local recognizeNext = type(onNext) == "function"
-    local recognizeError = type(onError) == "function"
-    local recognizeComplete = type(onComplete) == "function"
-    
-    local function isDisposed()
-        local disposable = this._disposable
-        return disposable and isDisposable(disposable) and disposable.isDisposed
-    end 
-
-    local function internalDispose()
-        local disposable = this._disposable
-        if(disposable and isDisposable(disposable)) then 
-            dispose(disposable)
-        end 
-    end 
-
-    local function isActive()
-        return this._active or not isDisposed()
-    end 
-
+    local onNext = observer.onNext
     local function nextHandler(x)
-        if(isActive() and recognizeNext) then 
+        badArgument(x ~= nil, 1, debug.getinfo(1).name, "non-nil value")
+        local disposable = this._disposable
+        if(not isDisposed(disposable)) then 
             onNext(x)
         end 
     end 
 
     local function errorHandler(err)
-        if(isActive()) then 
-            this._active = false
-            internalDispose()
-            if(recognizeError) then 
-                onError(err)
-            end
+        badArgument(err ~= nil, 1, debug.getinfo(1).name, "non-nil value")
+        local disposable = this._disposable
+        if(not isDisposed(disposable)) then 
+            observer.onError(err)
+            dispose(disposable)
         end 
     end 
 
     local function completeHandler()
-        if(isActive()) then 
-            this._active = false
-            internalDispose()
-            if(recognizeComplete) then 
-                onComplete()
-            end
+        local disposable = this._disposable
+        if(not isDisposed(disposable)) then 
+            observer.onComplete()
+            dispose(disposable)
         end 
     end 
 

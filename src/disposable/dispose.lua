@@ -33,6 +33,11 @@ local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.dis
 local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.dispose"
 local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.dispose"
 
+local ObservableEmitter = require "RxLua.src.emitter.observable.dispose"
+local MaybeEmitter = require "RxLua.src.emitter.maybe.dispose"
+local CompletableEmitter = require "RxLua.src.emitter.completable.dispose"
+local SingleEmitter = require "RxLua.src.emitter.single.dispose"
+
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (disposable)
@@ -50,10 +55,17 @@ return function (disposable)
     --[[
         Dispose
     ]]
-    return Disposable(disposable)
+    local status, result = pcall(function ()
+        return Disposable(disposable)
         or CompositeDisposable(disposable)
         or DisposableObserver(disposable)
         or DisposableMaybeObserver(disposable)
         or DisposableCompletableObserver(disposable)
         or DisposableSingleObserver(disposable)
+    end)
+
+    if(status) then 
+        return result 
+    end 
+    return false
 end 

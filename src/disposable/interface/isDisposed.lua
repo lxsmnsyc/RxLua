@@ -22,8 +22,10 @@
 
 local is = require "RxLua.src.disposable.interface.is"
 
+local badArgument = require "RxLua.src.asserts.badArgument"
+
 return function (disposable)
-    assert(isDisposable(disposable), "bad argument #1 to '"..debug.getinfo(1).name.."' (Disposable expected)")
+    badArgument(isDisposable(disposable), 1, debug.getinfo(1).name, "Disposable")
 
     return disposable._isDisposed
 end 

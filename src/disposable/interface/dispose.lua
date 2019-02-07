@@ -28,7 +28,7 @@ return function (disposable)
     --[[
         Assert argument
     ]]
-    local context = debug.getinfo(1)
+    local context = debug.getinfo(1).name
     badArgument(is(disposable), 1, context, "Disposable")
     --[[
         The disposable is already disposed, exit 

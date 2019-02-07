@@ -21,13 +21,17 @@
 ]]  
 
 local M = require "RxLua.src.emitter.single.M"
+local badArgument = require "RxLua.src.asserts.badArgument"
 
-local Disposable = require "RxLua.src.disposable.new"
+local isObserver = require "RxLua.src.observer.single.is"
+local isDisposableObserver = require "RxLua.src.observer.single.disposable.is"
+
 local isDisposable = require "RxLua.src.disposable.is"
+local isDisposed = require "RxLua.src.disposable."
 local dispose = require "RxLua.src.disposable.dispose"
 
-return function (_, receiver)
-    assert(type(receiver) == "table", "TypeError: receiver is not a table. (received: "..type("receiver")..")")
+return function (_, observer)
+    badArgument(isObserver(observer) or isDisposableObserver(observer), 1, debug.getinfo(1).name, "SingleObserver or DisposableSingleObserver")
     --[[
         Tells the observer that it can receive signals
     ]]
@@ -36,50 +40,27 @@ return function (_, receiver)
         _className = "SingleEmitter"
     }
 
-    local onSuccess = receiver.onSuccess 
-    local onError = receiver.onError
-    
-    local recognizeSuccess = type(onSuccess) == "function"
-    local recognizeError = type(onError) == "function"
-    
-    local function isDisposed()
+    local function errorHandler(err)
+        badArgument(err ~= nil, 1, debug.getinfo(1).name, "non-nil value")
         local disposable = this._disposable
-        return disposable and isDisposable(disposable) and disposable.isDisposed
+        if(not isDisposed(disposable)) then 
+            observer.onError(err)
+            dispose(this._disposable)
+        end 
     end 
 
-    local function internalDispose()
+    local function successHandler(x)
+        badArgument(x ~= nil, 1, debug.getinfo(1).name, "non-nil value")
+
         local disposable = this._disposable
-        if(disposable and isDisposable(disposable)) then 
+        if(not isDisposed(disposable)) then 
+            observer.onSuccess(x)
             dispose(disposable)
         end 
     end 
 
-    local function isActive()
-        return this._active or not isDisposed()
-    end 
-
-    local function successHandler(x)
-        if(isActive()) then 
-            this._active = false
-            internalDispose()
-            if(recognizeSuccess) then 
-                onSuccess(x)
-            end
-        end 
-    end 
-
-    local function errorHandler(err)
-        if(isActive()) then 
-            this._active = false
-            internalDispose()
-            if(recognizeError) then 
-                onError(err)
-            end
-        end 
-    end 
-
-    this.success = successHandler
     this.error = errorHandler
+    this.success = successHandler
 
     return setmetatable(this, M)
 end

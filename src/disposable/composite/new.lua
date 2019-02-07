@@ -21,9 +21,13 @@
 ]]  
 local M = require "RxLua.src.disposable.composite.M"
 
-local isDisposable = require "RxLua.src.global.disposable.is"
+local isDisposable = require "RxLua.src.disposable.is"
 
-return function (disposables)
+local badArgument = require "RxLua.src.asserts.badArgument"
+
+return function (_, disposables)
+    local context = debug.getinfo(1).name 
+    
     local composite = {
         _className = "CompositeDisposable",
         _disposed = false
@@ -32,10 +36,12 @@ return function (disposables)
     local count = 0
     local indeces = {}
     local list = {}
-
     if(type(disposables) == "table") then 
         for k, disposable in ipairs(disposables) do 
-            assert(isDisposable(disposable), "TypeError: Element at "..k.." is not a disposable.")
+            --[[
+                Assert: argument is a Disposable instance.
+            ]]
+            badArgument(isDisposable(disposable), k + 1, context, "Disposable")
             count = count + 1
 
             list[count] = disposable

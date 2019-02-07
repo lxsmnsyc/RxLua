@@ -19,7 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local is = require "RxLua.src.emitter.completable.is"
+local is = require "RxLua.src.emitter.observable.is"  
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 local isDisposable
@@ -35,10 +35,14 @@ local function asyncLoad()
 end
 
 return function (emitter)
-    badArgument(is(emitter), 1, debug.getinfo(1).name, "CompletableEmitter")
+    badArgument(is(emitter), 1, debug.getinfo(1).name, "ObservableEmitter")
     asyncLoad()
 
     local disposable = emitter._disposable
 
-    return isDisposable(disposable) and isDisposed(disposable)
+    if(isDisposed(disposable)) then 
+        return false
+    end
+
+    return dispose(disposable)
 end 

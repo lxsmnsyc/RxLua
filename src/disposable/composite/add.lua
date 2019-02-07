@@ -22,11 +22,12 @@
 local is = require "RxLua.src.disposable.composite.is"
 
 local isDisposable = require "RxLua.src.disposable.is"
-local dispose = require "RxLua.src.disposable.dispose"
+local dispose
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (composite, ...)
+    dispose = dispose or require "RxLua.src.disposable.dispose"
     --[[
         Check for initial valid argument
     ]]

@@ -20,12 +20,25 @@
     SOFTWARE.
 ]]  
 local is = require "RxLua.src.observer.completable.disposable.is"
-local isDisposable = require "RxLua.src.disposable"
-local dispose = require "RxLua.src.disposable.dispose"
+local badArgument = require "RxLua.src.asserts.badArgument"
+
+local isDisposable
+local isDisposed
+
+local notLoaded = true
+local function asyncLoad()
+    if(notLoaded) then
+        isDisposable = isDisposable or require "RxLua.src.disposable.is"
+        isDisposed = isDisposed or require "RxLua.src.disposable.isDisposed"
+        notLoaded = false 
+    end
+end
 
 return function (observer)
-    assert(is(observer), "TypeError: observer must be a DisposableCompletableObserver instance.")
+    badArgument(is(observer), 1, debug.getinfo(1).name, "DisposableObserver")
+    asyncLoad()
+
     local disposable = observer._disposable
 
-    return isDisposable(disposable) and disposable.isDisposed
+    return isDisposable(disposable) and isDisposed(disposable)
 end 

@@ -26,12 +26,10 @@ local function load(name)
     return require(path.."."..name)
 end 
 
-local M = load("M")
-
 local SuperDisposable = setmetatable({}, M)
 
 SuperDisposable.is = load("is")
-SuperDisposable.dispose = load("dispose")
 SuperDisposable.isDisposed = load("isDisposed")
+SuperDisposable.dispose = load("dispose")
 
 return SuperDisposable

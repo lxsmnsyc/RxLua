@@ -24,6 +24,7 @@ local is = require "RxLua.src.disposable.composite.is"
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (composite)
+    local context = debug.getinfo(1).name
     badArgument(is(composite), 1, context, "CompositeDisposable")
     return composite._disposed
 end

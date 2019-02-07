@@ -29,7 +29,7 @@ return function (composite, disposable)
     --[[
         Assert arguments
     ]]
-    local context = debug.getinfo(1)
+    local context = debug.getinfo(1).name
     --[[
         Argument #1: CompositeDisposable
         Argument #2: Disposable

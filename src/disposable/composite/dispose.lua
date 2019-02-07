@@ -21,15 +21,16 @@
 ]]  
 local is = require "RxLua.src.disposable.composite.is"
 
-local dispose = require "RxLua.src.disposable.dispose"
+local dispose
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (composite)
+    dispose = dispose or require "RxLua.src.disposable.dispose"
     --[[
         Assert argument
     ]]
-    local context = debug.getinfo(1)
+    local context = debug.getinfo(1).name
     badArgument(is(composite), 1, context, "CompositeDisposable")
     --[[
         The composite is already disposed, exit

@@ -19,7 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local is = require "RxLua.src.emitter.completable.is"
+local is = require "RxLua.src.emitter.completable.is"  
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 local isDisposable
@@ -40,5 +40,9 @@ return function (emitter)
 
     local disposable = emitter._disposable
 
-    return isDisposable(disposable) and isDisposed(disposable)
+    if(isDisposed(disposable)) then 
+        return false
+    end
+
+    return dispose(disposable)
 end 

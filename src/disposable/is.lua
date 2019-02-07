@@ -25,16 +25,26 @@
 ]]
 local Disposable = require "RxLua.src.disposable.interface.is"
 local CompositeDisposable = require "RxLua.src.disposable.composite.is"
+
 local DisposableObserver = require "RxLua.src.observer.disposable.is"
 local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.is"
 local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.is"
 local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.is"
 
-return function (x)
-    return  Disposable(x) or 
-            CompositeDisposable(x) or 
-            DisposableObserver(x) or 
-            DisposableMaybeObserver(x) or 
-            DisposableCompletableObserver(x) or 
-            DisposableSingleObserver(x)
+local ObservableEmitter = require "RxLua.src.emitter.observable.is"
+local MaybeEmitter = require "RxLua.src.emitter.maybe.is"
+local CompletableEmitter = require "RxLua.src.emitter.completable.is"
+local SingleEmitter = require "RxLua.src.emitter.single.is"
+
+return function (disposable)
+    return Disposable(disposable)
+        or CompositeDisposable(disposable)
+        or DisposableObserver(disposable)
+        or DisposableMaybeObserver(disposable)
+        or DisposableCompletableObserver(disposable)
+        or DisposableSingleObserver(disposable)
+        or ObservableEmitter(disposable)
+        or MaybeEmitter(disposable)
+        or CompletableEmitter(disposable)
+        or SingleEmitter(disposable)
 end
