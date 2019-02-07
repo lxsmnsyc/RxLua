@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions for Lua
+    Reactive Extensions Single Observer
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,41 +18,13 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]] 
-local M = require "RxLua.src.observer.maybe.disposable.M"
+]]
 
-local isDisposable = require "RxLua.src.disposable.is"
-local isDisposed = require "RxLua.src.disposable.isDisposed"
-local dispose = require "RxLua.src.disposable.dispose"
 
-local badArgument = require "RxLua.src.asserts.badArgument"
+local CompletableObserver = require "RxLua.src.observer.completable.is"
+local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.is"
 
-return function (_, receiver)
-    badArgument(type(receiver) == "table", 1, debug.getinfo(1).name, "table", type(receiver))
-
-    local onStart = receiver.onStart
-    local recognizeStart = type(onStart) == "function"
-
-    local this = {
-        _disposable = nil,
-        _className = "DisposableMaybeObserver",
-        
-        onSuccess = receiver.onSuccess,
-        onError = receiver.onError,
-        onComplete = receiver.onComplete
-    }
-
-    this.onSubscribe = function (d)
-        if(this._disposable) then 
-            error("Protocol Violation: Disposable already set.")
-        else 
-            this._disposable = d
-
-            if(recognizeStart) then 
-                onStart()
-            end
-        end 
-    end 
-
-    return setmetatable(this, M)
-end
+return function (observer)
+    return CompletableObserver(observer)
+        or DisposableCompletableObserver(observer)
+end 

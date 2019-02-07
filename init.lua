@@ -41,13 +41,17 @@ Rx.ObserverInterface = load("observer.interface")
 Rx.Observer = load("observer")
 Rx.DisposableObserver = load("observer.disposable")
 Rx.DefaultObserver = load("observer.default")
+Rx.LambdaObserver = load("observer.lambda")
 
+Rx.MaybeObserverInterface = load("observer.maybe.interface")
 Rx.MaybeObserver = load("observer.maybe")
 Rx.DisposableMaybeObserver = load("observer.maybe.disposable")
 
+Rx.SingleObserverInterface = load("observer.single.interface")
 Rx.SingleObserver = load("observer.single")
 Rx.DisposableSingleObserver = load("observer.single.disposable")
 
+Rx.CompletableObserverInterface = load("observer.completable.interface")
 Rx.CompletableObserver = load("observer.completable")
 Rx.DisposableCompletableObserver = load("observer.completable.disposable")
 
