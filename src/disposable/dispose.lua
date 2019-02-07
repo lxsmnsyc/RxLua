@@ -1,3 +1,4 @@
+
 --[[
     Reactive Extensions for Lua
 	
@@ -19,53 +20,35 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-
-local isDisposable = require "RxLua.src.disposable.is"
-local isDisposed = require "RxLua.src.disposable.isDisposed"
-
---[[
-    Load the dispose function variants
-]]
-local Disposable = require "RxLua.src.disposable.interface.dispose"
-local CompositeDisposable = require "RxLua.src.disposable.composite.dispose"
-local DisposableObserver = require "RxLua.src.observer.disposable.dispose"
-local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.dispose"
-local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.dispose"
-local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.dispose"
-
-local ObservableEmitter = require "RxLua.src.emitter.observable.dispose"
-local MaybeEmitter = require "RxLua.src.emitter.maybe.dispose"
-local CompletableEmitter = require "RxLua.src.emitter.completable.dispose"
-local SingleEmitter = require "RxLua.src.emitter.single.dispose"
+local is = require "RxLua.src.disposable.interface.is"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (disposable)
     --[[
-        Check argument
+        Assert argument
     ]]
     local context = debug.getinfo(1).name
-    badArgument(isDisposable(disposable), 1, context, "Disposable")
+    badArgument(is(disposable), 1, context, "Disposable")
     --[[
-        Disposable is already disposed, exit.
+        The disposable is already disposed, exit 
     ]]
-    if(isDisposed(disposable)) then 
+    if(disposable._disposed) then 
         return false 
     end
     --[[
-        Dispose
+        Update state
     ]]
-    local status, result = pcall(function ()
-        return Disposable(disposable)
-        or CompositeDisposable(disposable)
-        or DisposableObserver(disposable)
-        or DisposableMaybeObserver(disposable)
-        or DisposableCompletableObserver(disposable)
-        or DisposableSingleObserver(disposable)
-    end)
+    disposable._disposed = true 
+    --[[
+        Execute cleanup
+    ]]
+    local cleanup = disposable.cleanup
+    if(type(cleanup) == "function") then 
+        disposable.cleanup()
 
-    if(status) then 
-        return result 
-    end 
-    return false
-end 
+        disposable.cleanup = nil
+    end
+
+    return true 
+end

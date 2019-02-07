@@ -26,7 +26,7 @@ local dispose
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (composite)
-    dispose = dispose or require "RxLua.src.disposable.dispose"
+    dispose = dispose or require "RxLua.src.disposable.interface.dispose"
     --[[
         Assert argument
     ]]

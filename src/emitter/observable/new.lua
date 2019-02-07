@@ -27,9 +27,9 @@ local isObserver = require "RxLua.src.observer.is"
 local isDefaultObserver = require "RxLua.src.observer.default.is"
 local isDisposableObserver = require "RxLua.src.observer.disposable.is"
 
-local isDisposable = require "RxLua.src.disposable.is"
-local isDisposed = require "RxLua.src.disposable."
-local dispose = require "RxLua.src.disposable.dispose"
+local isDisposable = require "RxLua.src.disposable.interface.is"
+local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
+local dispose = require "RxLua.src.disposable.interface.dispose"
 
 return function (_, observer)
     badArgument(

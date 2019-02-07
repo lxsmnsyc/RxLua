@@ -35,7 +35,8 @@ CompletableEmitter.is = load("is")
 M.__call = load("new")
 M.__index = {
     setDisposable = load("setDisposable"),
-    isDisposed = load("isDisposed")
+    isDisposed = load("isDisposed"),
+    dispose = load("dispose")
 }
 
 return CompletableEmitter

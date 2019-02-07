@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Disposable
+    Reactive Extensions Super Disposable
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -26,16 +26,10 @@ local function load(name)
     return require(path.."."..name)
 end 
 
-local M = load("M")
+local DisposableInterface = {}
 
-local Disposable = setmetatable({}, M)
+DisposableInterface.is = load("is")
+DisposableInterface.isDisposed = load("isDisposed")
+DisposableInterface.dispose = load("dispose")
 
-Disposable.is = load("is")
-
-M.__call = load("new")
-M.__index = {
-    dispose = load("dispose"),
-    isDisposed = load("isDisposed")
-}
-
-return Disposable
+return DisposableInterface

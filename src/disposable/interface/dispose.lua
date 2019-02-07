@@ -1,4 +1,3 @@
-
 --[[
     Reactive Extensions for Lua
 	
@@ -20,35 +19,57 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local is = require "RxLua.src.disposable.interface.is"
+
+local isDisposable = require "RxLua.src.disposable.interface.is"
+local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
+
+--[[
+    Load the dispose function variants
+]]
+local Disposable = require "RxLua.src.disposable.dispose"
+local CompositeDisposable = require "RxLua.src.disposable.composite.dispose"
+local DisposableObserver = require "RxLua.src.observer.disposable.dispose"
+local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.dispose"
+local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.dispose"
+local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.dispose"
+
+local ObservableEmitter = require "RxLua.src.emitter.observable.dispose"
+local MaybeEmitter = require "RxLua.src.emitter.maybe.dispose"
+local CompletableEmitter = require "RxLua.src.emitter.completable.dispose"
+local SingleEmitter = require "RxLua.src.emitter.single.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (disposable)
     --[[
-        Assert argument
+        Check argument
     ]]
     local context = debug.getinfo(1).name
-    badArgument(is(disposable), 1, context, "Disposable")
+    badArgument(isDisposable(disposable), 1, context, "Disposable")
     --[[
-        The disposable is already disposed, exit 
+        Disposable is already disposed, exit.
     ]]
-    if(disposable._disposed) then 
+    if(isDisposed(disposable)) then 
         return false 
     end
     --[[
-        Update state
+        Dispose
     ]]
-    disposable._disposed = true 
-    --[[
-        Execute cleanup
-    ]]
-    local cleanup = disposable.cleanup
-    if(type(cleanup) == "function") then 
-        disposable.cleanup()
+    local status, result = pcall(function ()
+        return Disposable(disposable)
+            or CompositeDisposable(disposable)
+            or DisposableObserver(disposable)
+            or DisposableMaybeObserver(disposable)
+            or DisposableCompletableObserver(disposable)
+            or DisposableSingleObserver(disposable)
+            or ObservableEmitter(disposable)
+            or MaybeEmitter(disposable)
+            or CompletableEmitter(disposable)
+            or SingleEmitter(disposable)
+    end)
 
-        disposable.cleanup = nil
-    end
-
-    return true 
-end
+    if(status) then 
+        return result 
+    end 
+    return false
+end 

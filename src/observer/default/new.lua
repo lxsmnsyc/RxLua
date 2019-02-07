@@ -22,66 +22,37 @@
 
 local M = require "RxLua.src.observer.disposable.M"
 
+local badArgument = require "RxLua.src.asserts.badArgument"
+
 return function (_, receiver)
-    assert(type(receiver) == "table", "TypeError: receiver is not a table. (received: "..type("receiver")..")")
-    --[[
-        Tells the observer that it can receive signals
-    ]]
-    local active = true 
+    badArgument(type(receiver) == "table", 1, debug.getinfo(1).name, "table", type(receiver))
 
-    local onNext = receiver.onNext 
-    local onError = receiver.onError
-    local onComplete = receiver.onComplete
-    local onSubscribe = receiver.onSubscribe
-    
-    local recognizeNext = type(onNext) == "function"
-    local recognizeError = type(onError) == "function"
-    local recognizeComplete = type(onComplete) == "function"
-    local recognizeSubscribe = type(onSubscribe) == "function"
+    local onStart = receiver.onStart 
+    local recognizeStart = type(onStart) == "function"
 
-    local cancel = function ()
-        active = false 
-    end 
+    local upstream
 
-    local function nextHandler(x)
-        if(active and recognizeNext) then 
-            onNext(x, cancel)
-        end 
-    end 
-
-    local function errorHandler(err)
-        if(active) then 
-            active = false
-            if(recognizeError) then 
-                onError(err)
-            end
-        end 
-    end 
-
-    local function completeHandler()
-        if(active) then 
-            active = false
-            if(recognizeComplete) then 
-                onComplete()
-            end
-        end 
-    end 
-
-    local function subscribeHandler(d)
-        cancel = function ()
-            active = false
-            dispose(d)
-        end
-        if(active and recognizeSubscribe) then 
-            onSubscribe(d)
-        end 
+    local function cancel()
+        dispose(upstream)
     end 
 
     return setmetatable({
-        onNext = nextHandler,
-        onError = errorHandler,
-        onComplete = completeHandler,
-        onSubscribe = subscribeHandler,
+        onSubscribe = function (d)
+            badArgument(isDisposable(d), 1, debug.getinfo(1).name, "Disposable")
+            if(upstream) then 
+                error('Protocol Violation: Multiple subscriptions on observer')
+            else 
+                upstream = d
+                if(recognizeStart) then
+                    onStart()
+                end
+            end 
+        end, 
+
+        onNext = receiver.onNext,
+        onError = receiver.onError,
+        onComplete = receiver.onComplete,
+
         _className = "DefaultObserver"
     }, M)
 end

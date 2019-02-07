@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions for Lua
+    Reactive Extensions Observer Interface
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,40 +18,16 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]  
-local M = require "RxLua.src.disposable.composite.M"
+]]
 
-local isDisposable = require "RxLua.src.disposable.interface.is"
+local path = "RxLua.src.observer.interface"
 
-local badArgument = require "RxLua.src.asserts.badArgument"
-
-return function (_, disposables)
-    local context = debug.getinfo(1).name 
-    
-    local composite = {
-        _className = "CompositeDisposable",
-        _disposed = false
-    }
-
-    local count = 0
-    local indeces = {}
-    local list = {}
-    if(type(disposables) == "table") then 
-        for k, disposable in ipairs(disposables) do 
-            --[[
-                Assert: argument is a Disposable instance.
-            ]]
-            badArgument(isDisposable(disposable), k + 1, context, "Disposable")
-            count = count + 1
-
-            list[count] = disposable
-            indeces[disposable] = count
-        end
-    end 
-
-    composite._disposables = list 
-    composite._indeces = indeces
-    composite._size = count 
-
-    return setmetatable(composite, M)
+local function load(name)
+    return require(path.."."..name)
 end 
+
+local ObserverInterface = {}
+
+ObserverInterface.is = load("is")
+
+return ObserverInterface

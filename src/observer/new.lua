@@ -22,13 +22,11 @@
 
 local M = require "RxLua.src.observer.M"
 
-return function (_, receiver)
-    assert(type(receiver) == "table", "TypeError: receiver is not a table. (received: "..type("receiver")..")")
-    --[[
-        Tells the observer that it can receive signals
-    ]]
-    local active = true 
+local badArgument = require "RxLua.src.asserts.badArgument"
 
+return function (_, receiver)
+    badArgument(type(receiver) == "table", 1, debug.getinfo(1).name, "table", type(receiver))
+    
     local onNext = receiver.onNext 
     local onError = receiver.onError
     local onComplete = receiver.onComplete
