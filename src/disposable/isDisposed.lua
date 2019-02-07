@@ -19,35 +19,27 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local is = require "RxLua.src.disposable.composite.is"
-local dispose = require "RxLua.src.disposable.dispose"
-local isDisposed = require "RxLua.src.disposable.composite.isDisposed"
 
-local isDisposable = require "RxLua.src.disposable.is"
+local is = require "RxLua.src.disposable.is"
 
-return function (composite, ...)
-    assert(is(composite), "bad argument #1 to '"..debug.getinfo(1).name.."' (CompositeDisposable expected).")
+local isDisposable = require "RxLua.src.is.disposable"
 
-    local disposed = isDisposed(composite)
+local CompositeDisposable = require "RxLua.src.disposable.composite.isDisposed"
+local DisposableObserver = require "RxLua.src.observer.disposable.isDisposed"
+local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.isDisposed"
+local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.isDisposed"
+local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.isDisposed"
 
-    local disposables = {...}
+return function (disposable)
+    assert(isDisposable(disposable), "bad argument #1 to '"..debug.getinfo(1).name.."' (Disposable expected)")
 
-    local list = composite._disposables
-    local indeces = composite._indeces 
-    local count = composite._size
-
-    for k, disposable in ipairs(disposables) do 
-        assert(isDisposable(disposable), "bad argument #"..(k + 1).." to '"..debug.getinfo(1).name.." (Disposable expected).")
-
-        if(disposed) then 
-            count = count + 1
-
-            list[count] = disposable
-            indeces[disposable] = count
-        else 
-            dispose(disposable)
-        end
+    if(is(disposable)) then 
+        return disposable._isDisposed
     end
-
-    composite._size = count
+    return (is(disposable) and disposable._isDisposed)
+        or CompositeDisposable(disposable)
+        or DisposableObserver(disposable)
+        or DisposableMaybeObserver(disposable)
+        or DisposableCompletableObserver(disposable)
+        or DisposableSingleObserver(disposable)
 end 

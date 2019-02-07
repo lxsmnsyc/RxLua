@@ -19,9 +19,15 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-
+local is = require "RxLua.src.disposable.composite.is"
 local dispose = require "RxLua.src.disposable.dispose"
+local isDisposed = require "RxLua.src.disposable.composite.isDisposed"
+
 return function (composite)
+    assert(is(composite), "bad argument #1 to '"..debug.getinfo(1).name.."' (CompositeDisposable expected).")
+    if(isDisposed(composite)) then 
+        return
+    end
     if(composite._size > 0) then 
         local list = composite._disposables
         local indeces = composite._indeces 

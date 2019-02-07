@@ -21,15 +21,40 @@
 ]]  
 local is = require "RxLua.src.disposable.is"
 
-return function (disposable)
-    local cleanup = disposable.cleanup
-    if(disposable and is(disposable) and not disposable.isDisposed) then 
-        disposable.isDisposed = true 
+local isDisposable = require "RxLua.src.is.disposable"
+
+local isDisposed = require "RxLua.src.disposable.isDisposed"
+
+local CompositeDisposable = require "RxLua.src.disposable.composite.dispose"
+local DisposableObserver = require "RxLua.src.observer.disposable.dispose"
+local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.dispose"
+local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.dispose"
+local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.dispose"
+
+local function dispose(disposable)
+    if(is(disposable)) then 
+        local cleanup = disposable.cleanup
+        disposable._isDisposed = true 
 
         if(type(cleanup) == "function") then 
             disposable.cleanup()
-    
+
             disposable.cleanup = nil
         end
-    end 
+
+        return true 
+    end
+    return false
+end
+
+return function (disposable)
+    assert(isDisposable(disposable), "bad argument #1 to '"..debug.getinfo(1).name.."' (Disposable expected)")
+
+    
+    return dispose(disposable)
+        or CompositeDisposable(disposable)
+        or DisposableObserver(disposable)
+        or DisposableMaybeObserver(disposable)
+        or DisposableCompletableObserver(disposable)
+        or DisposableSingleObserver(disposable)
 end 

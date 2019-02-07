@@ -19,35 +19,20 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local is = require "RxLua.src.disposable.composite.is"
-local dispose = require "RxLua.src.disposable.dispose"
-local isDisposed = require "RxLua.src.disposable.composite.isDisposed"
 
-local isDisposable = require "RxLua.src.disposable.is"
+local Disposable = require "RxLua.src.disposable.is"
+local CompositeDisposable = require "RxLua.src.disposable.composite.is"
 
-return function (composite, ...)
-    assert(is(composite), "bad argument #1 to '"..debug.getinfo(1).name.."' (CompositeDisposable expected).")
+local DisposableObserver = require "RxLua.src.observer.disposable.is"
+local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.is"
+local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.is"
+local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.is"
 
-    local disposed = isDisposed(composite)
-
-    local disposables = {...}
-
-    local list = composite._disposables
-    local indeces = composite._indeces 
-    local count = composite._size
-
-    for k, disposable in ipairs(disposables) do 
-        assert(isDisposable(disposable), "bad argument #"..(k + 1).." to '"..debug.getinfo(1).name.." (Disposable expected).")
-
-        if(disposed) then 
-            count = count + 1
-
-            list[count] = disposable
-            indeces[disposable] = count
-        else 
-            dispose(disposable)
-        end
-    end
-
-    composite._size = count
-end 
+return function (x)
+    return  Disposable(x) or 
+            CompositeDisposable(x) or 
+            DisposableObserver(x) or 
+            DisposableMaybeObserver(x) or 
+            DisposableCompletableObserver(x) or 
+            DisposableSingleObserver(x)
+end

@@ -19,13 +19,14 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
+local isDisposed = require "RxLua.src.disposable.isDisposed"
 return function (composite)
-
+    assert(is(composite), "bad argument #1 to '"..debug.getinfo(1).name.."' (CompositeDisposable expected).")
     if(composite._size > 0) then 
         local list = composite._disposables
 
         for k, disposable in ipairs(list) do 
-            if(not disposable.isDisposed) then 
+            if(not isDisposed(disposable)) then 
                 return false
             end 
         end 

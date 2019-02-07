@@ -26,7 +26,7 @@ local function emptyCleanup() end
 return function ()
     return setmetatable({
         cleanup = emptyCleanup,
-        isDisposed = false,
+        _isDisposed = false,
         _className = "Disposable"
     }, M)
 end 

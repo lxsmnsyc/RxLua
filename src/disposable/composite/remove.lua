@@ -19,24 +19,22 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local isDisposable = require "RxLua.src.disposable.is"
+local is = require "RxLua.src.disposable.composite.is"
 local dispose = require "RxLua.src.disposable.dispose"
+local isDisposed = require "RxLua.src.disposable.composite.isDisposed"
+
+local isDisposable = require "RxLua.src.disposable.is"
+
+local delete = require "RxLua.src.disposable.composite.delete"
 
 return function (composite, disposable)
-    local count = composite._size
-    if(disposable and isDisposable(disposable) and count > 0) then 
-        local list = composite._disposables
-        local indeces = composite._indeces 
+    local fname = debug.getinfo(1).name
+    assert(is(composite), "bad argument #1 to '"..fname.."' (CompositeDisposable expected).")
+    assert(isDisposable(disposable), "bad argument #2 to '"..fname.."'") 
 
-        local index = indeces[disposable]
-
-        if(index) then 
-            local lastDisposable = list[count]
-            list[index] = lastDisposable
-            indeces[lastDisposable] = index 
-            count = count - 1
-
-            dispose(disposable)
-        end 
+    if(isDisposed(composite)) then 
+        return false 
     end 
+
+    return delete(composite, disposable) and dispose(disposable)
 end
