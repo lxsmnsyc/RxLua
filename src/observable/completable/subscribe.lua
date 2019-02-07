@@ -19,7 +19,14 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
+local is = require "RxLua.src.observable.completable.is"
 
+local isObserver = require "RxLua.src.observer.completable.interface.is"
 
-return function (observable, observer)
+local badArgument = require "RxLua.src.asserts.badArgument"
+
+return function (observable, onComplete, onError)
+    local isCompleteFunction = type(onError) == "function"
+    local isErrorFunction = type(onError) == "function" 
+    
 end 

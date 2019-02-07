@@ -37,7 +37,7 @@ return function (_, receiver)
     local recognizeComplete = type(onComplete) == "function"
     local recognizeSubscribe = type(onSubscribe) == "function"
 
-    local active = false 
+    local active = true 
     
     local function nextHandler(x)
         if(active and recognizeNext) then 

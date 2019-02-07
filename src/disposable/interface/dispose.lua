@@ -28,10 +28,14 @@ local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
 ]]
 local Disposable = require "RxLua.src.disposable.dispose"
 local CompositeDisposable = require "RxLua.src.disposable.composite.dispose"
+
 local DisposableObserver = require "RxLua.src.observer.disposable.dispose"
 local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.dispose"
 local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.dispose"
 local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.dispose"
+
+local LambdaObserver = require "RxLua.src.observer.lambda.dispose"
+local EmptyCompletableObserver = require "RxLua.src.observer.completable.empty.dispose"
 
 local ObservableEmitter = require "RxLua.src.emitter.observable.dispose"
 local MaybeEmitter = require "RxLua.src.emitter.maybe.dispose"
@@ -39,6 +43,11 @@ local CompletableEmitter = require "RxLua.src.emitter.completable.dispose"
 local SingleEmitter = require "RxLua.src.emitter.single.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
+
+local function tryDispose(fn, disposable)
+    local status, result = pcall(fn, disposable)
+    return status and result
+end 
 
 return function (disposable)
     --[[
@@ -56,16 +65,21 @@ return function (disposable)
         Dispose
     ]]
     local status, result = pcall(function ()
-        return Disposable(disposable)
-            or CompositeDisposable(disposable)
-            or DisposableObserver(disposable)
-            or DisposableMaybeObserver(disposable)
-            or DisposableCompletableObserver(disposable)
-            or DisposableSingleObserver(disposable)
-            or ObservableEmitter(disposable)
-            or MaybeEmitter(disposable)
-            or CompletableEmitter(disposable)
-            or SingleEmitter(disposable)
+        return tryDispose(Disposable, disposable)
+            or tryDispose(CompositeDisposable, disposable)
+
+            or tryDispose(DisposableObserver, disposable)
+            or tryDispose(DisposableMaybeObserver, disposable)
+            or tryDispose(DisposableCompletableObserver, disposable)
+            or tryDispose(DisposableSingleObserver, disposable)
+
+            or tryDispose(LambdaObserver, disposable)
+            or tryDispose(EmptyCompletableObserver, disposable)
+
+            or tryDispose(ObservableEmitter, disposable)
+            or tryDispose(MaybeEmitter, disposable)
+            or tryDispose(CompletableEmitter, disposable)
+            or tryDispose(SingleEmitter, disposable)
     end)
 
     if(status) then 

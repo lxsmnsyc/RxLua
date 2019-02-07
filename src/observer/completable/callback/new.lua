@@ -18,32 +18,45 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]  
-local is = require "RxLua.src.emitter.completable.is"
+]] 
+local M = require "RxLua.src.observer.completable.callback.M"
 
-local isDisposable = require "RxLua.src.disposable.interface.is"
-local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
-local dispose = require "RxLua.src.disposable.interface.dispose"
+local isDisposable = require "RxLua.src.disposable.is"
+local isDisposed = require "RxLua.src.disposable.isDisposed"
+local dispose = require "RxLua.src.disposable.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-return function (emitter, disposable)
-    local context = debug.getinfo(1).name
-    badArgument(is(emitter), 1, context, "CompletableEmitter")
-    badArgument(isDisposable(disposable), 1, context, "DisposableInterface")
+return function (_, onComplete, onError)
+    badArgument(type(onComplete) == "function", 1, debug.getinfo(1).name, "function")
 
-    local current = emitter._disposable
-    
-    if(current and current ~= disposable) then
-        if(isDisposed(current)) then 
-            dispose(disposable)
-            return false
-        else
-            emitter._disposable = disposable
-            dispose(current)
-        end
-    else 
-        emitter._disposable = disposable
-    end
-    return false
-end 
+    local this = {
+        _disposable = nil,
+        _className = "DisposableCompletableObserver",
+    }
+
+    local recognizeError = type(onError) == "function"
+
+    this.onComplete = function ()
+        dispose(this._disposable)
+    end 
+
+    this.onError = function (err)
+        local status, result = function ()
+
+        end 
+        error(err)
+        dispose(this._disposable)
+    end 
+
+
+    this.onSubscribe = function (d)
+        if(this._disposable) then 
+            error("Protocol Violation: Disposable already set.")
+        else 
+            this._disposable = d
+        end 
+    end 
+
+    return setmetatable(this, M)
+end

@@ -34,14 +34,19 @@ return function (emitter, disposable)
 
     local current = emitter._disposable
     
-    if(current and current ~= disposable) then
-        if(isDisposed(current)) then 
-            dispose(disposable)
-            return false
-        else
-            emitter._disposable = disposable
-            dispose(current)
-        end
+    if(current) then
+        if(current ~= disposable) then
+            if(isDisposed(current)) then 
+                dispose(disposable)
+                return false
+            else
+                emitter._disposable = disposable
+                dispose(current)
+                return true
+            end
+        end 
+    else 
+        emitter._disposable = disposable
     end
     return false
 end 

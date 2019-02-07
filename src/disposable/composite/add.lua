@@ -59,12 +59,12 @@ return function (composite, ...)
             to be added, otherwise, add it to the list of disposables.
         ]]
         if(disposed) then 
+            dispose(disposable)
+        else 
             count = count + 1
 
             list[count] = disposable
             indeces[disposable] = count
-        else 
-            dispose(disposable)
         end
     end
     --[[

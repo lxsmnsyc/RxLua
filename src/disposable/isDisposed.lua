@@ -25,7 +25,7 @@ local is = require "RxLua.src.disposable.is"
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (disposable)
-    badArgument(isDisposable(disposable), 1, debug.getinfo(1).name, "Disposable")
+    badArgument(is(disposable), 1, debug.getinfo(1).name, "Disposable")
 
-    return disposable._isDisposed
+    return disposable._disposed
 end 

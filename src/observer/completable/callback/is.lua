@@ -19,31 +19,8 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local is = require "RxLua.src.emitter.completable.is"
+local M = require "RxLua.src.observer.completable.callback.M"
 
-local isDisposable = require "RxLua.src.disposable.interface.is"
-local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
-local dispose = require "RxLua.src.disposable.interface.dispose"
-
-local badArgument = require "RxLua.src.asserts.badArgument"
-
-return function (emitter, disposable)
-    local context = debug.getinfo(1).name
-    badArgument(is(emitter), 1, context, "CompletableEmitter")
-    badArgument(isDisposable(disposable), 1, context, "DisposableInterface")
-
-    local current = emitter._disposable
-    
-    if(current and current ~= disposable) then
-        if(isDisposed(current)) then 
-            dispose(disposable)
-            return false
-        else
-            emitter._disposable = disposable
-            dispose(current)
-        end
-    else 
-        emitter._disposable = disposable
-    end
-    return false
-end 
+return function (x)
+    return type(x) == "table" and getmetatable(x) == M
+end

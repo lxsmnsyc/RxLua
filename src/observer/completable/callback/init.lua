@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions for Lua
+    Reactive Extensions Callback Completable Observer
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,32 +18,24 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]  
-local is = require "RxLua.src.emitter.completable.is"
+]]
 
-local isDisposable = require "RxLua.src.disposable.interface.is"
-local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
-local dispose = require "RxLua.src.disposable.interface.dispose"
+local path = "RxLua.src.observer.completable.callback"
 
-local badArgument = require "RxLua.src.asserts.badArgument"
-
-return function (emitter, disposable)
-    local context = debug.getinfo(1).name
-    badArgument(is(emitter), 1, context, "CompletableEmitter")
-    badArgument(isDisposable(disposable), 1, context, "DisposableInterface")
-
-    local current = emitter._disposable
-    
-    if(current and current ~= disposable) then
-        if(isDisposed(current)) then 
-            dispose(disposable)
-            return false
-        else
-            emitter._disposable = disposable
-            dispose(current)
-        end
-    else 
-        emitter._disposable = disposable
-    end
-    return false
+local function load(name)
+    return require(path.."."..name)
 end 
+
+local M = load("M")
+
+local CallbackCompletableObserver = setmetatable({}, M)
+
+CallbackCompletableObserver.is = load("is")
+
+M.__call = load("new")
+M.__index = {
+    isDisposed = load("isDisposed"),
+    dispose = load("dispose")
+}
+
+return CallbackCompletableObserver

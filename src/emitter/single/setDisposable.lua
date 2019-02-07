@@ -42,6 +42,8 @@ return function (emitter, disposable)
             emitter._disposable = disposable
             dispose(current)
         end
+    else 
+        emitter._disposable = disposable
     end
     return false
 end 
