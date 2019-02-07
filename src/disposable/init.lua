@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Disposable
+    Reactive Extensions Super Disposable
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -28,13 +28,10 @@ end
 
 local M = load("M")
 
-local Disposable = setmetatable({}, M)
+local SuperDisposable = setmetatable({}, M)
 
-Disposable.is = load("is")
+SuperDisposable.is = load("is")
+SuperDisposable.dispose = load("dispose")
+SuperDisposable.isDisposed = load("isDisposed")
 
-M.__call = load("new")
-M.__index = {
-    dispose = load("dispose")
-}
-
-return Disposable
+return SuperDisposable

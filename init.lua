@@ -30,7 +30,8 @@ end
 --[[
     Disposable
 ]]
-Rx.Disposable = load("disposable")
+Rx.SuperDisposable = load("disposable")
+Rx.Disposable = load("disposable.interface")
 Rx.CompositeDisposable = load("disposable.composite")
 --[[
     Observer

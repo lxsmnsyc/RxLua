@@ -19,34 +19,11 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local is = require "RxLua.src.disposable.composite.is"
 
-local isDisposable = require "RxLua.src.disposable.is"
-local dispose = require "RxLua.src.disposable.dispose"
+local is = require "RxLua.src.disposable.interface.is"
 
-local delete = require "RxLua.src.disposable.composite.delete"
+return function (disposable)
+    assert(isDisposable(disposable), "bad argument #1 to '"..debug.getinfo(1).name.."' (Disposable expected)")
 
-local badArgument = require "RxLua.src.asserts.badArgument"
-
-return function (composite, disposable)
-    --[[
-        Assert arguments
-    ]]
-    local context = debug.getinfo(1)
-    --[[
-        Argument #1: CompositeDisposable
-        Argument #2: Disposable
-    ]]
-    badArgument(is(composite), 1, context, "CompositeDisposable")
-    badArgument(isDisposable(disposable), 2, context, "Disposable")
-    --[[
-        The composite is already disposed, exit.
-    ]]
-    if(composite._disposed) then 
-        return false 
-    end 
-    --[[
-        Dispose after a successful deletion.
-    ]]
-    return delete(composite, disposable) and dispose(disposable)
-end
+    return disposable._isDisposed
+end 

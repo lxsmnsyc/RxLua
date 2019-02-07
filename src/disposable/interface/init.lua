@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions for Lua
+    Reactive Extensions Disposable
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,15 +18,24 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]  
-local M = require "RxLua.src.disposable.M"
+]]
 
-local function emptyCleanup() end
+local path = "RxLua.src.disposable.interface"
 
-return function ()
-    return setmetatable({
-        cleanup = emptyCleanup,
-        _isDisposed = false,
-        _className = "Disposable"
-    }, M)
+local function load(name)
+    return require(path.."."..name)
 end 
+
+local M = load("M")
+
+local Disposable = setmetatable({}, M)
+
+Disposable.is = load("is")
+
+M.__call = load("new")
+M.__index = {
+    dispose = load("dispose"),
+    isDisposed = load("isDisposed")
+}
+
+return Disposable

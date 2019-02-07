@@ -19,27 +19,21 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-
-local is = require "RxLua.src.disposable.is"
-
-local isDisposable = require "RxLua.src.is.disposable"
-
+--[[
+    Load all is variants
+]]
+local Disposable = require "RxLua.src.disposable.interface.isDisposed"
 local CompositeDisposable = require "RxLua.src.disposable.composite.isDisposed"
 local DisposableObserver = require "RxLua.src.observer.disposable.isDisposed"
 local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.isDisposed"
 local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.isDisposed"
 local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.isDisposed"
 
-return function (disposable)
-    assert(isDisposable(disposable), "bad argument #1 to '"..debug.getinfo(1).name.."' (Disposable expected)")
-
-    if(is(disposable)) then 
-        return disposable._isDisposed
-    end
-    return (is(disposable) and disposable._isDisposed)
-        or CompositeDisposable(disposable)
-        or DisposableObserver(disposable)
-        or DisposableMaybeObserver(disposable)
-        or DisposableCompletableObserver(disposable)
-        or DisposableSingleObserver(disposable)
-end 
+return function (x)
+    return  Disposable(x) or 
+            CompositeDisposable(x) or 
+            DisposableObserver(x) or 
+            DisposableMaybeObserver(x) or 
+            DisposableCompletableObserver(x) or 
+            DisposableSingleObserver(x)
+end

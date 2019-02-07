@@ -19,8 +19,22 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local M = require "RxLua.src.disposable.M"
+
+--[[
+    Load all is variants
+]]
+local Disposable = require "RxLua.src.disposable.interface.is"
+local CompositeDisposable = require "RxLua.src.disposable.composite.is"
+local DisposableObserver = require "RxLua.src.observer.disposable.is"
+local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.is"
+local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.is"
+local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.is"
 
 return function (x)
-    return type(x) == "table" and getmetatable(x) == M
+    return  Disposable(x) or 
+            CompositeDisposable(x) or 
+            DisposableObserver(x) or 
+            DisposableMaybeObserver(x) or 
+            DisposableCompletableObserver(x) or 
+            DisposableSingleObserver(x)
 end

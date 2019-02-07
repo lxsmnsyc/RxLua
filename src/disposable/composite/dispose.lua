@@ -20,7 +20,8 @@
     SOFTWARE.
 ]]  
 local is = require "RxLua.src.disposable.composite.is"
-local dispose = require "RxLua.src.global.disposable.dispose"
+
+local dispose = require "RxLua.src.disposable.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
@@ -34,7 +35,7 @@ return function (composite)
         The composite is already disposed, exit
     ]]
     if(composite._disposed) then 
-        return 
+        return false
     end
     --[[
         update composite state
@@ -51,4 +52,5 @@ return function (composite)
             dispose(disposable)
         end 
     end
+    return true
 end

@@ -19,34 +19,14 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local is = require "RxLua.src.disposable.composite.is"
+local M = require "RxLua.src.disposable.interface.M"
 
-local isDisposable = require "RxLua.src.disposable.is"
-local dispose = require "RxLua.src.disposable.dispose"
+local function emptyCleanup() end
 
-local delete = require "RxLua.src.disposable.composite.delete"
-
-local badArgument = require "RxLua.src.asserts.badArgument"
-
-return function (composite, disposable)
-    --[[
-        Assert arguments
-    ]]
-    local context = debug.getinfo(1)
-    --[[
-        Argument #1: CompositeDisposable
-        Argument #2: Disposable
-    ]]
-    badArgument(is(composite), 1, context, "CompositeDisposable")
-    badArgument(isDisposable(disposable), 2, context, "Disposable")
-    --[[
-        The composite is already disposed, exit.
-    ]]
-    if(composite._disposed) then 
-        return false 
-    end 
-    --[[
-        Dispose after a successful deletion.
-    ]]
-    return delete(composite, disposable) and dispose(disposable)
-end
+return function ()
+    return setmetatable({
+        cleanup = emptyCleanup,
+        _isDisposed = false,
+        _className = "Disposable"
+    }, M)
+end 

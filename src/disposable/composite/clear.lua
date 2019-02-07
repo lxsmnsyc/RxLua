@@ -22,8 +22,8 @@
 
 local is = require "RxLua.src.disposable.composite.is"
 
-local isDisposable = require "RxLua.src.global.disposable.is"
-local dispose = require "RxLua.src.global.disposable.dispose"
+local isDisposable = require "RxLua.src.disposable.is"
+local dispose = require "RxLua.src.disposable.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
