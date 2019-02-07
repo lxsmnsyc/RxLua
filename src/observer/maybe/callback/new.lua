@@ -27,31 +27,44 @@ local dispose = require "RxLua.src.disposable.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-return function (_, onSuccess, onError, onSuccess)
-    badArgument(type(onComplete) == "function", 1, debug.getinfo(1).name, "function")
-
+return function (_, onSuccess, onError, onComplete)
     local this = {
         _disposable = nil,
         _className = "CallbackMaybeObserver",
     }
 
+    local recognizeSuccess = type(onSuccess) == "function"
     local recognizeError = type(onError) == "function"
+    local recognizeComplete = type(onComplete) == "function"
+
+
+    this.onSubscribe = function (d)
+        if(this._disposable) then 
+            error("Protocol Violation: Disposable already set.")
+        else 
+            this._disposable = d
+        end 
+    end 
 
     this.onSuccess = function (x)
-        local status, result = pcall(onSuccess, x)
+        if(recognizeSuccess) then 
+            local status, result = pcall(onSuccess, x)
 
-        if(not status) then 
-            error(result)
-        end 
+            if(not status) then 
+                error(result)
+            end 
+        end
         dispose(this._disposable)
     end 
 
     this.onComplete = function ()
-        local status, result = pcall(onComplete)
+        if(recognizeComplete) then 
+            local status, result = pcall(onComplete)
 
-        if(not status) then 
-            error(result)
-        end 
+            if(not status) then 
+                error(result)
+            end 
+        end
         dispose(this._disposable)
     end 
 
@@ -68,14 +81,6 @@ return function (_, onSuccess, onError, onSuccess)
         dispose(this._disposable)
     end 
 
-
-    this.onSubscribe = function (d)
-        if(this._disposable) then 
-            error("Protocol Violation: Disposable already set.")
-        else 
-            this._disposable = d
-        end 
-    end 
 
     return setmetatable(this, M)
 end

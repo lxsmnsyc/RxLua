@@ -46,6 +46,7 @@ Rx.LambdaObserver = load("observer.lambda")
 Rx.MaybeObserverInterface = load("observer.maybe.interface")
 Rx.MaybeObserver = load("observer.maybe")
 Rx.DisposableMaybeObserver = load("observer.maybe.disposable")
+Rx.CallbackMaybeObserver = load("observer.maybe.callback")
 
 Rx.SingleObserverInterface = load("observer.single.interface")
 Rx.SingleObserver = load("observer.single")

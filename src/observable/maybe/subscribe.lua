@@ -19,69 +19,73 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local is = require "RxLua.src.observable.completable.is"
+local is = require "RxLua.src.observable.maybe.is"
 
-local isObserver = require "RxLua.src.observer.completable.interface.is"
+local isObserver = require "RxLua.src.observer.maybe.interface.is"
 
 local Disposable = require "RxLua.src.disposable.new"
 
 local isDisposable = require "RxLua.src.disposable.interface.is"
 local dispose = require "RxLua.src.disposable.interface.dispose"
 
-local CallbackCompletableObserver = require "RxLua.src.observer.completable.callback.new"
-local EmptyCompletableObserver = require "RxLua.src.observer.completable.empty.new"
+local CallbackMaybeObserver = require "RxLua.src.observer.maybe.callback.new"
 
-local CompletableEmitter = require "RxLua.src.emitter.completable.new"
+local MaybeEmitter = require "RxLua.src.emitter.maybe.new"
 
-local subscribe = require "RxLua.src.onSubscribe.completable.subscribe"
+local subscribe = require "RxLua.src.onSubscribe.maybe.subscribe"
 
 return function (observable, onSuccess, onError, onComplete)
     local observer 
     --[[
-        If onComplete is a valid CompletableObservable, continue
+        If onSuccess is a valid CompletableObservable, continue
     ]]
-    if(isObserver(onComplete)) then 
-        observer = onComplete
+    if(isObserver(onSuccess)) then 
+        observer = onSuccess
     --[[
-        If onComplete is a function, create a CallbackCompletableObserver
+        If onSuccess is a function, create a CallbackCompletableObserver
     ]]
-    elseif(type(onComplete) == "function") then 
-        observer = CallbackCompletableObserver(_, onComplete, onError)
     else
-    --[[
-        Otherwise, create an EmptyCompletableObserver
-    ]]
-        observer = EmptyCompletableObserver()
+        observer = CallbackMaybeObserver(_, onSuccess, onError, onComplete)
     end 
 
     local disposable = Disposable()
 
-    local emitter = CompletableEmitter(_, observable._modify(observer))
-
-    emitter:setDisposable(disposable)
-
-    local onSubscribe = observer.onSubscribe
-    if(onSubscribe) then 
-        onSubscribe(disposable)
-    end 
-
-    local status, result = pcall(function ()
-        return subscribe(observable._subscriber, emitter)
+    local try, obs = pcall(function ()
+        observer = observable._modify(observer)
     end)
 
-    if(status) then 
-        if(isDisposable(result)) then 
-            disposable.cleanup = function ()
-                dispose(result)
+    if(try) then 
+        local emitter = MaybeEmitter(_, observer)
+
+        emitter:setDisposable(disposable)
+
+        local onSubscribe = observer.onSubscribe
+        if(onSubscribe) then 
+            onSubscribe(disposable)
+        end 
+
+        local status, result = pcall(function ()
+            return subscribe(observable._subscriber, emitter)
+        end)
+
+        if(status) then 
+            if(isDisposable(result)) then 
+                disposable.cleanup = function ()
+                    dispose(disposable)
+                end 
+            elseif(type(result) == "function") then 
+                disposable.cleanup = result
             end 
-        elseif(type(result) == "function") then 
-            disposable.cleanup = result
+        else 
+            observer.onError(result)
+            error(result)
+            dispose(disposable)
         end 
     else 
-        observer.onError(result)
+        observer.onError(obs)
         error(result)
         dispose(disposable)
-    end 
+    end
 
     return disposable
 end 
