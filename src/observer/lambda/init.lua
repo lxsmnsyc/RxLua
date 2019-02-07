@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions for Lua
+    Reactive Extensions Observer
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,14 +18,22 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]  
+]]
 
-local is = require "RxLua.src.disposable.is"
+local path = "RxLua.src.observer.lambda"
 
-local badArgument = require "RxLua.src.asserts.badArgument"
-
-return function (disposable)
-    badArgument(isDisposable(disposable), 1, debug.getinfo(1).name, "Disposable")
-
-    return disposable._isDisposed
+local function load(name)
+    return require(path.."."..name)
 end 
+
+local M = load("M")
+
+local LambdaObserver = setmetatable({}, M)
+
+LambdaObserver.is = load("is")
+
+M.__call = load("new")
+M.__index = {
+}
+
+return LambdaObserver

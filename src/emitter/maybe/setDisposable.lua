@@ -30,7 +30,7 @@ local badArgument = require "RxLua.src.asserts.badArgument"
 return function (emitter, disposable)
     local context = debug.getinfo(1).name
     badArgument(is(emitter), 1, context, "ObservableEmitter")
-    badArgument(isDisposable(disposable), 1, context, "Disposable")
+    badArgument(isDisposable(disposable), 1, context, "DisposableInterface")
 
     local current = emitter._disposable
     

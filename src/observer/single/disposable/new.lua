@@ -31,46 +31,28 @@ return function (_, receiver)
     badArgument(type(receiver) == "table", 1, debug.getinfo(1).name, "table", type(receiver))
 
     local onStart = receiver.onStart
-    local onSuccess = receiver.onSuccess 
-    local onError = receiver.onError 
-    local onComplete = receiver.onComplete 
-    local onSubscribe = receiver.onSubscribe
-
     local recognizeStart = type(onStart) == "function"
-    local recognizeSuccess = type(onSuccess) == "function"
-    local recognizeError = type(onError) == "function"
-    local recognizeComplete = type(onComplete) == "function"
-    local recognizeSubscribe = type(onSubscribe) == "function"
 
-    local function internalDispose()
-        dispose(disposable)
-    end 
+    local this = {
+        _disposable = nil,
+        _className = "DisposableSingleObserver",
+        
+        onSuccess = receiver.onSuccess,
+        onError = receiver.onError,
+        onComplete = receiver.onComplete
+    }
 
-    local function internalIsDisposed()
-        return isDisposed(disposable)
-    end 
+    this.onSubscribe = function (d)
+        if(this._disposable) then 
+            error("Protocol Violation: Disposable already set.")
+        else 
+            this._disposable = d
 
-    return setmetatable({
-        onSubscribe = function (d)
-            badArgument(isDisposable(d), 1, debug.getinfo(1).name, "Disposable")
-            if(not (isDisposed(d) or disposable) and recognizeStart) then 
-                disposable = d
+            if(recognizeStart) then 
                 onStart()
-            end 
-        end,
-
-        onSuccess = function (x)
-            if(recognizeSuccess) then 
-                onSuccess(x, internalDispose, isDisposed)
-            end 
-        end,
-
-        onError = function (err)
-            if(recognizeError) then 
-                onError(err)
             end
-        end,
-        _disposable = disposable,
-        _className = "DisposableMaybeObserver"
-    }, M)
+        end 
+    end 
+
+    return setmetatable(this, M)
 end

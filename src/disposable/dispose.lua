@@ -20,7 +20,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local is = require "RxLua.src.disposable.interface.is"
+local is = require "RxLua.src.disposable.is"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 

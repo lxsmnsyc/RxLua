@@ -19,7 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local M = require "RxLua.src.disposable.interface.M"
+local M = require "RxLua.src.disposable.M"
 
 return function (x)
     return type(x) == "table" and getmetatable(x) == M

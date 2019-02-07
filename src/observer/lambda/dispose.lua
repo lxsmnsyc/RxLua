@@ -18,14 +18,31 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]  
-
-local is = require "RxLua.src.disposable.is"
-
+]]
+local is = require "RxLua.src.observer.lambda.is"  
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-return function (disposable)
-    badArgument(isDisposable(disposable), 1, debug.getinfo(1).name, "Disposable")
+local isDisposable
+local isDisposed
 
-    return disposable._isDisposed
+local notLoaded = true
+local function asyncLoad()
+    if(notLoaded) then
+        isDisposable = isDisposable or require "RxLua.src.disposable.is"
+        isDisposed = isDisposed or require "RxLua.src.disposable.isDisposed"
+        notLoaded = false 
+    end
+end
+
+return function (observer)
+    badArgument(is(observer), 1, debug.getinfo(1).name, "LambdaObserver")
+    asyncLoad()
+
+    local disposable = observer._disposable
+
+    if(isDisposed(disposable)) then 
+        return false
+    end
+
+    return dispose(disposable)
 end 

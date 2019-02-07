@@ -23,9 +23,7 @@
 local M = require "RxLua.src.emitter.observable.M"
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-local isObserver = require "RxLua.src.observer.is"
-local isDefaultObserver = require "RxLua.src.observer.default.is"
-local isDisposableObserver = require "RxLua.src.observer.disposable.is"
+local isObserver = require "RxLua.src.observer.interface.is"
 
 local isDisposable = require "RxLua.src.disposable.interface.is"
 local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
@@ -33,10 +31,8 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 
 return function (_, observer)
     badArgument(
-        isObserver(observer) or 
-        isDisposableObserver(observer) or
-        isDefaultObserver(observer), 
-        1, debug.getinfo(1).name, "Observer, DisposableObserver or DefaultObserver"
+        isObserver(observer), 
+        1, debug.getinfo(1).name, "ObserverInterface"
     )
     --[[
         Tells the observer that it can receive signals
