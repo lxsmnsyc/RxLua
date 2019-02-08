@@ -51,6 +51,6 @@ implement(DisposableInterface, M, {
     dispose = dispose
 })
 
-implement(CompletableObserverInterface, M, {})
+implement(SingleObserverInterface, M, {})
 
 return BiConsumerSingleObserver

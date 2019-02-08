@@ -21,14 +21,13 @@
 ]]  
 local implements = require "RxLua.src.disposable.interface.is"
 
+local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (x)
     --[[
         Check argument
     ]]
     local implementation = implements(x)
-    local context = debug.getinfo(1).name
-    badArgument(implementation, 1, context, "implements DisposableInterface")
 
     if(implementation) then 
         return implementation.isDisposed(x)

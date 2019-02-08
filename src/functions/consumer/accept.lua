@@ -23,8 +23,8 @@ local is = require "RxLua.src.functions.consumer.is"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-return function (biconsumer, a)
+return function (consumer, a)
     local context = debug.getinfo(1).name
-    badArgument(is(biconsumer), 1, context, "Consumer")
+    badArgument(is(consumer), 1, context, "Consumer")
     return consumer._handler(a)
 end 

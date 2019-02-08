@@ -24,11 +24,6 @@ local M = require "RxLua.src.emitter.maybe.M"
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 local isObserver = require "RxLua.src.observer.maybe.interface.is"
-
-local isDisposable = require "RxLua.src.disposable.interface.is"
-local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
-local dispose = require "RxLua.src.disposable.interface.dispose"
-
 return function (_, observer)
     badArgument(
         isObserver(observer), 

@@ -19,7 +19,29 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
+local is = require "RxLua.src.observable.single.is"
 
+local isObserver = require "RxLua.src.observer.single.interface.is"
+local dispose = require "RxLua.src.disposable.interface.dispose"
 
-return function (observable, observer)
+local ConsumerSingleObserver = require "RxLua.src.observer.single.consumer.new"
+
+local badArgument = require "RxLua.src.asserts.badArgument"
+
+return function (observable, onSuccess, onError)
+    badArgument(is(observable), 1, debug.getinfo(1).name, "Single")
+    local function subscribeCore(observer)
+        observer = observable:_modify(observer)
+
+        observable:_subscribeActual(observer)
+    end 
+
+    if(isObserver(onSuccess)) then 
+        subscribeCore(onSuccess)
+        return
+    end 
+    observer = ConsumerSingleObserver(nil, onSuccess, onError)
+    subscribeCore(observer)
+    return observer
 end 
+

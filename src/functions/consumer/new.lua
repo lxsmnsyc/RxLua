@@ -19,7 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local M = require "RxLua.src.functions.biconsumer.M"
+local M = require "RxLua.src.functions.consumer.M"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
@@ -35,6 +35,6 @@ return function (_, handler)
 
     return setmetatable({
         _handler = handler,
-        _className = "BiConsumer"
+        _className = "Consumer"
     }, M)
 end

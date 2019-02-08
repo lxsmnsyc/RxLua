@@ -43,9 +43,8 @@ return function (_, onSuccess, onError)
 
     local context = debug.getinfo(1).name 
 
-    badArgument(onSuccess, 1, context, "either an Consumer, a function or nil")
-    badArgument(onError, 2, context, "either an Consumer, a function or nil")
-
+    badArgument(onSuccess, 1, context, "either a Consumer, a function or nil")
+    badArgument(onError, 2, context, "either a Consumer, a function or nil")
 
     this.onSubscribe = function (d)
         if(this._disposable) then 

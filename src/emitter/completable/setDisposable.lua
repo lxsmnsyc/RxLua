@@ -30,7 +30,8 @@ local badArgument = require "RxLua.src.asserts.badArgument"
 return function (emitter, disposable)
     local context = debug.getinfo(1).name
     badArgument(is(emitter), 1, context, "CompletableEmitter")
-    badArgument(isDisposable(disposable), 1, context, "DisposableInterface")
+    badArgument(isDisposable(disposable), 2, context, "implements DisposableInterface")
+    badArgument(emitter ~= disposable, 2, context, "set not to self")
 
     emitter.setDisposable(disposable)
 end 

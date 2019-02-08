@@ -21,11 +21,12 @@
 ]]  
 local M = require "RxLua.src.observable.maybe.M"
 
-local onSubscribe = require "RxLua.src.onSubscribe.maybe.new"
+local MaybeOnSubscribe = require "RxLua.src.onSubscribe.maybe.new"
 local isOnSubscribe = require "RxLua.src.onSubscribe.maybe.is"
 
 local Emitter = require "RxLua.src.emitter.maybe.new"
 
+local Disposable = require "RxLua.src.disposable.new"
 local isDisposable = require "RxLua.src.disposable.interface.is"
 local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
 local dispose = require "RxLua.src.disposable.interface.dispose"
@@ -37,10 +38,10 @@ local badArgument = require "RxLua.src.asserts.badArgument"
 local function subscribeActual(observable, observer)
     local emitter = Emitter(nil, observer)
 
-    local disposable
+    local disposable = Disposable()
 
     emitter.onSuccess = function(x)
-        if(disposable and not isDisposed(disposable)) then 
+        if(not isDisposed(disposable)) then 
             local status, result = pcall(function ()
                 if(x == nil) then 
                     observer.onError("Protocol Violation: onSuccess called with nil: nil values are not allowed.")
@@ -53,7 +54,7 @@ local function subscribeActual(observable, observer)
     end 
 
     emitter.onComplete = function()
-        if(disposable and not isDisposed(disposable)) then 
+        if(not isDisposed(disposable)) then 
             local status, result = pcall(function ()
                 observer.onComplete()
             end)
@@ -66,7 +67,7 @@ local function subscribeActual(observable, observer)
             t = "onError called with nil: nil values are not allowed."
         end
 
-        if(disposable and not isDisposed(disposable)) then 
+        if(not isDisposed(disposable)) then 
             local status, result = pcall(function ()
                 observer.onError(t)
             end)
@@ -84,7 +85,7 @@ local function subscribeActual(observable, observer)
     end 
 
     emitter.setDisposable = function(d)
-        if(disposable and d ~= disposable) then
+        if(d ~= disposable) then
             if(isDisposed(disposable)) then 
                 dispose(d)
                 return 
@@ -95,12 +96,13 @@ local function subscribeActual(observable, observer)
         disposable = d
     end 
 
+    
     emitter.isDisposed = function()
-        return disposable and isDisposed(disposable)
+        return isDisposed(disposable)
     end 
 
     emitter.dispose = function()
-        return disposable and dispose(disposable)
+        return dispose(disposable)
     end 
 
 
@@ -127,7 +129,7 @@ return function (_, subscriber)
     badArgument(isFunction or isOnSubscribe(subscriber), 1, debug.getinfo(1).name , "MaybeOnSubscribe or function")
 
     if(isFunction) then 
-        subscriber = OnSubscribe(nil, subscriber)
+        subscriber = MaybeOnSubscribe(nil, subscriber)
     end
     return setmetatable({
         _modify = defaultModify,

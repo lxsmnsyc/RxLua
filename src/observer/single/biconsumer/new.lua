@@ -42,7 +42,7 @@ return function (_, onCallback)
 
     local context = debug.getinfo(1).name 
 
-    badArgument(onCallback, 1, context, "either an BiConsumer, a function or nil")
+    badArgument(onCallback, 1, context, "either a BiConsumer, a function or nil")
 
 
     this.onSubscribe = function (d)

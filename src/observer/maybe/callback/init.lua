@@ -22,6 +22,7 @@
 local implement = require "RxLua.src.interface.implement"
 
 local DisposableInterface = require "RxLua.src.disposable.interface.M"
+local MaybeObserverInterface = require "RxLua.src.observer.maybe.interface.M"
 
 local path = "RxLua.src.observer.maybe.callback"
 

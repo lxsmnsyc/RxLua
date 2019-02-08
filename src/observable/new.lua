@@ -21,11 +21,12 @@
 ]]  
 local M = require "RxLua.src.observable.M"
 
-local onSubscribe = require "RxLua.src.onSubscribe.observable.new"
+local ObservableOnSubscribe = require "RxLua.src.onSubscribe.observable.new"
 local isOnSubscribe = require "RxLua.src.onSubscribe.observable.is"
 
 local Emitter = require "RxLua.src.emitter.observable.new"
 
+local Disposable = require "RxLua.src.disposable.new"
 local isDisposable = require "RxLua.src.disposable.interface.is"
 local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
 local dispose = require "RxLua.src.disposable.interface.dispose"
@@ -37,20 +38,20 @@ local badArgument = require "RxLua.src.asserts.badArgument"
 local function subscribeActual(observable, observer)
     local emitter = Emitter(nil, observer)
 
-    local disposable
+    local disposable = Disposable()
 
     emitter.onNext = function(x)
         if(x == nil) then 
             observer.onError("Protocol Violation: onNext called with nil: nil values are not allowed.")
             return 
         end 
-        if(disposable and not isDisposed(disposable)) then 
+        if(not isDisposed(disposable)) then 
             observer.onNext(x)
         end 
     end 
 
     emitter.onComplete = function()
-        if(disposable and not isDisposed(disposable)) then 
+        if(not isDisposed(disposable)) then 
             local status, result = pcall(function ()
                 observer.onComplete()
             end)
@@ -63,7 +64,7 @@ local function subscribeActual(observable, observer)
             t = "Protocol Violation: onError called with nil: nil values are not allowed."
         end
 
-        if(disposable and not isDisposed(disposable)) then 
+        if(not isDisposed(disposable)) then 
             local status, result = pcall(function ()
                 observer.onError(t)
             end)
@@ -81,7 +82,7 @@ local function subscribeActual(observable, observer)
     end 
 
     emitter.setDisposable = function(d)
-        if(disposable and d ~= disposable) then
+        if(d ~= disposable) then
             if(isDisposed(disposable)) then 
                 dispose(d)
                 return 
@@ -93,11 +94,11 @@ local function subscribeActual(observable, observer)
     end 
 
     emitter.isDisposed = function()
-        return (not disposable) and isDisposed(disposable)
+        return isDisposed(disposable)
     end 
 
     emitter.dispose = function()
-        return disposable and dispose(disposable)
+        return dispose(disposable)
     end 
 
 

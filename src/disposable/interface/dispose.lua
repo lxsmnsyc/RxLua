@@ -30,8 +30,6 @@ return function (disposable)
         Check argument
     ]]
     local implementation = implements(disposable)
-    local context = debug.getinfo(1).name
-    badArgument(implementation, 1, context, "implements DisposableInterface")
     
     if(implementation) then 
         return implementation.dispose(disposable)
