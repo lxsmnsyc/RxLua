@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Super Disposable
+    Reactive Extensions for Lua
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,18 +18,22 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]
+]]  
 
-local path = "RxLua.src.disposable.interface"
+local DisposableInterface
 
-local function load(name)
-    return require(path.."."..name)
-end 
-
-local DisposableInterface = {}
-
-DisposableInterface.implements = load("implements")
-DisposableInterface.isDisposed = load("isDisposed")
-DisposableInterface.dispose = load("dispose")
-
-return DisposableInterface
+return function (disposable)
+    DisposableInterface = DisposableInterface or require "RxLua.src.disposable.interface"
+    if(disposable and type(disposable) == "table") then 
+        local mt = getmetatable(disposable)
+        
+        local implements = mt._implements
+        if(implements) then 
+            local implementation = implements[DisposableInterface]
+            if(implementation) then 
+                return implementation
+            end 
+        end
+    end 
+    return false 
+end

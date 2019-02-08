@@ -19,68 +19,19 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local isDisposable = require "RxLua.src.disposable.interface.is"
---[[
-    Load all is variants
-]]
-local Disposable = require "RxLua.src.disposable.isDisposed"
-local CompositeDisposable = require "RxLua.src.disposable.composite.isDisposed"
+local implements = require "RxLua.src.disposable.interface.implements"
 
-local DisposableObserver = require "RxLua.src.observer.disposable.isDisposed"
-local DisposableMaybeObserver = require "RxLua.src.observer.maybe.disposable.isDisposed"
-local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.isDisposed"
-local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.isDisposed"
-
-local LambdaObserver = require "RxLua.src.observer.lambda.isDisposed"
-
-local EmptyCompletableObserver = require "RxLua.src.observer.completable.empty.isDisposed"
-local CallbackCompletableObserver = require "RxLua.src.observer.completable.callback.isDisposed"
-
-local CallbackMaybeObserver = require "RxLua.src.observer.maybe.callback.isDisposed"
-
-local ObservableEmitter = require "RxLua.src.emitter.observable.isDisposed"
-local MaybeEmitter = require "RxLua.src.emitter.maybe.isDisposed"
-local CompletableEmitter = require "RxLua.src.emitter.completable.isDisposed"
-local SingleEmitter = require "RxLua.src.emitter.single.isDisposed"
-
-local badArgument = require "RxLua.src.asserts.badArgument"
-
-local function try(fn, disposable)
-    local status, result = pcall(fn, disposable)
-    return status and result
-end 
 
 return function (x)
     --[[
         Check argument
     ]]
+    local implementation = implements(x)
     local context = debug.getinfo(1).name
-    badArgument(isDisposable(x), 1, context, "extends DisposableInterface")
-    
-    local status, result = pcall(function ()
-        return try(Disposable, disposable)
-            or try(CompositeDisposable, disposable)
+    badArgument(implementation, 1, context, "implements DisposableInterface")
 
-            or try(DisposableObserver, disposable)
-            or try(DisposableMaybeObserver, disposable)
-            or try(DisposableCompletableObserver, disposable)
-            or try(DisposableSingleObserver, disposable)
-
-            or try(LambdaObserver, disposable)
-            
-            or try(EmptyCompletableObserver, disposable)
-            or try(CallbackCompletableObserver, disposable)
-
-            or try(CallbackMaybeObserver, disposable)
-
-            or try(ObservableEmitter, disposable)
-            or try(MaybeEmitter, disposable)
-            or try(CompletableEmitter, disposable)
-            or try(SingleEmitter, disposable)
-    end)
-
-    if(status) then 
-        return result 
+    if(implementation) then 
+        return implementation.isDisposed(x)
     end 
     return false
 end
