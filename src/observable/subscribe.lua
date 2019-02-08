@@ -40,7 +40,7 @@ return function (observable, onNext, onError, onComplete, onSubscribe)
         subscribeCore(onSuccess)
         return
     end 
-    observer = LambdaObserver(_, onNext, onError, onComplete, onSubscribe)
+    observer = LambdaObserver(nil, onNext, onError, onComplete, onSubscribe)
     subscribeCore(observer)
     return observer
 end 

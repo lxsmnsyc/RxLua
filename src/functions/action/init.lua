@@ -38,6 +38,7 @@ Action.TRUE = load("alwaysTrue")
 Action.NIL = load("alwaysNil")
 
 Action.just = load("just")
+Action.produce = load("produce")
 
 M.__call = load("new")
 M.__index = {

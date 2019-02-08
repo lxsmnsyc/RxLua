@@ -22,7 +22,7 @@
 
 local M = require "RxLua.src.interface.M"
 
-return function (_)
+return function ()
     return setmetatable({
         _className = "Interface"
     }, M)

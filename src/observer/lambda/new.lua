@@ -28,32 +28,51 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
+local isAction = require "RxLua.src.functions.action.is"
+local run = require "RxLua.src.functions.action.run"
+
+local isConsumer = require "RxLua.src.functions.consumer.is"
+local accept = require "RxLua.src.functions.consumer.accept"
+
+local produceAction = require "RxLua.src.functions.action.produce"
+local produceConsumer = require "RxLua.src.functions.consumer.produce"
+
+local emptyAction = require "RxLua.src.functions.action.empty"
+local emptyConsumer = require "RxLua.src.functions.consumer.empty"
+
+
 return function (_, onNext, onError, onComplete, onSubscribe)
-    local recognizeNext = type(onNext) == "function"
-    local recognizeError = type(onError) == "function"
-    local recognizeComplete = type(onComplete) == "function"
-    local recognizeSubscribe = type(onSubscribe) == "function"
+    onSubscribe = produceConsumer(onSubscribe, emptyConsumer)
+    onNext = produceConsumer(onNext, emptyConsumer)
+    onError = produceConsumer(onError, emptyConsumer)
+    onComplete = produceAction(onComplete, emptyAction)
+
+    local context = debug.getinfo(1).name 
+
+    badArgument(onSubscribe, 1, context, "either an Consumer, a function or nil")
+    badArgument(onNext, 2, context, "either an Consumer, a function or nil")
+    badArgument(onError, 3, context, "either an Consumer, a function or nil")
+    badArgument(onComplete, 4, context, "either an Action, a function or nil")
+
 
     local this = {
         _disposable = nil,
         _className = "LambdaObserver"
     }
 
-    local function errorHandler(err)
+    local function errorHandler(t)
         local disposable = this._disposable
         if(isDisposed(disposable)) then
-            error(err)
+            error(t)
         else 
             dispose(disposable)
-            if(recognizeError) then 
-                local status, result = pcall(function ()
-                    onError(err)
-                end)
+            local status, result = pcall(function () 
+                accept(onError, t)
+            end)
 
-                if(not status) then 
-                    error(err + "\n" + result)
-                end 
-            end
+            if(not status) then 
+                error(t + "\n" + result)
+            end 
         end 
     end
 
@@ -63,15 +82,13 @@ return function (_, onNext, onError, onComplete, onSubscribe)
         else 
             this._disposable = d
 
-            if(recognizeSubscribe) then 
-                local status, result = pcall(function (d)
-                    onSubscribe(d)
-                end)
+            local status, result = pcall(function (d)
+                accept(onSubscribe, d)
+            end)
 
-                if(not status) then 
-                    dispose(d)
-                    errorHandler(result)
-                end 
+            if(not status) then 
+                dispose(d)
+                errorHandler(result)
             end 
         end 
     end 
@@ -79,16 +96,14 @@ return function (_, onNext, onError, onComplete, onSubscribe)
     this.onNext = function (x)
         local disposable = this._disposable
         if(not isDisposed(disposable)) then 
-            if(recognizeNext) then 
-                local status, result = pcall(function ()
-                    onNext(x)
-                end)
+            local status, result = pcall(function ()
+                accept(onNext, x)
+            end)
 
-                if(not status) then 
-                    dispose(disposable)
-                    errorHandler(result)
-                end 
-            end
+            if(not status) then 
+                dispose(disposable)
+                errorHandler(result)
+            end 
         end 
     end
 
@@ -96,15 +111,13 @@ return function (_, onNext, onError, onComplete, onSubscribe)
         local disposable = this._disposable
         if(not isDisposed(disposable)) then 
             dispose(disposable)
-            if(recognizeComplete) then 
-                local status, result = pcall(function ()
-                    onComplete(x)
-                end)
+            local status, result = pcall(function ()
+                run(onComplete)
+            end)
 
-                if(not status) then 
-                    errorHandler(result)
-                end 
-            end
+            if(not status) then 
+                errorHandler(result)
+            end 
         end 
     end 
 

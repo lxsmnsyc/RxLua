@@ -27,15 +27,33 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
+local isAction = require "RxLua.src.functions.action.is"
+local run = require "RxLua.src.functions.action.run"
+
+local isConsumer = require "RxLua.src.functions.consumer.is"
+local accept = require "RxLua.src.functions.consumer.accept"
+
+local produceAction = require "RxLua.src.functions.action.produce"
+local produceConsumer = require "RxLua.src.functions.consumer.produce"
+
+local emptyAction = require "RxLua.src.functions.action.empty"
+local emptyConsumer = require "RxLua.src.functions.consumer.empty"
+
 return function (_, onSuccess, onError, onComplete)
     local this = {
         _disposable = nil,
         _className = "CallbackMaybeObserver",
     }
 
-    local recognizeSuccess = type(onSuccess) == "function"
-    local recognizeError = type(onError) == "function"
-    local recognizeComplete = type(onComplete) == "function"
+    onSuccess = produceConsumer(onSuccess, emptyConsumer)
+    onError = produceConsumer(onError, emptyConsumer)
+    onComplete = produceAction(onComplete, emptyAction)
+
+    local context = debug.getinfo(1).name 
+
+    badArgument(onSuccess, 1, context, "either an Consumer, a function or nil")
+    badArgument(onError, 2, context, "either an Consumer, a function or nil")
+    badArgument(onComplete, 3, context, "either an Action, a function or nil")
 
 
     this.onSubscribe = function (d)
@@ -47,38 +65,36 @@ return function (_, onSuccess, onError, onComplete)
     end 
 
     this.onSuccess = function (x)
-        if(recognizeSuccess) then 
-            local status, result = pcall(onSuccess, x)
-
-            if(not status) then 
-                error(result)
-            end 
-        end
         dispose(this._disposable)
+        local status, result = pcall(function ()
+            accept(onSuccess, x)
+        end)
+
+        if(not status) then 
+            error(result)
+        end 
     end 
 
     this.onComplete = function ()
-        if(recognizeComplete) then 
-            local status, result = pcall(onComplete)
-
-            if(not status) then 
-                error(result)
-            end 
-        end
         dispose(this._disposable)
+        local status, result = pcall(function ()
+            run(onComplete)
+        end)
+
+        if(not status) then 
+            error(result)
+        end 
     end 
 
-    this.onError = function (err)
-        if(recognizeError) then 
-            local status, result = pcall(function ()
-                return onError(err)
-            end)
-    
-            if(not status) then 
-                error(result)
-            end 
-        end 
+    this.onError = function (t)
         dispose(this._disposable)
+        local status, result = pcall(function ()
+            accept(onError, t)
+        end)
+
+        if(not status) then 
+            error(result)
+        end 
     end 
 
 

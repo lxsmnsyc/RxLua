@@ -35,7 +35,7 @@ local subscribe = require "RxLua.src.onSubscribe.maybe.subscribe"
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 local function subscribeActual(observable, observer)
-    local emitter = Emitter(_, observer)
+    local emitter = Emitter(nil, observer)
 
     local disposable
 
@@ -127,7 +127,7 @@ return function (_, subscriber)
     badArgument(isFunction or isOnSubscribe(subscriber), 1, debug.getinfo(1).name , "MaybeOnSubscribe or function")
 
     if(isFunction) then 
-        subscriber = OnSubscribe(_, subscriber)
+        subscriber = OnSubscribe(nil, subscriber)
     end
     return setmetatable({
         _modify = defaultModify,

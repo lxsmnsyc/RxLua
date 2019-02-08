@@ -47,7 +47,7 @@ return function (observable, onComplete, onError)
         subscribeCore(onComplete)
         return
     elseif(type(onComplete) == "function") then  
-        observer = CallbackCompletableObserver(_, onComplete, onError)
+        observer = CallbackCompletableObserver(nil, onComplete, onError)
     else 
         observer = EmptyCompletableObserver()
     end 

@@ -19,6 +19,18 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Action = require "RxLua.src.functions.action.new"
 
-return Action(nil, function () return true end)
+local BiConsumer = require "RxLua.src.functions.biconsumer.new"
+
+local is = require "RxLua.src.functions.biconsumer.is"
+
+return function (fn, fallback)
+    if(is(fn)) then 
+        return fn 
+    elseif(type(fn) == "function") then 
+        return BiConsumer(nil, fn)
+    elseif(fn == nil) then 
+        return fallback
+    end 
+    return false
+end 

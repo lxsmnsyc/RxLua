@@ -53,6 +53,8 @@ Rx.CallbackMaybeObserver = load("observer.maybe.callback")
 Rx.SingleObserverInterface = load("observer.single.interface")
 Rx.SingleObserver = load("observer.single")
 Rx.DisposableSingleObserver = load("observer.single.disposable")
+Rx.ConsumerSingleObserver = load("observer.single.consumer")
+Rx.BiConsumerSingleObserver = load("observer.single.biconsumer")
 
 Rx.CompletableObserverInterface = load("observer.completable.interface")
 Rx.CompletableObserver = load("observer.completable")

@@ -48,11 +48,11 @@ return function (_, onComplete, onError)
     }
 
     if(isFunction) then 
-        onComplete = Action(_, onComplete)
+        onComplete = Action(nil, onComplete)
     end 
 
     if(type(onError) == "function") then 
-        onError = Consumer(_, onError)
+        onError = Consumer(nil, onError)
     elseif(not (onError == nil or isConsumer(onError))) then
         badArgument(false, 2, context, "optional Action or function")
     end

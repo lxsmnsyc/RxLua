@@ -30,7 +30,7 @@ return function (_, handler)
     local isFunction = receivedType == "function"
     badArgument(isFunction, 1, context, "function with 1 parameter", receivedType)
     
-    local params = debug.getinfo(1).nparams 
+    local params = debug.getinfo(handler).nparams 
     badArgument(params == 1, 1, context, "function with 1 parameter", "function with "..params.." parameters")
 
     return setmetatable({

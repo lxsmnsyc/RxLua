@@ -19,10 +19,10 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Consumer = require "RxLua.src.functions.consumer"
+local Consumer = require "RxLua.src.functions.consumer.new"
 
 return function (v)
-    return Consumer(_, function (a) 
+    return Consumer(nil, function (a) 
         return v 
     end)
 end

@@ -18,7 +18,9 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]] 
-local Action = require "RxLua.src.functions.action.new"
+]]  
+local M = require "RxLua.src.observer.single.consumer.M"
 
-return Action(nil, function () return true end)
+return function (x)
+    return type(x) == "table" and getmetatable(x) == M
+end

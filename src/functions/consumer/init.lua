@@ -42,6 +42,7 @@ Consumer.just = load("just")
 
 Consumer.error = load("error")
 Consumer.identity = load("identity")
+Consumer.produce = load("produce")
 
 M.__call = load("new")
 M.__index = {

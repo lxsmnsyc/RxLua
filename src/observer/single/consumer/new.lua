@@ -18,8 +18,8 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]  
-local M = require "RxLua.src.observer.disposable.M"
+]] 
+local M = require "RxLua.src.observer.single.consumer.M"
 
 local isDisposable = require "RxLua.src.disposable.interface.is"
 local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
@@ -27,64 +27,56 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-local isAction = require "RxLua.src.functions.action.is"
-local run = require "RxLua.src.functions.action.run"
-
 local isConsumer = require "RxLua.src.functions.consumer.is"
-local acceptConsumer = require "RxLua.src.functions.consumer.accept"
-
-local isBiConsumer = require "RxLua.src.functions.biconsumer.is"
-local acceptBiConsumer = require "RxLua.src.functions.biconsumer.accept"
-
-local produceAction = require "RxLua.src.functions.action.produce"
+local accept = require "RxLua.src.functions.consumer.accept"
 local produceConsumer = require "RxLua.src.functions.consumer.produce"
-local produceBiConsumer = require "RxLua.src.functions.biconsumer.produce"
-
-local emptyAction = require "RxLua.src.functions.action.empty"
 local emptyConsumer = require "RxLua.src.functions.consumer.empty"
-local emptyBiConsumer = require "RxLua.src.functions.biconsumer.empty"
 
-return function (_, receiver)
-    badArgument(type(receiver) == "table", 1, debug.getinfo(1).name, "table", type(receiver))
-
-    local onStart = produceAction(receiver.onStart, emptyAction)
-    local onNext = produceBiConsumer(receiver.onNext, emptyBiConsumer)
-    local onError = produceConsumer(receiver.onError, emptyConsumer)
-    local onComplete = produceAction(receiver.onComplete, emptyAction)
-
-    assert(onStart, "Protocol Violation: onStart must be either an Action, a function or nil.")
-    assert(onNext, "Protocol Violation: onNext must be either a BiConsumer, a function or nil.")
-    assert(onError, "Protocol Violation: onError must be either a Consumer, a function or nil.")
-    assert(onComplete, "Protocol Violation: onComplete must be either an Action, a function or nil.")
-
+return function (_, onSuccess, onError)
     local this = {
         _disposable = nil,
-        _className = "DisposableObserver",
-        onError = function (t)
-            acceptConsumer(onError, t)
-        end,
-        onComplete = function ()
-            run(onComplete)
-        end
+        _className = "ConsumerSingleObserver",
     }
 
-    local function cancel()
-        return dispose(this._disposable)
-    end
+    onSuccess = produceConsumer(onSuccess, emptyConsumer)
+    onError = produceConsumer(onError, emptyConsumer)
 
-    this.onNext = function (x)
-        acceptBiConsumer(onNext, x, cancel)
-    end 
+    local context = debug.getinfo(1).name 
+
+    badArgument(onSuccess, 1, context, "either an Consumer, a function or nil")
+    badArgument(onError, 2, context, "either an Consumer, a function or nil")
+
 
     this.onSubscribe = function (d)
         if(this._disposable) then 
             error("Protocol Violation: Disposable already set.")
-        elseif(isDisposable(d)) then
+        else 
             this._disposable = d
-
-            run(onStart)
         end 
     end 
+
+    this.onSuccess = function (x)
+        dispose(this._disposable)
+        local status, result = pcall(function ()
+            accept(onSuccess, x)
+        end)
+
+        if(not status) then 
+            error(result)
+        end 
+    end
+
+    this.onError = function (t)
+        dispose(this._disposable)
+        local status, result = pcall(function ()
+            accept(onError, t)
+        end)
+
+        if(not status) then 
+            error(result)
+        end 
+    end 
+
 
     return setmetatable(this, M)
 end

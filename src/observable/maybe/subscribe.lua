@@ -40,7 +40,7 @@ return function (observable, onSuccess, onError, onComplete)
         subscribeCore(onSuccess)
         return
     end 
-    observer = CallbackMaybeObserver(_, onSuccess, onError, onComplete)
+    observer = CallbackMaybeObserver(nil, onSuccess, onError, onComplete)
     subscribeCore(observer)
     return observer
 end 

@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions for Lua
+    Reactive Extensions BiConsumerSingleObserver
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,7 +18,39 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]] 
-local Action = require "RxLua.src.functions.action.new"
+]]
+local implement = require "RxLua.src.interface.implement"
 
-return Action(nil, function () return true end)
+local DisposableInterface = require "RxLua.src.disposable.interface.M"
+local SingleObserverInterface = require "RxLua.src.observer.single.interface"
+
+local path = "RxLua.src.observer.single.biconsumer"
+
+local function load(name)
+    return require(path.."."..name)
+end 
+
+local M = load("M")
+
+local BiConsumerSingleObserver = setmetatable({}, M)
+
+BiConsumerSingleObserver.is = load("is")
+
+
+local isDisposed = load("isDisposed")
+local dispose = load("dispose")
+
+M.__call = load("new")
+M.__index = {
+    isDisposed = isDisposed,
+    dispose = dispose
+}
+
+implement(DisposableInterface, M, {
+    isDisposed = isDisposed,
+    dispose = dispose
+})
+
+implement(CompletableObserverInterface, M, {})
+
+return BiConsumerSingleObserver

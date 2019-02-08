@@ -19,10 +19,10 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Action = require "RxLua.src.functions.action"
+local Action = require "RxLua.src.functions.action.new"
 
 return function (v)
-    return Action(_, function () 
+    return Action(nil, function () 
         return v 
     end)
 end

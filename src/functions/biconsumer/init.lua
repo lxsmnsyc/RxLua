@@ -35,6 +35,7 @@ BiConsumer.EMPTY = load("empty")
 
 BiConsumer.equal = load("equal")
 BiConsumer.lessThan = load("lessThan")
+BiConsumer.produce = load("produce")
 
 M.__call = load("new")
 M.__index = {

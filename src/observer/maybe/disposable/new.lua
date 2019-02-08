@@ -30,16 +30,29 @@ local badArgument = require "RxLua.src.asserts.badArgument"
 return function (_, receiver)
     badArgument(type(receiver) == "table", 1, debug.getinfo(1).name, "table", type(receiver))
 
-    local onStart = receiver.onStart
-    local recognizeStart = type(onStart) == "function"
+    local onSuccess = produceConsumer(receiver.onSuccess, emptyConsumer)
+    local onError = produceConsumer(receiver.onError, emptyConsumer)
+    local onComplete = produceAction(receiver.onComplete, emptyAction)
+
+    local context = debug.getinfo(1).name 
+
+    badArgument(onSuccess, 1, context, "either an Consumer, a function or nil")
+    badArgument(onError, 2, context, "either an Consumer, a function or nil")
+    badArgument(onComplete, 3, context, "either an Action, a function or nil")
 
     local this = {
         _disposable = nil,
         _className = "DisposableMaybeObserver",
         
-        onSuccess = receiver.onSuccess,
-        onError = receiver.onError,
-        onComplete = receiver.onComplete
+        onSuccess = function (x)
+            accept(onSuccess, x) 
+        end,
+        onError = function (t)
+            accept(onError, t)
+        end,
+        onComplete = function ()
+            run(onComplete)
+        end,
     }
 
     this.onSubscribe = function (d)

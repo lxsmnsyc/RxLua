@@ -19,6 +19,6 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local BiConsumer = require "RxLua.src.functions.biconsumer"
+local BiConsumer = require "RxLua.src.functions.biconsumer.new"
 
-return BiConsumer(_, function (a, b) return a == b end)
+return BiConsumer(nil, function (a, b) return a == b end)

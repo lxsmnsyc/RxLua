@@ -33,47 +33,29 @@ local accept = require "RxLua.src.functions.consumer.accept"
 local isAction = require "RxLua.src.functions.action.is"
 local run = require "RxLua.src.functions.action.run"
 
+local produceAction = require "RxLua.src.functions.action.produce"
+local produceConsumer = require "RxLua.src.functions.consumer.produce"
+
+local emptyAction = require "RxLua.src.functions.action.empty"
+local emptyConsumer = require "RxLua.src.functions.consumer.empty"
+
 return function (_, receiver)
     badArgument(type(receiver) == "table", 1, debug.getinfo(1).name, "table", type(receiver))
 
-    local onStart = receiver.onStart
-    local onError = receiver.onError 
-    local onComplete = receiver.onComplete
+    local onStart = produceAction(receiver.onStart, emptyAction)
+    local onError = produceConsumer(receiver.onError, emptyConsumer)
+    local onComplete = produceAction(receiver.onComplete, emptyAction)
 
-    local startAction = isAction(onStart)
-    local errorConsumer = isConsumer(onError)
-    local completeAction = isAction(onComplete)
-
-    local startFn = type(onStart) == "function"
-    local errorFn = type(onError) == "function"
-    local completeFn = type(onComplete) == "function"
-
-    assert(startAction or startFn, "Protocol Violation: onStart must be either an Action or a function.")
-    assert(errorConsumer or errorFn, "Protocol Violation: onError must be either a Consumer or a function.")
-    assert(completeAction or completeFn, "Protocol Violation: onComplete must be either an Action or a function.")
+    assert(onStart, "Protocol Violation: onStart must be either an Action, a function or nil.")
+    assert(onError, "Protocol Violation: onError must be either a Consumer, a function or nil.")
+    assert(onComplete, "Protocol Violation: onComplete must be either an Action, a function or nil.")
 
     local function errorHandler(t)
-        if(errorFn) then 
-            onError(t)
-        elseif(errorConsumer) then 
-            accept(onError, t)
-        end
+        accept(onError, t)
     end 
 
     local function completeHandler()
-        if(completeFn) then 
-            onComplete()
-        elseif(completeAction) then 
-            run(onComplete)
-        end 
-    end 
-
-    local function startHandler()
-        if(startFn) then 
-            onStart()
-        elseif(startAction) then 
-            run(onStart)
-        end 
+        run(onComplete)
     end 
 
     local this = {
@@ -90,7 +72,7 @@ return function (_, receiver)
         elseif(isDisposable(d)) then
             this._disposable = d
 
-            startHandler()
+            run(onStart) 
         end 
     end 
 
