@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Composite Disposable
+    Reactive Extensions Interface
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -20,9 +20,7 @@
     SOFTWARE.
 ]]
 
-local implement = require "RxLua.src.disposable.interface.implement"
-
-local path = "RxLua.src.disposable.composite"
+local path = "RxLua.src.interface"
 
 local function load(name)
     return require(path.."."..name)
@@ -30,23 +28,16 @@ end
 
 local M = load("M")
 
-local CompositeDisposable = setmetatable({}, M)
+local Interface = setmetatable({}, M)
 
-CompositeDisposable.is = load("is")
-
-local isDisposed = load("isDisposed")
-local dispose = load("dispose")
+Interface.is = load("is")
 
 M.__call = load("new")
 M.__index = {
-    isDisposed = isDisposed,
-    dispose = dispose,
-    add = load("add"),
-    remove = load("remove"),
-    clear = load("clear"),
-    delete = load("delete")
+    implement = load("implement"),
+    implements = load("implements")
 }
 
-implement(CompositeDisposable, isDisposed, dispose)
 
-return CompositeDisposable
+
+return Interface

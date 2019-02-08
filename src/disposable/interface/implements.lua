@@ -20,20 +20,11 @@
     SOFTWARE.
 ]]  
 
+local implements = require "RxLua.src.interface.implements"
+
 local DisposableInterface
 
 return function (disposable)
     DisposableInterface = DisposableInterface or require "RxLua.src.disposable.interface"
-    if(disposable and type(disposable) == "table") then 
-        local mt = getmetatable(disposable)
-        
-        local implements = mt._implements
-        if(implements) then 
-            local implementation = implements[DisposableInterface]
-            if(implementation) then 
-                return implementation
-            end 
-        end
-    end 
-    return false 
+    return implements(DisposableInterface, disposable)
 end

@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Composite Disposable
+    Reactive Extensions for Lua
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,35 +18,9 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]
+]]  
+local M = require "RxLua.src.interface.M"
 
-local implement = require "RxLua.src.disposable.interface.implement"
-
-local path = "RxLua.src.disposable.composite"
-
-local function load(name)
-    return require(path.."."..name)
-end 
-
-local M = load("M")
-
-local CompositeDisposable = setmetatable({}, M)
-
-CompositeDisposable.is = load("is")
-
-local isDisposed = load("isDisposed")
-local dispose = load("dispose")
-
-M.__call = load("new")
-M.__index = {
-    isDisposed = isDisposed,
-    dispose = dispose,
-    add = load("add"),
-    remove = load("remove"),
-    clear = load("clear"),
-    delete = load("delete")
-}
-
-implement(CompositeDisposable, isDisposed, dispose)
-
-return CompositeDisposable
+return function (x)
+    return type(x) == "table" and getmetatable(x) == M
+end

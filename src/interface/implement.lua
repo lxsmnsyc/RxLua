@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Composite Disposable
+    Reactive Extensions for Lua
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,35 +18,29 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]
+]]  
 
-local implement = require "RxLua.src.disposable.interface.implement"
+local is = require "RxLua.src.interface.is"
 
-local path = "RxLua.src.disposable.composite"
+local badArgument = require "RxLua.src.asserts.badArgument"
 
-local function load(name)
-    return require(path.."."..name)
+return function (interface, class, methods)
+    local context = debug.getinfo(1).name 
+    badArgument(is(interface), 1, context, "Interface")
+    badArgument(type(class) == "table", 1, context, "table", type(class))
+    badArgument(type(methods) == "table", 1, context, "table", type(methods))
+
+    local implements = class._implements or {}
+
+    if(not implements[interface]) then 
+        local t = {}
+
+        for k, v in pairs(methods) do
+            t[k] = v
+        end 
+
+        implements[interface] = t
+    end 
+
+    class._implements = implements
 end 
-
-local M = load("M")
-
-local CompositeDisposable = setmetatable({}, M)
-
-CompositeDisposable.is = load("is")
-
-local isDisposed = load("isDisposed")
-local dispose = load("dispose")
-
-M.__call = load("new")
-M.__index = {
-    isDisposed = isDisposed,
-    dispose = dispose,
-    add = load("add"),
-    remove = load("remove"),
-    clear = load("clear"),
-    delete = load("delete")
-}
-
-implement(CompositeDisposable, isDisposed, dispose)
-
-return CompositeDisposable

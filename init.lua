@@ -27,6 +27,8 @@ local function load(name)
     return require(moduleName.."."..name)
 end
 
+Rx.Interface = load("interface")
+
 --[[
     Disposable
 ]]

@@ -20,16 +20,21 @@
     SOFTWARE.
 ]]
 
+local Interface = require "RxLua.src.interface.new"
+
 local path = "RxLua.src.disposable.interface"
 
 local function load(name)
     return require(path.."."..name)
 end 
 
-local DisposableInterface = {}
+local DisposableInterface = Interface()
 
+DisposableInterface.implement = load("implement")
 DisposableInterface.implements = load("implements")
-DisposableInterface.isDisposed = load("isDisposed")
+DisposableInterface.is = load("implements")
+
 DisposableInterface.dispose = load("dispose")
+DisposableInterface.isDisposed = load("isDisposed")
 
 return DisposableInterface

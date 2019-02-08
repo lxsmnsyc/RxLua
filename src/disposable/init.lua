@@ -20,6 +20,8 @@
     SOFTWARE.
 ]]
 
+local implement = require "RxLua.src.disposable.interface.implement"
+
 local path = "RxLua.src.disposable"
 
 local function load(name)
@@ -32,10 +34,17 @@ local Disposable = setmetatable({}, M)
 
 Disposable.is = load("is")
 
+local isDisposed = load("isDisposed")
+local dispose = load("dispose")
+
 M.__call = load("new")
 M.__index = {
-    dispose = load("dispose"),
-    isDisposed = load("isDisposed")
+    dispose = dispose,
+    isDisposed = isDisposed
 }
+
+implement(Disposable, isDisposed, dispose)
+
+
 
 return Disposable
