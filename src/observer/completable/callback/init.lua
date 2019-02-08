@@ -19,6 +19,10 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]
+local implement = require "RxLua.src.interface.implement"
+
+local DisposableInterface = require "RxLua.src.disposable.interface.M"
+local CompletableObserverInterface = require "RxLua.src.observer.completable.interface"
 
 local path = "RxLua.src.observer.completable.callback"
 
@@ -32,10 +36,21 @@ local CallbackCompletableObserver = setmetatable({}, M)
 
 CallbackCompletableObserver.is = load("is")
 
+
+local isDisposed = load("isDisposed")
+local dispose = load("dispose")
+
 M.__call = load("new")
 M.__index = {
-    isDisposed = load("isDisposed"),
-    dispose = load("dispose")
+    isDisposed = isDisposed,
+    dispose = dispose
 }
+
+implement(DisposableInterface, M, {
+    isDisposed = isDisposed,
+    dispose = dispose
+})
+
+implement(CompletableObserverInterface, M, {})
 
 return CallbackCompletableObserver

@@ -18,25 +18,9 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]  
+]] 
+local M = require "RxLua.src.functions.biconsumer.M"
 
-local DisposableInterface
-
-local implement = require "RxLua.src.interface.implement"
-
-
-local badArgument = require "RxLua.src.asserts.badArgument"
-
-return function (class, isDisposed, dispose)
-    local DisposableInterface = DisposableInterface or require "RxLua.src.disposable.interface"
-
-    local context = debug.getinfo(1).name 
-    badArgument(type(class) == "table", 1, context, "table")
-    badArgument(type(isDisposed) == "function", 1, context, "function")
-    badArgument(type(dispose) == "function", 1, context, "function")
-
-    implement(DisposableInterface, class, {
-        isDisposed = isDisposed,
-        dispose = dispose
-    })
-end 
+return function (x)
+    return type(x) == "table" and getmetatable(x) == M
+end

@@ -18,13 +18,13 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]  
+]] 
+local is = require "RxLua.src.functions.consumer.is"
 
-local implements = require "RxLua.src.interface.implements"
+local badArgument = require "RxLua.src.asserts.badArgument"
 
-local DisposableInterface
-
-return function (disposable)
-    DisposableInterface = DisposableInterface or require "RxLua.src.disposable.interface"
-    return implements(DisposableInterface, disposable)
-end
+return function (biconsumer, a)
+    local context = debug.getinfo(1).name
+    badArgument(is(biconsumer), 1, context, "Consumer")
+    return consumer._handler(a)
+end 

@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Super Disposable
+    Reactive Extensions DisposableInterface
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -20,19 +20,14 @@
     SOFTWARE.
 ]]
 
-local Interface = require "RxLua.src.interface.new"
-
 local path = "RxLua.src.disposable.interface"
 
 local function load(name)
     return require(path.."."..name)
 end 
 
-local DisposableInterface = Interface()
-
-DisposableInterface.implement = load("implement")
-DisposableInterface.implements = load("implements")
-DisposableInterface.is = load("implements")
+local DisposableInterface = load("M")
+DisposableInterface.is = load("is")
 
 DisposableInterface.dispose = load("dispose")
 DisposableInterface.isDisposed = load("isDisposed")

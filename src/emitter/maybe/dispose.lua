@@ -22,27 +22,12 @@
 local is = require "RxLua.src.emitter.maybe.is"  
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-local isDisposed
-local dispose
-
-local notLoaded = true
-local function asyncLoad()
-    if(notLoaded) then
-        isDisposed = require "RxLua.src.disposable.interface.isDisposed"
-        dispose = require "RxLua.src.disposable.interface.dispose"
-        notLoaded = false 
-    end
-end
-
 return function (emitter)
     badArgument(is(emitter), 1, debug.getinfo(1).name, "MaybeEmitter")
-    asyncLoad()
 
-    local disposable = emitter._disposable
-
-    if(isDisposed(disposable)) then 
-        return false
+    local dispose = emitter.dispose 
+    if(dispose and not emitter.isDisposed()) then 
+        return dispose()
     end
-
-    return dispose(disposable)
+    return false
 end 

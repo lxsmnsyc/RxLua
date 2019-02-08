@@ -22,14 +22,14 @@
 local is = require "RxLua.src.observer.single.disposable.is"  
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-local isDisposable
+local dispose
 local isDisposed
 
 local notLoaded = true
 local function asyncLoad()
     if(notLoaded) then
-        isDisposable = isDisposable or require "RxLua.src.disposable.is"
-        isDisposed = isDisposed or require "RxLua.src.disposable.isDisposed"
+        isDisposed = isDisposed or require "RxLua.src.disposable.interface.isDisposed"
+        dispose = isDisposable or require "RxLua.src.disposable.interface.is"
         notLoaded = false 
     end
 end

@@ -21,9 +21,9 @@
 ]] 
 local M = require "RxLua.src.observer.completable.callback.M"
 
-local isDisposable = require "RxLua.src.disposable.is"
-local isDisposed = require "RxLua.src.disposable.isDisposed"
-local dispose = require "RxLua.src.disposable.dispose"
+local isDisposable = require "RxLua.src.disposable.interface.is"
+local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
+local dispose = require "RxLua.src.disposable.interface.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
@@ -32,10 +32,18 @@ return function (_, onComplete, onError)
 
     local this = {
         _disposable = nil,
-        _className = "DisposableCompletableObserver",
+        _className = "CallbackCompletableObserver",
     }
 
     local recognizeError = type(onError) == "function"
+
+    this.onSubscribe = function (d)
+        if(this._disposable) then 
+            error("Protocol Violation: Disposable already set.")
+        else 
+            this._disposable = d
+        end 
+    end 
 
     this.onComplete = function ()
         local status, result = pcall(onComplete)
@@ -57,15 +65,6 @@ return function (_, onComplete, onError)
             end 
         end 
         dispose(this._disposable)
-    end 
-
-
-    this.onSubscribe = function (d)
-        if(this._disposable) then 
-            error("Protocol Violation: Disposable already set.")
-        else 
-            this._disposable = d
-        end 
     end 
 
     return setmetatable(this, M)

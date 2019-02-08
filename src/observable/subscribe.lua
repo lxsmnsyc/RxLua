@@ -19,7 +19,29 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
+local is = require "RxLua.src.observable.is"
 
+local isObserver = require "RxLua.src.observer.interface.is"
+local dispose = require "RxLua.src.disposable.interface.dispose"
 
-return function (observable, observer)
+local LambdaObserver = require "RxLua.src.observer.lambda.new"
+
+local badArgument = require "RxLua.src.asserts.badArgument"
+
+return function (observable, onNext, onError, onComplete, onSubscribe)
+    badArgument(is(observable), 1, debug.getinfo(1).name, "Observable")
+    local function subscribeCore(observer)
+        observer = observable:_modify(observer)
+
+        observable:_subscribeActual(observer)
+    end 
+
+    if(isObserver(onSuccess)) then 
+        subscribeCore(onSuccess)
+        return
+    end 
+    observer = LambdaObserver(_, onNext, onError, onComplete, onSubscribe)
+    subscribeCore(observer)
+    return observer
 end 
+

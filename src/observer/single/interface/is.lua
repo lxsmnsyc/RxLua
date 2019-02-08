@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Single Observer
+    Reactive Extensions for Lua
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,13 +18,10 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]
+]]  
+local Interface = require "RxLua.src.observer.single.interface.M"
+local implements = require "RxLua.src.interface.implements"
 
-
-local SingleObserver = require "RxLua.src.observer.single.is"
-local DisposableSingleObserver = require "RxLua.src.observer.single.disposable.is"
-
-return function (observer)
-    return SingleObserver(observer)
-        or DisposableSingleObserver(observer)
+return function (class)
+    return implements(Interface, getmetatable(class))
 end 

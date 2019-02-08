@@ -35,24 +35,10 @@ local M = load("M")
 local Single = setmetatable({}, M)
 
 Single.is = load("is")
-Single.error = loadOperator("error")
-
 
 M.__call = load("new")
 M.__index = {
-    subscribe = load("subscribe"),
-
-    amb = loadOperator("amb"),
-    contains = loadOperator("contains"),
-    doAfterSuccess = loadOperator("doAfterSuccess"),
-    doAfterTerminate = loadOperator("doAfterTerminate"),
-    doFinally = loadOperator("doFinally"),
-    doOnDispose = loadOperator("doOnDispose"),
-    doOnError = loadOperator("doOnError"),
-    doOnEvent = loadOperator("doOnEvent"),
-    doOnSuccess = loadOperator("doOnSuccess"),
-    equals = loadOperator("equals"),
-    filter = loadOperator("filter")
+    subscribe = load("subscribe")
 }
 
 return Single

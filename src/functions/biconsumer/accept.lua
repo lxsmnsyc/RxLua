@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions
+    Reactive Extensions for Lua
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,23 +18,13 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]
-local Single = require "RxLua.src.observable.single.new"
-local subscribe = require "RxLua.src.observable.single.subscribe"
+]] 
+local is = require "RxLua.src.functions.biconsumer.is"
 
-local SingleOnSubscribe = require "RxLua.src.onSubscribe.single.new"
+local badArgument = require "RxLua.src.asserts.badArgument"
 
-local function emptyHandler() end 
-
-return function (handler)
-    local validHandler = type(handler) == "function"
-    return Single(_, SingleOnSubscribe(_, function (emitter)
-        if(validHandler) then 
-            local status, result = pcall(handler)
-
-            emitter.error(result)
-        else 
-            emitter.error(handler)
-        end
-    end))
+return function (biconsumer, a, b)
+    local context = debug.getinfo(1).name
+    badArgument(is(biconsumer), 1, context, "BiConsumer")
+    biconsumer._handler(a, b)
 end 

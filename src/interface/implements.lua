@@ -27,8 +27,10 @@ local badArgument = require "RxLua.src.asserts.badArgument"
 return function (interface, class)
     local context = debug.getinfo(1).name 
     badArgument(is(interface), 1, context, "Interface")
-    badArgument(type(class) == "table", 1, context, "table", type(class))
-    local implements = class._implements
+    if(type(class) == "table") then
+        local implements = class._implements
 
-    return implements and implements[interface]
+        return implements and implements[interface]
+    end 
+    return false
 end 

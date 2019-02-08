@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Observer Interface
+    Reactive Extensions CompletableObserverInterface
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -26,7 +26,7 @@ local function load(name)
     return require(path.."."..name)
 end 
 
-local CompletableObserverInterface = {}
+local CompletableObserverInterface = load("M")
 
 CompletableObserverInterface.is = load("is")
 

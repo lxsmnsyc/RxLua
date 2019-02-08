@@ -21,9 +21,9 @@
 ]] 
 local M = require "RxLua.src.observer.maybe.disposable.M"
 
-local isDisposable = require "RxLua.src.disposable.is"
-local isDisposed = require "RxLua.src.disposable.isDisposed"
-local dispose = require "RxLua.src.disposable.dispose"
+local isDisposable = require "RxLua.src.disposable.interface.is"
+local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
+local dispose = require "RxLua.src.disposable.interface.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 

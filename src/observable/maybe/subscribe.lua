@@ -22,71 +22,26 @@
 local is = require "RxLua.src.observable.maybe.is"
 
 local isObserver = require "RxLua.src.observer.maybe.interface.is"
-
-local Disposable = require "RxLua.src.disposable.new"
-
-local isDisposable = require "RxLua.src.disposable.interface.is"
 local dispose = require "RxLua.src.disposable.interface.dispose"
 
 local CallbackMaybeObserver = require "RxLua.src.observer.maybe.callback.new"
 
-local MaybeEmitter = require "RxLua.src.emitter.maybe.new"
-
-local subscribe = require "RxLua.src.onSubscribe.maybe.subscribe"
+local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (observable, onSuccess, onError, onComplete)
-    local observer 
-    --[[
-        If onSuccess is a valid CompletableObservable, continue
-    ]]
-    if(isObserver(onSuccess)) then 
-        observer = onSuccess
-    --[[
-        If onSuccess is a function, create a CallbackCompletableObserver
-    ]]
-    else
-        observer = CallbackMaybeObserver(_, onSuccess, onError, onComplete)
+    badArgument(is(observable), 1, debug.getinfo(1).name, "Maybe")
+    local function subscribeCore(observer)
+        observer = observable:_modify(observer)
+
+        observable:_subscribeActual(observer)
     end 
 
-    local disposable = Disposable()
-
-    local try, obs = pcall(function ()
-        observer = observable._modify(observer)
-    end)
-
-    if(try) then 
-        local emitter = MaybeEmitter(_, observer)
-
-        emitter:setDisposable(disposable)
-
-        local onSubscribe = observer.onSubscribe
-        if(onSubscribe) then 
-            onSubscribe(disposable)
-        end 
-
-        local status, result = pcall(function ()
-            return subscribe(observable._subscriber, emitter)
-        end)
-
-        if(status) then 
-            if(isDisposable(result)) then 
-                disposable.cleanup = function ()
-                    dispose(disposable)
-                end 
-            elseif(type(result) == "function") then 
-                disposable.cleanup = result
-            end 
-        else 
-            observer.onError(result)
-            error(result)
-            dispose(disposable)
-        end 
-    else 
-        observer.onError(obs)
-        error(result)
-        dispose(disposable)
-    end
-
-    return disposable
+    if(isObserver(onSuccess)) then 
+        subscribeCore(onSuccess)
+        return
+    end 
+    observer = CallbackMaybeObserver(_, onSuccess, onError, onComplete)
+    subscribeCore(observer)
+    return observer
 end 
 

@@ -40,15 +40,6 @@ return function (disposable)
         Update state
     ]]
     disposable._disposed = true 
-    --[[
-        Execute cleanup
-    ]]
-    local cleanup = disposable.cleanup
-    if(type(cleanup) == "function") then 
-        disposable.cleanup()
-
-        disposable.cleanup = nil
-    end
 
     return true 
 end

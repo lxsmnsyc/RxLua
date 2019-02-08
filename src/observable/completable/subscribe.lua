@@ -23,75 +23,34 @@ local is = require "RxLua.src.observable.completable.is"
 
 local isObserver = require "RxLua.src.observer.completable.interface.is"
 
-local Disposable = require "RxLua.src.disposable.new"
-
-local isDisposable = require "RxLua.src.disposable.interface.is"
-local dispose = require "RxLua.src.disposable.interface.dispose"
-
 local CallbackCompletableObserver = require "RxLua.src.observer.completable.callback.new"
 local EmptyCompletableObserver = require "RxLua.src.observer.completable.empty.new"
 
-local CompletableEmitter = require "RxLua.src.emitter.completable.new"
-
-local subscribe = require "RxLua.src.onSubscribe.completable.subscribe"
+local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (observable, onComplete, onError)
-    local observer 
-    --[[
-        If onComplete is a valid CompletableObservable, continue
-    ]]
-    if(isObserver(onComplete)) then 
-        observer = onComplete
-    --[[
-        If onComplete is a function, create a CallbackCompletableObserver
-    ]]
-    elseif(type(onComplete) == "function") then 
-        observer = CallbackCompletableObserver(_, onComplete, onError)
-    else
-    --[[
-        Otherwise, create an EmptyCompletableObserver
-    ]]
-        observer = EmptyCompletableObserver()
-    end 
-
-    local disposable = Disposable()
-
-    local try, obs = pcall(function ()
-        observer = observable._modify(observer)
-    end)
-
-    if(try) then 
-        local emitter = CompletableEmitter(_, observer)
-
-        emitter:setDisposable(disposable)
-
-        local onSubscribe = observer.onSubscribe
-        if(onSubscribe) then 
-            onSubscribe(disposable)
-        end 
-
+    badArgument(is(observable), 1, debug.getinfo(1).name, "Completable")
+    local function subscribeCore(observer)
         local status, result = pcall(function ()
-            return subscribe(observable._subscriber, emitter)
+            observer = observable:_modify(observer)
+
+            observable:_subscribeActual(observer)
         end)
 
-        if(status) then 
-            if(isDisposable(result)) then 
-                disposable.cleanup = function ()
-                    dispose(disposable)
-                end 
-            elseif(type(result) == "function") then 
-                disposable.cleanup = result
-            end 
-        else 
+        if(not status) then 
             observer.onError(result)
-            error(result)
-            dispose(disposable)
         end 
-    else 
-        observer.onError(obs)
-        error(result)
-        dispose(disposable)
-    end
+    end 
 
-    return disposable
+    local observer
+    if(isObserver(onComplete)) then 
+        subscribeCore(onComplete)
+        return
+    elseif(type(onComplete) == "function") then  
+        observer = CallbackCompletableObserver(_, onComplete, onError)
+    else 
+        observer = EmptyCompletableObserver()
+    end 
+    subscribeCore(observer)
+    return observer
 end 

@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Observer Interface
+    Reactive Extensions ObserverInterface
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -26,7 +26,7 @@ local function load(name)
     return require(path.."."..name)
 end 
 
-local ObserverInterface = {}
+local ObserverInterface = load("M")
 
 ObserverInterface.is = load("is")
 

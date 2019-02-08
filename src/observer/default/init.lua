@@ -19,6 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]
+local implement = require "RxLua.src.interface.implement"
+
+local ObserverInterface = require "RxLua.src.observer.interface.M"
 
 local path = "RxLua.src.observer.default"
 
@@ -35,5 +38,7 @@ DefaultObserver.is = load("is")
 M.__call = load("new")
 M.__index = {
 }
+
+implement(ObserverInterface, M, {})
 
 return DefaultObserver

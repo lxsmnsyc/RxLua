@@ -34,9 +34,7 @@ Observable.is = load("is")
 
 M.__call = load("new")
 M.__index = {
-    subscribe = load("subscribe"),
-
-    amb = load("operator.amb")
+    subscribe = load("subscribe")
 }
 
 return Observable

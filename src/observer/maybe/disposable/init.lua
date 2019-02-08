@@ -19,6 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]
+local implement = require "RxLua.src.interface.implement"
+
+local DisposableInterface = require "RxLua.src.disposable.interface.M"
 
 local path = "RxLua.src.observer.maybe.disposable"
 
@@ -32,10 +35,19 @@ local DisposableMaybeObserver = setmetatable({}, M)
 
 DisposableMaybeObserver.is = load("is")
 
+
+local isDisposed = load("isDisposed")
+local dispose = load("dispose")
+
 M.__call = load("new")
 M.__index = {
-    isDisposed = load("isDisposed"),
-    dispose = load("dispose")
+    isDisposed = isDisposed,
+    dispose = dispose
 }
+
+implement(DisposableInterface, M, {
+    isDisposed = isDisposed,
+    dispose = dispose
+})
 
 return DisposableMaybeObserver

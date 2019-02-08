@@ -19,7 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-local implements = require "RxLua.src.disposable.interface.implements"
+local implements = require "RxLua.src.disposable.interface.is"
 
 
 return function (x)

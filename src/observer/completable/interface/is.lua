@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Single Observer
+    Reactive Extensions for Lua
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,17 +18,10 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]
+]]  
+local Interface = require "RxLua.src.observer.completable.interface.M"
+local implements = require "RxLua.src.interface.implements"
 
-
-local CompletableObserver = require "RxLua.src.observer.completable.is"
-local DisposableCompletableObserver = require "RxLua.src.observer.completable.disposable.is"
-local EmptyCompletableObserver = require "RxLua.src.observer.completable.empty.is"
-local CallbackCompletableObserver = require "RxLua.src.observer.completable.callback.is"
-
-return function (observer)
-    return CompletableObserver(observer)
-        or DisposableCompletableObserver(observer)
-        or EmptyCompletableObserver(observer)
-        or CallbackCompletableObserver(observer)
+return function (class)
+    return implements(Interface, getmetatable(class))
 end 

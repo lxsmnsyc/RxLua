@@ -20,6 +20,8 @@
     SOFTWARE.
 ]]
 
+local ObserverInterface = require "RxLua.src.observer.interface.M"
+
 local path = "RxLua.src.observer"
 
 local function load(name)

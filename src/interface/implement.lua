@@ -35,9 +35,11 @@ return function (interface, class, methods)
     if(not implements[interface]) then 
         local t = {}
 
-        for k, v in pairs(methods) do
-            t[k] = v
-        end 
+        if(methods) then 
+            for k, v in pairs(methods) do
+                t[k] = v
+            end 
+        end
 
         implements[interface] = t
     end 

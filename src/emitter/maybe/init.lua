@@ -20,6 +20,10 @@
     SOFTWARE.
 ]]
 
+local implement = require "RxLua.src.interface.implement"
+
+local DisposableInterface = require "RxLua.src.disposable.interface.M"
+
 local path = "RxLua.src.emitter.maybe"
 
 local function load(name)
@@ -32,10 +36,19 @@ local MaybeEmitter = setmetatable({}, M)
 
 MaybeEmitter.is = load("is")
 
+local isDisposed = load("isDisposed")
+local dispose = load("dispose")
+
 M.__call = load("new")
 M.__index = {
     setDisposable = load("setDisposable"),
-    isDisposed = load("isDisposed")
+    isDisposed = isDisposed,
+    dispose = dispose
 }
+
+implement(DisposableInterface, M, {
+    isDisposed = isDisposed,
+    dispose = dispose
+})
 
 return MaybeEmitter

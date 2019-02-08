@@ -10,5 +10,5 @@ return function (evaluateSuccess, argNo, context, expectedType, receivedType)
     if(receivedType) then 
         appended = ", got "..receivedType..")."
     end 
-    assert(evaluateSuccess, "bad argument #"..argNo..context.." ("..expectedType.." expected"..appended)
+    assert(evaluateSuccess, "bad argument #"..argNo..context.." ("..expectedType.." expected"..appended.."\n")
 end 

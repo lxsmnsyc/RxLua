@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions
+    Reactive Extensions for Lua
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,38 +18,6 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]
-local Single = require "RxLua.src.observable.single.new"
-local is = require "RxLua.src.observable.single.is"
-local subscribe = require "RxLua.src.observable.single.subscribe"
-
-local SingleOnSubscribe = require "RxLua.src.onSubscribe.single.new"
-local SingleObserver = require "RxLua.src.observer.single.new"
-
-local function emptyHandler() end 
-
-return function (single, handler)
-    assert(is(single), "TypeError: single must be a Single instance.")
-    handler = type(handler) == "function" and handler or emptyHandler
-    return Single(_, SingleOnSubscribe(_, function (emitter)
-        --[[
-            Subscribe to single
-        ]]
-        local disposable = subscribe(single, SingleObserver(_, {
-            onSuccess = emitter.success,
-            onError = emitter.error
-        }))
-        --[[
-            modify cleanup
-        ]]
-        local cleanup = disposable.cleanup
-        disposable.cleanup = function ()
-            handler()
-            cleanup()
-        end
-        --[[
-            Return the disposable
-        ]] 
-        return disposable
-    end))
-end 
+]]  
+local Interface = require "RxLua.src.interface.new"
+return Interface()

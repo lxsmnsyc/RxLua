@@ -32,18 +32,5 @@ return function (emitter, disposable)
     badArgument(is(emitter), 1, context, "ObservableEmitter")
     badArgument(isDisposable(disposable), 1, context, "DisposableInterface")
 
-    local current = emitter._disposable
-    
-    if(current and current ~= disposable) then
-        if(isDisposed(current)) then 
-            dispose(disposable)
-            return false
-        else
-            emitter._disposable = disposable
-            dispose(current)
-        end
-    else 
-        emitter._disposable = disposable
-    end
-    return false
+    emitter.setDisposable(disposable)
 end 

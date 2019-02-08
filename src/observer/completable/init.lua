@@ -19,6 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]
+local implement = require "RxLua.src.interface.implement"
+
+local CompletableObserverInterface = require "RxLua.src.observer.completable.interface"
 
 local path = "RxLua.src.observer.completable"
 
@@ -35,5 +38,7 @@ CompletableObserver.is = load("is")
 M.__call = load("new")
 M.__index = {
 }
+
+implement(CompletableObserverInterface, M, {})
 
 return CompletableObserver

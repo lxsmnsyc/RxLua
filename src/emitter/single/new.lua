@@ -32,36 +32,11 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 return function (_, observer)
     badArgument(
         isObserver(observer), 
-        1, debug.getinfo(1).name, "extends SingleObserverInterface")
-    --[[
-        Tells the observer that it can receive signals
-    ]]
-    local this = {
-        _active = true,
-        _className = "SingleEmitter"
-    }
-
-    local function errorHandler(err)
-        badArgument(err ~= nil, 1, debug.getinfo(1).name, "non-nil value")
-        local disposable = this._disposable
-        if(not isDisposed(disposable)) then 
-            observer.onError(err)
-            dispose(this._disposable)
-        end 
-    end 
-
-    local function successHandler(x)
-        badArgument(x ~= nil, 1, debug.getinfo(1).name, "non-nil value")
-
-        local disposable = this._disposable
-        if(not isDisposed(disposable)) then 
-            observer.onSuccess(x)
-            dispose(disposable)
-        end 
-    end 
-
-    this.error = errorHandler
-    this.success = successHandler
-
-    return setmetatable(this, M)
+        1, debug.getinfo(1).name, "implements SingleObserverInterface"
+    )
+    return setmetatable({
+        _className = "SingleEmitter",
+        error = observer.onError,
+        complete = observer.onSuccess
+    }, M)
 end

@@ -19,8 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]
+local implement = require "RxLua.src.interface.implement"
 
-local implement = require "RxLua.src.disposable.interface.implement"
+local DisposableInterface = require "RxLua.src.disposable.interface.M"
 
 local path = "RxLua.src.disposable"
 
@@ -39,11 +40,14 @@ local dispose = load("dispose")
 
 M.__call = load("new")
 M.__index = {
-    dispose = dispose,
-    isDisposed = isDisposed
+    isDisposed = isDisposed,
+    dispose = dispose
 }
 
-implement(Disposable, isDisposed, dispose)
+implement(DisposableInterface, M, {
+    isDisposed = isDisposed,
+    dispose = dispose
+})
 
 
 
