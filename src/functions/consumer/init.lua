@@ -32,6 +32,17 @@ local Consumer = setmetatable({}, M)
 
 Consumer.is = load("is")
 
+Consumer.EMPTY = load("empty")
+Consumer.FALSE = load("alwaysFalse")
+Consumer.TRUE = load("alwaysTrue")
+Consumer.NIL = load("alwaysNil")
+
+Consumer.equalsWith = load("equalsWith")
+Consumer.just = load("just")
+
+Consumer.error = load("error")
+Consumer.identity = load("identity")
+
 M.__call = load("new")
 M.__index = {
     accept = load("accept")

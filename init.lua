@@ -75,6 +75,13 @@ Rx.ObservableOnSubscribe = load("onSubscribe.observable")
 Rx.MaybeOnSubscribe = load("onSubscribe.maybe")
 Rx.CompletableOnSubscribe = load("onSubscribe.completable")
 Rx.SingleOnSubscribe = load("onSubscribe.single")
+
+--[[
+    Functions
+]]
+Rx.Action = load("functions.action")
+Rx.Consumer = load("functions.consumer")
+Rx.BiConsumer = load("functions.biconsumer")
 --[[
     Observable
 ]]

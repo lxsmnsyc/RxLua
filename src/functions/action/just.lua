@@ -1,5 +1,5 @@
 --[[
-    Reactive Extensions Action
+    Reactive Extensions for Lua
 	
     MIT License
     Copyright (c) 2019 Alexis Munsayac
@@ -18,30 +18,11 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]
+]] 
+local Action = require "RxLua.src.functions.action"
 
-local path = "RxLua.src.functions.action"
-
-local function load(name)
-    return require(path.."."..name)
-end 
-
-local M = load("M")
-
-local Action = setmetatable({}, M)
-
-Action.is = load("is")
-
-Action.EMPTY = load("empty")
-Action.FALSE = load("alwaysFalse")
-Action.TRUE = load("alwaysTrue")
-Action.NIL = load("alwaysNil")
-
-Action.just = load("just")
-
-M.__call = load("new")
-M.__index = {
-    run = load("run")
-}
-
-return Action
+return function (v)
+    return Action(_, function () 
+        return v 
+    end)
+end

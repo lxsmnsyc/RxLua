@@ -27,26 +27,48 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
+local Action = require "RxLua.src.functions.action.new"
+local isAction = require "RxLua.src.functions.action.is"
+local run = require "RxLua.src.functions.action.run"
+
+local Consumer = require "RxLua.src.functions.consumer.new"
+local isConsumer = require "RxLua.src.functions.consumer.is"
+local emptyConsumer = require "RxLua.src.functions.consumer.empty"
+local accept = require "RxLua.src.functions.consumer.accept"
+
 return function (_, onComplete, onError)
-    badArgument(type(onComplete) == "function", 1, debug.getinfo(1).name, "function")
+    local context = debug.getinfo(1).name
+
+    local isFunction = type(onComplete) == "function"
+    badArgument(isAction(onComplete) or isFunction, 1, context, "Action or function")
 
     local this = {
         _disposable = nil,
         _className = "CallbackCompletableObserver",
     }
 
-    local recognizeError = type(onError) == "function"
+    if(isFunction) then 
+        onComplete = Action(_, onComplete)
+    end 
+
+    if(type(onError) == "function") then 
+        onError = Consumer(_, onError)
+    elseif(not (onError == nil or isConsumer(onError))) then
+        badArgument(false, 2, context, "optional Action or function")
+    end
 
     this.onSubscribe = function (d)
         if(this._disposable) then 
             error("Protocol Violation: Disposable already set.")
-        else 
+        elseif(isDisposable(d)) then
             this._disposable = d
         end 
     end 
 
     this.onComplete = function ()
-        local status, result = pcall(onComplete)
+        local status, result = pcall(function ()
+            run(onComplete)
+        end)
 
         if(not status) then 
             error(result)
@@ -54,10 +76,10 @@ return function (_, onComplete, onError)
         dispose(this._disposable)
     end 
 
-    this.onError = function (err)
+    this.onError = function (t)
         if(recognizeError) then 
             local status, result = pcall(function ()
-                return onError(err)
+                accept(onError, t)
             end)
     
             if(not status) then 

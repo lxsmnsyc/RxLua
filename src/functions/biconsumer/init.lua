@@ -31,6 +31,10 @@ local M = load("M")
 local BiConsumer = setmetatable({}, M)
 
 BiConsumer.is = load("is")
+BiConsumer.EMPTY = load("empty")
+
+BiConsumer.equal = load("equal")
+BiConsumer.lessThan = load("lessThan")
 
 M.__call = load("new")
 M.__index = {

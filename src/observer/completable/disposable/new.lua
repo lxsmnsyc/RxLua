@@ -27,29 +27,70 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
+local isConsumer = require "RxLua.src.functions.consumer.is"
+local accept = require "RxLua.src.functions.consumer.accept"
+
+local isAction = require "RxLua.src.functions.action.is"
+local run = require "RxLua.src.functions.action.run"
+
 return function (_, receiver)
     badArgument(type(receiver) == "table", 1, debug.getinfo(1).name, "table", type(receiver))
 
     local onStart = receiver.onStart
-    local recognizeStart = type(onStart) == "function"
+    local onError = receiver.onError 
+    local onComplete = receiver.onComplete
+
+    local startAction = isAction(onStart)
+    local errorConsumer = isConsumer(onError)
+    local completeAction = isAction(onComplete)
+
+    local startFn = type(onStart) == "function"
+    local errorFn = type(onError) == "function"
+    local completeFn = type(onComplete) == "function"
+
+    assert(startAction or startFn, "Protocol Violation: onStart must be either an Action or a function.")
+    assert(errorConsumer or errorFn, "Protocol Violation: onError must be either a Consumer or a function.")
+    assert(completeAction or completeFn, "Protocol Violation: onComplete must be either an Action or a function.")
+
+    local function errorHandler(t)
+        if(errorFn) then 
+            onError(t)
+        elseif(errorConsumer) then 
+            accept(onError, t)
+        end
+    end 
+
+    local function completeHandler()
+        if(completeFn) then 
+            onComplete()
+        elseif(completeAction) then 
+            run(onComplete)
+        end 
+    end 
+
+    local function startHandler()
+        if(startFn) then 
+            onStart()
+        elseif(startAction) then 
+            run(onStart)
+        end 
+    end 
 
     local this = {
         _disposable = nil,
         _className = "DisposableCompletableObserver",
         
-        onError = receiver.onError,
-        onComplete = receiver.onComplete
+        onError = errorHandler,
+        onComplete = completeHandler
     }
 
     this.onSubscribe = function (d)
         if(this._disposable) then 
             error("Protocol Violation: Disposable already set.")
-        else 
+        elseif(isDisposable(d)) then
             this._disposable = d
 
-            if(recognizeStart) then 
-                onStart()
-            end
+            startHandler()
         end 
     end 
 

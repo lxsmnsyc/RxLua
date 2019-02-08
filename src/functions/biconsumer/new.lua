@@ -25,11 +25,14 @@ local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (_, handler)
     local context = debug.getinfo(1).name 
-    badArgument(
-        type(handler) == "function" and 
-        debug.getinfo(handler).nparams == 2, 
-        1, context, "function with two parameters"
-    )
+
+    local receivedType = type(handler)
+    local isFunction = receivedType == "function"
+    badArgument(isFunction, 1, context, "function with 2 parameters", receivedType)
+    
+    local params = debug.getinfo(1).nparams 
+    badArgument(params == 2, 1, context, "function with 2 parameters", "function with "..params.." parameters")
+
     return setmetatable({
         _handler = handler,
         _className = "BiConsumer"
