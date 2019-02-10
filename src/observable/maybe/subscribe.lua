@@ -29,18 +29,27 @@ local CallbackMaybeObserver = require "RxLua.src.observer.maybe.callback.new"
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (observable, onSuccess, onError, onComplete)
+	--[[
+		Argument check
+	]]
     badArgument(is(observable), 1, debug.getinfo(1).name, "Maybe")
+	--[[
+		Core of the subscribe method
+	]]
     local function subscribeCore(observer)
-        observer = observable:_modify(observer)
-
-        observable:_subscribeActual(observer)
+        observable._subscribeActual(observer)
     end 
-
+	--[[
+		Check if the first argument is a valid observer
+	]]
     if(isObserver(onSuccess)) then 
         subscribeCore(onSuccess)
         return
     end 
-    observer = CallbackMaybeObserver(nil, onSuccess, onError, onComplete)
+	--[[
+		Otherwise, create a CallbackMaybeObserver
+	]]
+    local observer = CallbackMaybeObserver(nil, onSuccess, onError, onComplete)
     subscribeCore(observer)
     return observer
 end 

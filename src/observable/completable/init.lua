@@ -26,15 +26,25 @@ local function load(name)
     return require(path.."."..name)
 end 
 
+local function loadOperator(name)
+	return load("operator."..name)
+end
+
 local M = load("M")
 
 local Completable = setmetatable({}, M)
 
 Completable.is = load("is")
 
+Completable.create = loadOperator("create")
+Completable.defer = loadOperator("defer")
+
 M.__call = load("new")
 M.__index = {
-    subscribe = load("subscribe")
+    subscribe = load("subscribe"),
+	
+	amb = loadOperator("amb"),
+	andThen = loadOperator("andThen")
 }
 
 return Completable

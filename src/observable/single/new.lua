@@ -21,110 +21,14 @@
 ]]  
 local M = require "RxLua.src.observable.single.M"
 
-local SingleOnSubscribe = require "RxLua.src.onSubscribe.single.new"
-local isOnSubscribe = require "RxLua.src.onSubscribe.single.is"
-
-local Emitter = require "RxLua.src.emitter.single.new"
-
-local Disposable = require "RxLua.src.disposable.new"
-local isDisposable = require "RxLua.src.disposable.interface.is"
-local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
-local dispose = require "RxLua.src.disposable.interface.dispose"
-
-local subscribe = require "RxLua.src.onSubscribe.single.subscribe"
-
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-local function subscribeActual(observable, observer)
-    local emitter = Emitter(nil, observer)
 
-    local disposable = Disposable()
-
-    emitter.onSuccess = function(x)
-        if(not isDisposed(disposable)) then 
-            local status, result = pcall(function ()
-                if(x == nil) then 
-                    observer.onError("Protocol Violation: onSuccess called with nil: nil values are not allowed.")
-                else
-                    observer.onSuccess(x)
-                end
-            end)
-            dispose(disposable)
-        end
-    end 
-
-    local function tryError(t)
-        if(t == nil) then 
-            t = "onError called with nil: nil values are not allowed."
-        end
-
-        if(not isDisposed(disposable)) then 
-            local status, result = pcall(function ()
-                observer.onError(t)
-            end)
-            dispose(disposable)
-
-            return true 
-        end
-        return false
-    end
-
-    emitter.onError = function(t)
-        if(not tryError(t)) then 
-            error(t)
-        end 
-    end 
-
-    emitter.setDisposable = function(d)
-        if(d ~= disposable) then
-            if(isDisposed(disposable)) then 
-                dispose(d)
-                return 
-            else
-                dispose(disposable)
-            end
-        end
-        disposable = d
-    end 
-
-    emitter.isDisposed = function()
-        return isDisposed(disposable)
-    end 
-
-    emitter.dispose = function()
-        return dispose(disposable)
-    end 
-
-
-    local onSubscribe = observer.onSubscribe
-    if(onSubscribe) then 
-        onSubscribe(emitter)
-    end 
-
-    local status, result = pcall(function ()
-        subscribe(observable._subscriber, emitter)
-    end)
-
-    if(not status) then 
-        emitter.error(result)
-    end 
-end
-
-local function defaultModify(observable, observer) 
-    return observer 
-end
-
-return function (_, subscriber)
-    local isFunction = type(subscriber) == "function"
-    badArgument(isFunction or isOnSubscribe(subscriber), 1, debug.getinfo(1).name , "SingleOnSubscribe or function")
-
-    if(isFunction) then 
-        subscriber = SingleOnSubscribe(nil, subscriber)
-    end
+return function (_, subscribeActual)
+	local receivedType = type(subscribeActual)
+	badArgument(receivedType == "function", debug.getinfo(1).name, "overload function for subscribeActual", receivedType)
     return setmetatable({
-        _modify = defaultModify,
         _subscribeActual = subscribeActual,
-        _subscriber = subscriber,
         _className = "Single"
     }, M)
 end

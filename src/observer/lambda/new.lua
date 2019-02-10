@@ -28,10 +28,7 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-local isAction = require "RxLua.src.functions.action.is"
 local run = require "RxLua.src.functions.action.run"
-
-local isConsumer = require "RxLua.src.functions.consumer.is"
 local accept = require "RxLua.src.functions.consumer.accept"
 
 local produceAction = require "RxLua.src.functions.action.produce"
@@ -77,11 +74,16 @@ return function (_, onNext, onError, onComplete, onSubscribe)
     end
 
     this.onSubscribe = function (d)
-        if(this._disposable) then 
-            error("Protocol Violation: Disposable already set.")
-        else 
+        local disposable = this._disposable
+        if(disposable) then 
+			if(isDisposed(disposable)) then 
+				dispose(d)
+			else
+				error("Protocol Violation: Disposable already set.")
+			end
+        else
             this._disposable = d
-
+			
             local status, result = pcall(function (d)
                 accept(onSubscribe, d)
             end)

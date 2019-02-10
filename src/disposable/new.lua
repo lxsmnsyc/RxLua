@@ -21,12 +21,6 @@
 ]]  
 local M = require "RxLua.src.disposable.M"
 
-local function emptyCleanup() end
-
 return function ()
-    return setmetatable({
-        cleanup = emptyCleanup,
-        _disposed = false,
-        _className = "Disposable"
-    }, M)
+	return setmetatable({}, M)
 end 

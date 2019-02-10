@@ -25,6 +25,9 @@ local path = "RxLua.src.observable"
 local function load(name)
     return require(path.."."..name)
 end 
+local function loadOperator(name)
+	return load("operator."..name)
+end
 
 local M = load("M")
 
@@ -32,9 +35,12 @@ local Observable = setmetatable({}, M)
 
 Observable.is = load("is")
 
+Observable.create = loadOperator("create")
+
 M.__call = load("new")
 M.__index = {
-    subscribe = load("subscribe")
+    subscribe = load("subscribe"),
+	
 }
 
 return Observable

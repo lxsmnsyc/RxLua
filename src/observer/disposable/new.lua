@@ -27,13 +27,8 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
-local isAction = require "RxLua.src.functions.action.is"
 local run = require "RxLua.src.functions.action.run"
-
-local isConsumer = require "RxLua.src.functions.consumer.is"
 local acceptConsumer = require "RxLua.src.functions.consumer.accept"
-
-local isBiConsumer = require "RxLua.src.functions.biconsumer.is"
 local acceptBiConsumer = require "RxLua.src.functions.biconsumer.accept"
 
 local produceAction = require "RxLua.src.functions.action.produce"
@@ -77,12 +72,15 @@ return function (_, receiver)
     end 
 
     this.onSubscribe = function (d)
-        if(this._disposable) then 
-            error("Protocol Violation: Disposable already set.")
-        elseif(isDisposable(d)) then
+        local disposable = this._disposable
+        if(disposable) then 
+			if(isDisposed(disposable)) then 
+				dispose(d)
+			else
+				error("Protocol Violation: Disposable already set.")
+			end
+        else
             this._disposable = d
-
-            run(onStart)
         end 
     end 
 

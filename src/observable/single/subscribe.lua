@@ -29,18 +29,27 @@ local ConsumerSingleObserver = require "RxLua.src.observer.single.consumer.new"
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (observable, onSuccess, onError)
+	--[[
+		Argument check
+	]]
     badArgument(is(observable), 1, debug.getinfo(1).name, "Single")
+	--[[
+		Core of the subscribe method
+	]]
     local function subscribeCore(observer)
-        observer = observable:_modify(observer)
-
-        observable:_subscribeActual(observer)
+		observable._subscribeActual(observer)
     end 
-
+	--[[
+		Check if the first argument is a valid observer
+	]]
     if(isObserver(onSuccess)) then 
         subscribeCore(onSuccess)
         return
-    end 
-    observer = ConsumerSingleObserver(nil, onSuccess, onError)
+    end  
+	--[[
+		Otherwise, create a ConsumerSingleObserver
+	]]
+    local observer = ConsumerSingleObserver(nil, onSuccess, onError)
     subscribeCore(observer)
     return observer
 end 

@@ -26,7 +26,8 @@ return function (emitter)
     badArgument(is(emitter), 1, debug.getinfo(1).name, "CompletableEmitter")
 
     local dispose = emitter.dispose 
-    if(dispose and not emitter.isDisposed()) then 
+	local isDisposed = emitter.isDisposed 
+    if(dispose and not (isDisposed and isDisposed())) then 
         return dispose()
     end
     return false

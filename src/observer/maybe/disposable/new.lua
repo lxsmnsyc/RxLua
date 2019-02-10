@@ -27,18 +27,26 @@ local dispose = require "RxLua.src.disposable.interface.dispose"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 
+local produceAction = require "RxLua.src.functions.action.produce"
+local emptyAction = require "RxLua.src.functions.action.empty"
+local accept = require "RxLua.src.functions.consumer.accept"
+
+local produceConsumer = require "RxLua.src.functions.consumer.produce"
+local run = require "RxLua.src.functions.action.run"
+local emptyConsumer = require "RxLua.src.functions.consumer.empty"
+
 return function (_, receiver)
     badArgument(type(receiver) == "table", 1, debug.getinfo(1).name, "table", type(receiver))
 
+    local onStart = produceAction(receiver.onStart, emptyAction)
     local onSuccess = produceConsumer(receiver.onSuccess, emptyConsumer)
     local onError = produceConsumer(receiver.onError, emptyConsumer)
     local onComplete = produceAction(receiver.onComplete, emptyAction)
 
-    local context = debug.getinfo(1).name 
-
-    badArgument(onSuccess, 1, context, "either an Consumer, a function or nil")
-    badArgument(onError, 2, context, "either an Consumer, a function or nil")
-    badArgument(onComplete, 3, context, "either an Action, a function or nil")
+    assert(onStart, "Protocol Violation: onStart must be either an Action, a function or nil.")
+    assert(onNext, "Protocol Violation: onNext must be either a Consumer, a function or nil.")
+    assert(onError, "Protocol Violation: onError must be either a Consumer, a function or nil.")
+    assert(onComplete, "Protocol Violation: onComplete must be either an Action, a function or nil.")
 
     local this = {
         _disposable = nil,
@@ -56,14 +64,17 @@ return function (_, receiver)
     }
 
     this.onSubscribe = function (d)
-        if(this._disposable) then 
-            error("Protocol Violation: Disposable already set.")
-        else 
+		local disposable = this._disposable
+        if(disposable) then 
+			if(isDisposed(disposable)) then 
+				dispose(d)
+			else
+				error("Protocol Violation: Disposable already set.")
+			end
+        else
             this._disposable = d
-
-            if(recognizeStart) then 
-                onStart()
-            end
+			
+			run(onStart)
         end 
     end 
 

@@ -25,17 +25,31 @@ local badArgument = require "RxLua.src.asserts.badArgument"
 local isDisposable
 local isDisposed
 
+--[[
+	Sadly, this is required.
+	
+	If the modules are synchronously required/loaded, the interpreter
+	will throw an error due to nested/recursive require.
+	
+	Since the DisposableInterface.isDisposed depends on this implementation,
+	and the DisposableInterface.isDisposed is also required by this module, 
+	we need to let the DisposableInterface.dispose receive the module first
+	before this implementation receives it.
+]]
 local notLoaded = true
 local function asyncLoad()
     if(notLoaded) then
-        isDisposable = isDisposable or require "RxLua.src.disposable.is"
-        isDisposed = isDisposed or require "RxLua.src.disposable.isDisposed"
+        isDisposable = require "RxLua.src.disposable.interface.is"
+        isDisposed = require "RxLua.src.disposable.interface.isDisposed"
         notLoaded = false 
     end
 end
 
 return function (observer)
     badArgument(is(observer), 1, debug.getinfo(1).name, "DisposableObserver")
+	--[[
+		Asynchronously load modules once
+	]]
     asyncLoad()
 
     local disposable = observer._disposable

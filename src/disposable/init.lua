@@ -49,6 +49,4 @@ implement(DisposableInterface, M, {
     dispose = dispose
 })
 
-
-
 return Disposable

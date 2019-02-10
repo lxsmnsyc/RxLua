@@ -19,9 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]
-local implement = require "RxLua.src.interface.implement"
+local implements = require "RxLua.src.interface.implements"
 
-local DisposableInterface = require "RxLua.src.disposable.interface.M"
+local Disposable = require "RxLua.src.disposable"
 
 local path = "RxLua.src.disposable.composite"
 
@@ -29,28 +29,10 @@ local function load(name)
     return require(path.."."..name)
 end 
 
-local M = load("M")
+local CompositeDisposable = implements(Disposable)
 
-local CompositeDisposable = setmetatable({}, M)
-
-CompositeDisposable.is = load("is")
-
-local isDisposed = load("isDisposed")
-local dispose = load("dispose")
-
-M.__call = load("new")
-M.__index = {
-    isDisposed = isDisposed,
-    dispose = dispose,
-    add = load("add"),
-    remove = load("remove"),
-    clear = load("clear"),
-    delete = load("delete")
-}
-
-implement(DisposableInterface, M, {
-    isDisposed = isDisposed,
-    dispose = dispose
+return setmetatable({}, {
+    __call = load("new"),
+    __index = CompositeDisposable
 })
 
-return CompositeDisposable

@@ -51,4 +51,6 @@ implement(DisposableInterface, M, {
     dispose = dispose
 })
 
+implement(MaybeObserverInterface, M, {})
+
 return CallbackMaybeObserver

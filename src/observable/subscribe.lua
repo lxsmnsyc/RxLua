@@ -29,18 +29,27 @@ local LambdaObserver = require "RxLua.src.observer.lambda.new"
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (observable, onNext, onError, onComplete, onSubscribe)
+	--[[
+		Argument check
+	]]
     badArgument(is(observable), 1, debug.getinfo(1).name, "Observable")
+	--[[
+		Core of the subscribe method
+	]]
     local function subscribeCore(observer)
-        observer = observable:_modify(observer)
-
-        observable:_subscribeActual(observer)
+        observable._subscribeActual(observer)
     end 
-
+	--[[
+		Check if the first argument is a valid observer
+	]]
     if(isObserver(onSuccess)) then 
         subscribeCore(onSuccess)
         return
     end 
-    observer = LambdaObserver(nil, onNext, onError, onComplete, onSubscribe)
+	--[[
+		Otherwise, create a LambdaObserver
+	]]
+    local observer = LambdaObserver(nil, onNext, onError, onComplete, onSubscribe)
     subscribeCore(observer)
     return observer
 end 

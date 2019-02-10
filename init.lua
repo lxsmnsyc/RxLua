@@ -36,6 +36,7 @@ Rx.DisposableInterface = load("disposable.interface")
 
 Rx.Disposable = load("disposable")
 Rx.CompositeDisposable = load("disposable.composite")
+Rx.EmptyDisposable = load("disposable.empty")
 --[[
     Observer
 ]]

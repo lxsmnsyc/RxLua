@@ -47,13 +47,19 @@ return function (_, onSuccess, onError)
     badArgument(onError, 2, context, "either a Consumer, a function or nil")
 
     this.onSubscribe = function (d)
-        if(this._disposable) then 
-            error("Protocol Violation: Disposable already set.")
-        else 
+		local disposable = this._disposable
+        if(disposable) then 
+			if(isDisposed(disposable)) then 
+				dispose(d)
+			else
+				error("Protocol Violation: Disposable already set.")
+			end
+        else
             this._disposable = d
+			
+			run(onStart)
         end 
     end 
-
     this.onSuccess = function (x)
         dispose(this._disposable)
         local status, result = pcall(function ()

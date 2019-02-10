@@ -25,6 +25,9 @@ local path = "RxLua.src.observable.maybe"
 local function load(name)
     return require(path.."."..name)
 end 
+local function loadOperator(name)
+	return load("operator."..name)
+end
 
 local M = load("M")
 
@@ -32,9 +35,13 @@ local Maybe = setmetatable({}, M)
 
 Maybe.is = load("is")
 
+Maybe.create = loadOperator("create")
+
 M.__call = load("new")
 M.__index = {
-    subscribe = load("subscribe")
+    subscribe = load("subscribe"),
+	
+	
 }
 
 return Maybe

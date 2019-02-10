@@ -21,7 +21,6 @@
 ]]  
 
 local implements = require "RxLua.src.disposable.interface.is"
-local isDisposed = require "RxLua.src.disposable.interface.isDisposed"
 
 local badArgument = require "RxLua.src.asserts.badArgument"
 

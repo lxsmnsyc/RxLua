@@ -49,17 +49,20 @@ return function (_, onSuccess, onError, onComplete)
     onError = produceConsumer(onError, emptyConsumer)
     onComplete = produceAction(onComplete, emptyAction)
 
-    local context = debug.getinfo(1).name 
-
     badArgument(onSuccess, 1, context, "either an Consumer, a function or nil")
     badArgument(onError, 2, context, "either an Consumer, a function or nil")
     badArgument(onComplete, 3, context, "either an Action, a function or nil")
 
 
     this.onSubscribe = function (d)
-        if(this._disposable) then 
-            error("Protocol Violation: Disposable already set.")
-        else 
+        local disposable = this._disposable
+        if(disposable) then 
+			if(isDisposed(disposable)) then 
+				dispose(d)
+			else
+				error("Protocol Violation: Disposable already set.")
+			end
+        else
             this._disposable = d
         end 
     end 
@@ -86,7 +89,7 @@ return function (_, onSuccess, onError, onComplete)
         end 
     end 
 
-    this.onError = function (t)
+	this.onError = function (t)
         dispose(this._disposable)
         local status, result = pcall(function ()
             accept(onError, t)

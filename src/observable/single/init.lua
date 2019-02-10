@@ -35,10 +35,12 @@ local M = load("M")
 local Single = setmetatable({}, M)
 
 Single.is = load("is")
+	
+Single.create = loadOperator("create")
 
 M.__call = load("new")
 M.__index = {
-    subscribe = load("subscribe")
+    subscribe = load("subscribe"),
 }
 
 return Single

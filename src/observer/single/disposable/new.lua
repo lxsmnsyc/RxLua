@@ -30,27 +30,41 @@ local badArgument = require "RxLua.src.asserts.badArgument"
 return function (_, receiver)
     badArgument(type(receiver) == "table", 1, debug.getinfo(1).name, "table", type(receiver))
 
-    local onStart = receiver.onStart
-    local recognizeStart = type(onStart) == "function"
+    local onStart = produceAction(receiver.onStart, emptyAction)
+    local onSuccess = produceConsumer(receiver.onSuccess, emptyConsumer)
+    local onError = produceConsumer(receiver.onError, emptyConsumer)
 
-    local this = {
+    assert(onStart, "Protocol Violation: onStart must be either an Action, a function or nil.")
+    assert(onNext, "Protocol Violation: onNext must be either a Consumer, a function or nil.")
+    assert(onError, "Protocol Violation: onError must be either a Consumer, a function or nil.")
+
+	local this = {
         _disposable = nil,
         _className = "DisposableSingleObserver",
         
-        onSuccess = receiver.onSuccess,
-        onError = receiver.onError,
-        onComplete = receiver.onComplete
+        onSuccess = function (x)
+            accept(onSuccess, x) 
+        end,
+        onError = function (t)
+            accept(onError, t)
+        end,
+        onComplete = function ()
+            run(onComplete)
+        end,
     }
-
+	
     this.onSubscribe = function (d)
-        if(this._disposable) then 
-            error("Protocol Violation: Disposable already set.")
-        else 
+		local disposable = this._disposable
+        if(disposable) then 
+			if(isDisposed(disposable)) then 
+				dispose(d)
+			else
+				error("Protocol Violation: Disposable already set.")
+			end
+        else
             this._disposable = d
-
-            if(recognizeStart) then 
-                onStart()
-            end
+			
+			run(onStart)
         end 
     end 
 

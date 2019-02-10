@@ -54,13 +54,18 @@ return function (_, onComplete, onError)
     if(type(onError) == "function") then 
         onError = Consumer(nil, onError)
     elseif(not (onError == nil or isConsumer(onError))) then
-        badArgument(false, 2, context, "optional Action or function")
+        badArgument(false, 2, context, "a Consumer, a function or nil")
     end
 
     this.onSubscribe = function (d)
-        if(this._disposable) then 
-            error("Protocol Violation: Disposable already set.")
-        elseif(isDisposable(d)) then
+        local disposable = this._disposable
+        if(disposable) then 
+			if(isDisposed(disposable)) then 
+				dispose(d)
+			else
+				error("Protocol Violation: Disposable already set.")
+			end
+        else
             this._disposable = d
         end 
     end 
@@ -77,15 +82,14 @@ return function (_, onComplete, onError)
     end 
 
     this.onError = function (t)
-        if(recognizeError) then 
-            local status, result = pcall(function ()
-                accept(onError, t)
-            end)
-    
-            if(not status) then 
-                error(result)
-            end 
-        end 
+		local status, result = pcall(function ()
+			accept(onError, t)
+		end)
+		
+
+		if(not status) then 
+			error(result)
+		end 
         dispose(this._disposable)
     end 
 

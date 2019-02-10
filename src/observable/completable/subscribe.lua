@@ -22,35 +22,51 @@
 local is = require "RxLua.src.observable.completable.is"
 
 local isObserver = require "RxLua.src.observer.completable.interface.is"
+local isAction = require "RxLua.src.functions.action.is"
 
 local CallbackCompletableObserver = require "RxLua.src.observer.completable.callback.new"
 local EmptyCompletableObserver = require "RxLua.src.observer.completable.empty.new"
 
+
 local badArgument = require "RxLua.src.asserts.badArgument"
 
 return function (observable, onComplete, onError)
+	--[[
+		Argument check
+	]]
     badArgument(is(observable), 1, debug.getinfo(1).name, "Completable")
+	--[[
+		Core of the subscribe method
+	]]
     local function subscribeCore(observer)
-        local status, result = pcall(function ()
-            observer = observable:_modify(observer)
-
-            observable:_subscribeActual(observer)
-        end)
-
-        if(not status) then 
-            observer.onError(result)
-        end 
+        observable._subscribeActual(observer)
     end 
 
     local observer
+	--[[
+		Check if the first argument is a valid observer
+	]]
     if(isObserver(onComplete)) then 
+		--[[
+			Subscribe
+		]]
         subscribeCore(onComplete)
         return
-    elseif(type(onComplete) == "function") then  
+	--[[
+		Otherwise, if the provided argument is a function or an Action,
+		create a CallbackCompletableObserver
+	]]
+    elseif(type(onComplete) == "function" or isAction(onComplete)) then  
         observer = CallbackCompletableObserver(nil, onComplete, onError)
+	--[[
+		Create an EmptyCompletableObserver instead.
+	]]
     else 
         observer = EmptyCompletableObserver()
     end 
+	--[[
+		Subscribe the created Observer
+	]]
     subscribeCore(observer)
     return observer
 end 

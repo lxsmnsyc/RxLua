@@ -63,12 +63,17 @@ return function (_, receiver)
 
     return setmetatable({
         onSubscribe = function (d)
-            if(upstream) then 
-                error('Protocol Violation: Multiple subscriptions on observer')
-            elseif(isDisposable(d)) then
-                upstream = d
-                run(onStart)
-            end 
+			if(upstream) then 
+				if(isDisposed(upstream)) then 
+					dispose(d)
+				else
+					error("Protocol Violation: Disposable already set.")
+				end
+			else
+				upstream = d
+
+				run(onStart) 
+			end 
         end, 
 
         onNext = function (x)
