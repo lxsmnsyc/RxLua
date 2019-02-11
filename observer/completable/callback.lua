@@ -33,9 +33,6 @@ local BadArgument = require "Rx.utils.badArgument"
 local setOnce = require "Rx.disposable.helper.setOnce"
 local dispose = require "Rx.disposable.helper.dispose"
 local isDisposed = require "Rx.disposable.helper.isDisposed"
-local defaultSet = require "Rx.disposable.helper.defaultSet"
-
-local DISPOSED = require "Rx.disposable.helper.disposed"
 
 local ProduceConsumer = require "Rx.functions.helper.produceConsumer"
 
@@ -59,23 +56,22 @@ return class ("CallbackCompletableObserver", Disposable, CompletableObserver){
     end,
     
     onComplete = function (self)
-        local try, catch = pcall(function ()
+        if(not isDisposed(self)) then 
+            dispose(self)
             self._onComplete:run()
-        end)
-        if(not try) then 
-            error(catch)
         end
-        defaultSet(self, DISPOSED)
     end,
     
     onError = function (self, t)
-        local try, catch = pcall(function ()
-            self._onError:accept(t)
-        end)
-        if(not try) then 
-            error(catch)
+        if(not isDisposed(self)) then 
+            dispose(self)
+            local try, catch = pcall(function ()
+                self._onError:accept(t)
+            end)
+            if(not try) then 
+                error(catch)
+            end
         end
-        defaultSet(self, DISPOSED)
     end,
 
     dispose = function (self)

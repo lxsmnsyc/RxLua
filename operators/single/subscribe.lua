@@ -19,8 +19,38 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local FIELD = require "Rx.disposable.helper.FIELD"
 
-return function (field, value)
-    FIELD[field] = value
-end
+local Disposable = require "Rx.disposable"
+
+local SingleObserver = require "Rx.observer.single"
+
+local BiConsumerSingleObserver = require "Rx.observer.single.biconsumer"
+local ConsumerSingleObserver = require "Rx.observer.single.consumer"
+
+local BiConsumer = require "Rx.functions.biconsumer"
+
+local ProduceConsumer = require "Rx.functions.helper.produceConsumer"
+
+local BadArgument = require "Rx.utils.badArgument"
+
+return function (self, onSuccess, onError)
+    local observer 
+    if(SingleObserver.instanceof(onSuccess, SingleObserver)) then 
+        observer = onSuccess 
+    elseif(BiConsumer.instanceof(onSuccess, BiConsumer)) then
+        observer = BiConsumerSingleObserver(onSuccess)
+    else 
+        onSuccess = ProduceConsumer(onSuccess)
+        onError = ProduceConsumer(onError)
+
+        BadArgument(onSuccess, 1, "Consumer, function or nil")
+        BadArgument(onError, 1, "Consumer, function or nil")
+
+        observer = ConsumerSingleObserver(onSuccess, onError, onComplete)
+    end 
+    self:subscribeActual(observer)
+
+    if(Disposable.instanceof(observer, Disposable)) then 
+        return observer
+    end
+end 

@@ -19,6 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
+local Disposable = require "Rx.disposable"
 
 local CompletableObserver = require "Rx.observer"
 
@@ -44,5 +45,8 @@ return function (self, onComplete, onError, onSubscribe)
         observer = EmptyCompletableObserver() 
     end 
     self:subscribeActual(observer)
-    return observer
+
+    if(Disposable.instanceof(observer, Disposable)) then 
+        return observer
+    end
 end 

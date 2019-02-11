@@ -24,9 +24,11 @@
 local class = require "Rx.utils.meta.class"
 
 
-local Observer = require "Rx.observer"
-local ObservableOnSubscribe = require "Rx.onSubscribe.observable"
+local MaybeObserver = require "Rx.observer.maybe"
+local MaybeOnSubscribe = require "Rx.onSubscribe.maybe"
 
+local DISPOSED = require "Rx.disposable.helper.disposed"
+local getAndSet = require "Rx.disposable.helper.getAndSet"
 local set = require "Rx.disposable.helper.set"
 local dispose = require "Rx.disposable.helper.dispose"
 local isDisposed = require "Rx.disposable.helper.isDisposed"
@@ -34,27 +36,28 @@ local isDisposed = require "Rx.disposable.helper.isDisposed"
 local BadArgument = require "Rx.utils.badArgument"
 
 
-local ObservableEmitter = require "Rx.emitter.observable"
+local MaybeEmitter = require "Rx.emitter.maybe"
 local Disposable = require "Rx.disposable"
+
 --[[
     The emitter class that emits the signals on the receiver.
 ]]
-local ObservableCreateEmitter = class("ObservableCreateEmitter", ObservableEmitter, Disposable){
+local MaybeCreateEmitter = class("MaybeCreateEmitter", MaybeEmitter, Disposable){
     new = function (self, observer)
-        BadArgument(Observer.instanceof(observer, Observer), 1, "Observer")
+        BadArgument(MaybeObserver.instanceof(observer, MaybeObserver), 1, "MaybeObserver")
 
         self._observer = observer
     end,
 
-    onNext = function (self, x)
-        if(x == nil) then 
-            self:onError("onNext called with null. Null values are generally not allowed.")
-            return
+    onSuccess = function (self, x)
+        if(not isDisposed(self)) then 
+            dispose(self)
+            if(x == nil) then 
+                observer:onError("onSuccess called with null. Null values are generally not allowed.")
+            else 
+                observer:onSuccess(x)
+            end 
         end 
-
-        if(not isDisposed(self)) then
-            self._observer:onNext(x)
-        end
     end, 
 
     onError = function (self, t)
@@ -102,15 +105,15 @@ local ObservableCreateEmitter = class("ObservableCreateEmitter", ObservableEmitt
 }
 
 
-local ObservableCreate
-local Observable
+local MaybeCreate
+local Maybe
 
-local EmptySubscribe = ObservableOnSubscribe(function () end)
+local EmptySubscribe = MaybeOnSubscribe(function () end)
 
 local function produceSubscribe(sc)
     if(type(sc) == "function") then 
-        return ObservableOnSubscribe(sc)
-    elseif(ObservableOnSubscribe.instanceof(sc, ObservableOnSubscribe)) then 
+        return MaybeOnSubscribe(sc)
+    elseif(MaybeOnSubscribe.instanceof(sc, MaybeOnSubscribe)) then 
         return sc 
     elseif(sc == nil) then 
         return EmptySubscribe
@@ -125,19 +128,19 @@ local notLoaded = true
 local function asyncLoad()
     if(notLoaded) then
         notLoaded = false 
-        Observable = require "Rx.observable"
-        ObservableCreate = class("ObservableCreate", Observable){
+        Maybe = require "Rx.maybe"
+        MaybeCreate = class("MaybeCreate", Maybe){
             new = function (self, source)
                 source = produceSubscribe(source)
-                BadArgument(source, 1, "ObservableOnSubscribe, function or nil")
+                BadArgument(source, 1, "MaybeOnSubscribe, function or nil")
         
                 self._source = source
             end, 
         
             subscribeActual = function (self, observer)
-                BadArgument(Observer.instanceof(observer, Observer), 1, "Observer")
+                BadArgument(MaybeObserver.instanceof(observer, MaybeObserver), 1, "MaybeObserver")
         
-                local parent = ObservableCreateEmitter(observer)
+                local parent = MaybeCreateEmitter(observer)
                 observer:onSubscribe(parent)
         
                 local try, catch = pcall(function ()
@@ -155,7 +158,7 @@ end
 
 return function (source)
     source = produceSubscribe(source)
-    BadArgument(source, 1, "CompletableOnSubscribe, function or nil")
+    BadArgument(source, 1, "MaybeOnSubscribe, function or nil")
     asyncLoad()
-    return ObservableCreate(source)
+    return MaybeCreate(source)
 end

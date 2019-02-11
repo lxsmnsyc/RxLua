@@ -23,6 +23,16 @@ local class = require "Rx.utils.meta.class"
 
 local MaybeSource = require "Rx.source.completable"
 
+local path = "Rx.operators.maybe"
+
+local function loadOperator(name)
+    return require(path.."."..name)
+end 
+
 return class ("Maybe", MaybeSource){
-    subscribeActual = function (self, observer) end
+    subscribeActual = function (self, observer) end,
+    
+    create = loadOperator("create"),
+
+    subscribe = loadOperator("subscribe")
 }

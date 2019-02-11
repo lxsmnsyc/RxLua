@@ -26,18 +26,14 @@ local FIELD = require "Rx.disposable.helper.FIELD"
 
 local BadArgument = require "Rx.utils.badArgument"
 
-local function getAndSet(field, value)
-    local old = FIELD[field]
-    FIELD[field] = value 
-    return old
-end 
+local getAndSet = require "Rx.disposable.helper.getAndSet"
 
 return function (field)
     BadArgument(Disposable.instanceof(field, Disposable), 1, "Disposable")
     local current = FIELD[field]
 
     if(current ~= DISPOSED) then 
-        current = getAndSet(DISPOSED)
+        current = getAndSet(field, DISPOSED)
         if(current ~= DISPOSED) then 
             if(current) then 
                 current:dispose()

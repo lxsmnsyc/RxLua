@@ -54,24 +54,24 @@ local CompletableCreateEmitter = class("CompletableCreateEmitter", CompletableEm
 
     tryOnError = function (self, t)
         if(t == nil) then 
-            t = "onNext called with null. Null values are generally not allowed."
+            t = "onError called with null. Null values are generally not allowed."
         end
-        if(not self:isDisposed()) then 
+        if(not isDisposed(self)) then 
             local try, catch = pcall(function ()
                 self._observer:onError(t)
             end)
-            self:dispose()
+            dispose(self)
             return true
         end
         return false
     end,
 
     onComplete = function (self)
-        if(not self:isDisposed()) then 
+        if(not isDisposed(self)) then 
             local try, catch = pcall(function ()
                 self._observer:onComplete()
             end)
-            self:dispose()
+            dispose(self)
         end
     end,
 

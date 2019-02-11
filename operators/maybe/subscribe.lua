@@ -20,37 +20,35 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
-
 local Disposable = require "Rx.disposable"
-local CompletableObserver = require "Rx.observer"
 
-local Action = require "Rx.functions.action"
-local Consumer = require "Rx.functions.consumer"
+local MaybeObserver = require "Rx.observer.maybe"
 
-local setOnce = require "Rx.disposable.helper.setOnce"
-local dispose = require "Rx.disposable.helper.dispose"
-local isDisposed = require "Rx.disposable.helper.isDisposed"
+local CallbackMaybeObserver = require "Rx.observer.maybe.callback"
 
-return class ("EmptyCompletableObserver", Disposable, CompletableObserver){
-    onSubscribe = function (self, disposable) 
-        setOnce(self, disposable)
-    end,
-    
-    onComplete = function (self)
-        dispose(self)
-    end,
-    
-    onError = function (self, t)
-        dispose(self)
-    end,
+local ProduceAction = require "Rx.functions.helper.produceAction"
+local ProduceConsumer = require "Rx.functions.helper.produceConsumer"
 
+local BadArgument = require "Rx.utils.badArgument"
 
-    dispose = function (self)
-        dispose(self)
-    end,
+return function (self, onSuccess, onError, onComplete)
+    local observer 
+    if(MaybeObserver.instanceof(onSuccess, MaybeObserver)) then 
+        observer = onSuccess 
+    else
+        onSuccess = ProduceConsumer(onSuccess)
+        onError = ProduceConsumer(onError)
+        onComplete = ProduceAction(onComplete)
 
-    isDisposed = function (self)
-        return isDisposed(self)
+        BadArgument(onSuccess, 1, "Consumer, function or nil")
+        BadArgument(onError, 1, "Consumer, function or nil")
+        BadArgument(onComplete, 1, "Action, function or nil")
+
+        observer = CallbackMaybeObserver(onSuccess, onError, onComplete)
     end 
-}
+    self:subscribeActual(observer)
+
+    if(Disposable.instanceof(observer, Disposable)) then 
+        return observer
+    end
+end 

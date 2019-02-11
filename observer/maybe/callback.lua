@@ -23,83 +23,78 @@
 local class = require "Rx.utils.meta.class"
 
 local Disposable = require "Rx.disposable"
-local Observer = require "Rx.observer"
+local MaybeObserver = require "Rx.observer.maybe"
 
 local Action = require "Rx.functions.action"
 local Consumer = require "Rx.functions.consumer"
-local Predicate = require "Rx.functions.predicate"
 
 local BadArgument = require "Rx.utils.badArgument"
 local CompositeException = require "Rx.utils.compositeException"
 
+
 local setOnce = require "Rx.disposable.helper.setOnce"
 local dispose = require "Rx.disposable.helper.dispose"
 local isDisposed = require "Rx.disposable.helper.isDisposed"
-local defaultSet = require "Rx.disposable.helper.defaultSet"
+local get = require "Rx.disposable.helper.get"
 
-return class ("ForEachWhileObserver", Disposable, Observer){
-    new = function (self, onNext, onError, onComplete)
-        BadArgument(Predicate.instanceof(onNext, Predicate), 1, "Predicate")
-        BadArgument(Consumer.instanceof(onError, Consumer), 2, "Consumer")
-        BadArgument(Action.instanceof(onComplete, Action), 3, "Action")
+local DISPOSED = require "Rx.disposable.helper.disposed"
 
-        self._onNext = onNext 
-        self._onError = onError 
+
+local ProduceAction = require "Rx.functions.helper.produceAction"
+local ProduceConsumer = require "Rx.functions.helper.produceConsumer"
+
+return class ("CallbackMaybeObserver", Disposable, MaybeObserver){
+    new = function (self, onSuccess, onError, onComplete, onSubscribe)
+        onSuccess = ProduceConsumer(onSuccess)
+        onError = ProduceConsumer(onError)
+        onComplete = ProduceAction(onComplete)
+
+        BadArgument(onSuccess, 1, "Consumer, function or nil")
+        BadArgument(onError, 2, "Consumer, function or nil")
+        BadArgument(onComplete, 3, "Action, function or nil")
+
+        self._onSuccess = onSuccess
+        self._onError = onError
         self._onComplete = onComplete
-        self._done = false 
     end,
 
     onSubscribe = function (self, disposable) 
-        setOnce(self, disposable)
+        if(setOnce(self, disposable)) then 
+            local try, catch = pcall(function ()
+                self._onSubscribe:accept(disposable)
+            end)
+    
+            if(not try) then 
+                disposable:dispose()
+                self:onError(catch)
+            end 
+        end
     end,
 
-    onNext = function (self, x)
-        if(self._done) then 
-            return 
-        end 
-
-        local try, catch = pcall(function ()
-            return self._onNext:test(x)
-        end)
-
-        if(try) then 
-            if(not catch) then 
-                dispose(self)
-                self:onComplete()
-            end 
-        else 
+    onSuccess = function (self, x)
+        if(not isDisposed(self)) then 
             dispose(self)
-            self:onError(catch)
-        end 
+            self._onSuccess:accept(x)
+        end
     end, 
 
-    onError = function (self, t) 
-        if(self._done) then 
-            error(t)
-            return
-        end 
-        self._done = true 
-        local try, catch = pcall(function ()
-            self._onError:accept(t)
-        end)
-
-        if(not try) then 
-            CompositeException(t, catch)
+    onError = function (self, t)
+        if(not isDisposed(self)) then 
+            dispose(self)
+            local try, catch = pcall(function ()
+                self._onError:accept(t)
+            end)
+    
+            if(not try) then 
+                CompositeException(t, catch)
+            end 
         end 
     end,
 
     onComplete = function (self) 
-        if(self._done) then 
-            error(t)
-            return
-        end 
-        self._done = true 
-        local try, catch = pcall(function ()
+        if(not dispose(self)) then
+            dispose(self)
             self._onComplete:run()
-        end)
-
-        if(not try) then 
-            error(catch)
         end 
     end,
 

@@ -19,20 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Disposable = require "Rx.disposable"
-
-local path = "Rx.disposable.helper.disposed"
-
-
-
-return {
-    DISPOSED = require "Rx.disposable.helper.disposed",
-    get = require "Rx.disposable.helper.get",
-    set = require "Rx.disposable.helper.set",
-    setOnce = require "Rx.disposable.helper.setOnce",
-    replace = require "Rx.disposable.helper.replace",
-    dispose = require "Rx.disposable.helper.dispose",
-    validate = require "Rx.disposable.helper.validate",
-    trySet = require "Rx.disposable.helper.trySet",
-    defaultSet = require "RX.disposable.helper.defaultSet",    
-}
+local FIELD = require "Rx.disposable.helper.FIELD"
+return function (field, value)
+    local old = FIELD[field]
+    FIELD[field] = value 
+    return old
+end 
