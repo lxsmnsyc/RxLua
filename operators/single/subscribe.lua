@@ -20,18 +20,18 @@
     SOFTWARE.
 ]] 
 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local SingleObserver = require "Rx.observer.single"
+local SingleObserver = require "RxLua.observer.single"
 
-local BiConsumerSingleObserver = require "Rx.observer.single.biconsumer"
-local ConsumerSingleObserver = require "Rx.observer.single.consumer"
+local BiConsumerSingleObserver = require "RxLua.observer.single.biconsumer"
+local ConsumerSingleObserver = require "RxLua.observer.single.consumer"
 
-local BiConsumer = require "Rx.functions.biconsumer"
+local BiConsumer = require "RxLua.functions.biconsumer"
 
-local ProduceConsumer = require "Rx.functions.helper.produceConsumer"
+local ProduceConsumer = require "RxLua.functions.helper.produceConsumer"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
 return function (self, onSuccess, onError)
     local observer 

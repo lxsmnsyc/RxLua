@@ -20,7 +20,7 @@
     SOFTWARE.
 ]] 
 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
 local DISPOSED = Disposable()
 

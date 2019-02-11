@@ -20,11 +20,11 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local CompletableEmitter = require "Rx.emitter.completable"
+local CompletableEmitter = require "RxLua.emitter.completable"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
 return class "CompletableOnSubscribe"{
     new = function (self, fn)

@@ -20,30 +20,29 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local Disposable = require "Rx.disposable"
-local Observer = require "Rx.observer"
+local Disposable = require "RxLua.disposable"
+local Observer = require "RxLua.observer"
 
-local Action = require "Rx.functions.action"
-local Consumer = require "Rx.functions.consumer"
-local Predicate = require "Rx.functions.predicate"
+local Action = require "RxLua.functions.action"
+local Consumer = require "RxLua.functions.consumer"
+local Predicate = require "RxLua.functions.predicate"
 
-local BadArgument = require "Rx.utils.badArgument"
-local CompositeException = require "Rx.utils.compositeException"
-
-
-local setOnce = require "Rx.disposable.helper.setOnce"
-local dispose = require "Rx.disposable.helper.dispose"
-local isDisposed = require "Rx.disposable.helper.isDisposed"
-local defaultSet = require "Rx.disposable.helper.defaultSet"
-local get = require "Rx.disposable.helper.get"
-
-local DISPOSED = require "Rx.disposable.helper.disposed"
+local BadArgument = require "RxLua.utils.badArgument"
+local CompositeException = require "RxLua.utils.compositeException"
 
 
-local ProduceAction = require "Rx.functions.helper.produceAction"
-local ProduceConsumer = require "Rx.functions.helper.produceConsumer"
+local setOnce = require "RxLua.disposable.helper.setOnce"
+local dispose = require "RxLua.disposable.helper.dispose"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
+local get = require "RxLua.disposable.helper.get"
+
+local DISPOSED = require "RxLua.disposable.helper.disposed"
+
+
+local ProduceAction = require "RxLua.functions.helper.produceAction"
+local ProduceConsumer = require "RxLua.functions.helper.produceConsumer"
 
 return class ("LambdaObserver", Disposable, Observer){
     new = function (self, onNext, onError, onComplete, onSubscribe)

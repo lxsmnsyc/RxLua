@@ -20,21 +20,20 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local Disposable = require "Rx.disposable"
-local SingleObserver = require "Rx.observer.single"
+local Disposable = require "RxLua.disposable"
+local SingleObserver = require "RxLua.observer.single"
 
-local BiConsumer = require "Rx.functions.biconsumer"
+local BiConsumer = require "RxLua.functions.biconsumer"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
-local setOnce = require "Rx.disposable.helper.setOnce"
-local dispose = require "Rx.disposable.helper.dispose"
-local isDisposed = require "Rx.disposable.helper.isDisposed"
-local defaultSet = require "Rx.disposable.helper.defaultSet"
+local setOnce = require "RxLua.disposable.helper.setOnce"
+local dispose = require "RxLua.disposable.helper.dispose"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
-local DISPOSED = require "Rx.disposable.helper.disposed"
+local DISPOSED = require "RxLua.disposable.helper.disposed"
 
 return class ("BiConsumerSingleObserver", Disposable, SingleObserver){
     new = function (self, onCallback)

@@ -19,11 +19,11 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local ObservableSource = require "Rx.source.observable"
+local ObservableSource = require "RxLua.source.observable"
 
-local path = "Rx.operators.observable"
+local path = "RxLua.operators.observable"
 
 local function loadOperator(name)
     return require(path.."."..name)

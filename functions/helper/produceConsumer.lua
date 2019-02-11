@@ -20,9 +20,9 @@
     SOFTWARE.
 ]] 
 
-local Consumer = require "Rx.functions.consumer"
+local Consumer = require "RxLua.functions.consumer"
 
-local EmptyConsumer = require "Rx.functions.helper.emptyConsumer"
+local EmptyConsumer = require "RxLua.functions.helper.emptyConsumer"
 
 return function (fn)
     if(type(fn) == "function") then 

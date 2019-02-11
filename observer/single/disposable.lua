@@ -20,14 +20,14 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local Disposable = require "Rx.disposable"
-local SingleObserver = require "Rx.observer.single"
+local Disposable = require "RxLua.disposable"
+local SingleObserver = require "RxLua.observer.single"
 
-local setOnce = require "Rx.disposable.helper.setOnce"
-local isDisposed = require "Rx.disposable.helper.isDisposed"
-local dispose = require "Rx.disposable.helper.dispose"
+local setOnce = require "RxLua.disposable.helper.setOnce"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
+local dispose = require "RxLua.disposable.helper.dispose"
 
 
 return class ("DisposableSingleObserver", Disposable, SingleObserver){

@@ -21,23 +21,23 @@
 ]] 
 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
 
-local SingleObserver = require "Rx.observer.single"
-local SingleOnSubscribe = require "Rx.onSubscribe.single"
+local SingleObserver = require "RxLua.observer.single"
+local SingleOnSubscribe = require "RxLua.onSubscribe.single"
 
-local DISPOSED = require "Rx.disposable.helper.disposed"
-local getAndSet = require "Rx.disposable.helper.getAndSet"
-local set = require "Rx.disposable.helper.set"
-local dispose = require "Rx.disposable.helper.dispose"
-local isDisposed = require "Rx.disposable.helper.isDisposed"
+local DISPOSED = require "RxLua.disposable.helper.disposed"
+local getAndSet = require "RxLua.disposable.helper.getAndSet"
+local set = require "RxLua.disposable.helper.set"
+local dispose = require "RxLua.disposable.helper.dispose"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
 
-local SingleEmitter = require "Rx.emitter.single"
-local Disposable = require "Rx.disposable"
+local SingleEmitter = require "RxLua.emitter.single"
+local Disposable = require "RxLua.disposable"
 
 --[[
     The emitter class that emits the signals on the receiver.
@@ -53,9 +53,9 @@ local SingleCreateEmitter = class("SingleCreateEmitter", SingleEmitter, Disposab
         if(not isDisposed(self)) then 
             dispose(self)
             if(x == nil) then 
-                observer:onError("onSuccess called with null. Null values are generally not allowed.")
+                self._observer:onError("onSuccess called with null. Null values are generally not allowed.")
             else 
-                observer:onSuccess(x)
+                self._observer:onSuccess(x)
             end 
         end 
     end, 
@@ -112,14 +112,14 @@ local function produceSubscribe(sc)
     return false
 end     
 --[[
-    Since the we require the Observable class and the Observable module requires this module,
-    we need to asynchronously load the Observable class to prevent recursive requires
+    Since the we require the Single class and the Single module requires this module,
+    we need to asynchronously load the Single class to prevent recursive requires
 ]]
 local notLoaded = true 
 local function asyncLoad()
     if(notLoaded) then
         notLoaded = false 
-        Single = require "Rx.single"
+        Single = require "RxLua.single"
         SingleCreate = class("SingleCreate", Single){
             new = function (self, source)
                 source = produceSubscribe(source)

@@ -20,14 +20,14 @@
     SOFTWARE.
 ]] 
 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local isDisposed = require "Rx.disposable.helper.isDisposed"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
-local compareAndSet = require "Rx.disposable.helper.compareAndSet"
+local compareAndSet = require "RxLua.disposable.helper.compareAndSet"
 
-local BadArgument = require "Rx.utils.badArgument"
-local ProtocolViolation = require "Rx.utils.protocolViolation"
+local BadArgument = require "RxLua.utils.badArgument"
+local ProtocolViolation = require "RxLua.utils.protocolViolation"
 
 return function (field, disposable)
     BadArgument(Disposable.instanceof(field, Disposable), 1, "Disposable")

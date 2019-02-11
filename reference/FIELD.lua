@@ -20,6 +20,7 @@
     SOFTWARE.
 ]] 
 
-local BiConsumer = require "RxLua.functions.biconsumer"
-
-return BiConsumer(function () end)
+--[[
+    This table holds every state from any object references
+]]
+return setmetatable({}, {__mode = 'v'})

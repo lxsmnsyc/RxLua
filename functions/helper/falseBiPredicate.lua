@@ -20,6 +20,6 @@
     SOFTWARE.
 ]] 
 
-local BiPredicate = require "Rx.functions.bipredicate"
+local BiPredicate = require "RxLua.functions.bipredicate"
 
 return BiPredicate(function () return false end)

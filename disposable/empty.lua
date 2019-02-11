@@ -20,14 +20,14 @@
     SOFTWARE.
 ]] 
 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
-local Observer = require "Rx.observer"
-local CompletableObserver = requrie "Rx.observer.completable"
-local MaybeObserver = require "Rx.observer.maybe"
-local SingleObserver = require "Rx.observer.single"
+local Observer = require "RxLua.observer"
+local CompletableObserver = requrie "RxLua.observer.completable"
+local MaybeObserver = require "RxLua.observer.maybe"
+local SingleObserver = require "RxLua.observer.single"
 
 local EMPTY = Disposable()
 

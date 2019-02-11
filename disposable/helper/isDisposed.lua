@@ -19,9 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local DISPOSED = require "Rx.disposable.helper.disposed"
-local get = require "Rx.disposable.helper.get"
+local DISPOSED = require "RxLua.disposable.helper.disposed"
+local get = require "RxLua.reference.get"
 
 return function (field)
-    return get() == DISPOSED
+    return get(field) == DISPOSED
 end

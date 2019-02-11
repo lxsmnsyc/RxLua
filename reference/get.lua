@@ -19,7 +19,8 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
+local FIELD = require "RxLua.reference.FIELD"
 
-local BiConsumer = require "RxLua.functions.biconsumer"
-
-return BiConsumer(function () end)
+return function (field)
+    return FIELD[field]
+end

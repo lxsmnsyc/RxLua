@@ -20,59 +20,59 @@
     SOFTWARE.
 ]] 
 
-local Rx = {}
+local RxLua = {}
 
-Rx.Class = require "Rx.utils.meta.class"
+RxLua.Class = require "RxLua.utils.meta.class"
 
-Rx.Disposable = require "Rx.disposable"
-Rx.CompositeDisposable = require "Rx.disposable.composite"
+RxLua.Disposable = require "RxLua.disposable"
+RxLua.CompositeDisposable = require "RxLua.disposable.composite"
 
-Rx.Action = require "Rx.functions.action"
-Rx.Consumer = require "Rx.functions.consumer"
-Rx.BiConsumer = require "Rx.functions.biconsumer"
-Rx.Predicate = require "Rx.functions.predicate"
-Rx.BiPredicate = require "Rx.functions.predicate"
-Rx.PolyFunction = require "Rx.functions.polyfunction"
+RxLua.Action = require "RxLua.functions.action"
+RxLua.Consumer = require "RxLua.functions.consumer"
+RxLua.BiConsumer = require "RxLua.functions.biconsumer"
+RxLua.Predicate = require "RxLua.functions.predicate"
+RxLua.BiPredicate = require "RxLua.functions.predicate"
+RxLua.PolyFunction = require "RxLua.functions.polyfunction"
 
-Rx.Observer = require "Rx.observer"
-Rx.DefaultObserver = require "Rx.observer.default"
-Rx.DisposableObserver = require "Rx.observer.disposable"
-Rx.LambdaObserver = require "Rx.observer.lambda"
-Rx.DisposableLambdaObserver = require "Rx.observer.lambda.disposable"
+RxLua.Observer = require "RxLua.observer"
+RxLua.DefaultObserver = require "RxLua.observer.default"
+RxLua.DisposableObserver = require "RxLua.observer.disposable"
+RxLua.LambdaObserver = require "RxLua.observer.lambda"
+RxLua.DisposableLambdaObserver = require "RxLua.observer.lambda.disposable"
 
-Rx.CompletableObserver = require "Rx.observer.completable"
-Rx.CallbackCompletableObserver = require "Rx.observer.completable.callback"
-Rx.EmptyCompletableObserver = require "Rx.observer.completable.empty"
-Rx.DisposableCompletableObserver = require "Rx.observer.completable.disposable"
+RxLua.CompletableObserver = require "RxLua.observer.completable"
+RxLua.CallbackCompletableObserver = require "RxLua.observer.completable.callback"
+RxLua.EmptyCompletableObserver = require "RxLua.observer.completable.empty"
+RxLua.DisposableCompletableObserver = require "RxLua.observer.completable.disposable"
 
-Rx.MaybeObserver = require "Rx.observer.maybe"
-Rx.DisposableMaybeObserver = require "Rx.observer.maybe"
+RxLua.MaybeObserver = require "RxLua.observer.maybe"
+RxLua.DisposableMaybeObserver = require "RxLua.observer.maybe"
 
-Rx.SingleObserver = require "Rx.observer.single"
-Rx.DisposableSingleObserver = require "Rx.observer.single.disposable"
-Rx.ResumeSingleObserver = require "Rx.observer.single.resume"
-Rx.ConsumerSingleObserver = require "Rx.observer.single.consumer"
-Rx.BiConsumerSingleObserver = require "Rx.observer.single.biconsumer"
+RxLua.SingleObserver = require "RxLua.observer.single"
+RxLua.DisposableSingleObserver = require "RxLua.observer.single.disposable"
+RxLua.ResumeSingleObserver = require "RxLua.observer.single.resume"
+RxLua.ConsumerSingleObserver = require "RxLua.observer.single.consumer"
+RxLua.BiConsumerSingleObserver = require "RxLua.observer.single.biconsumer"
 
-Rx.Emitter = require "Rx.emitter"
-Rx.ObservableEmitter = require "Rx.emitter.observable"
-Rx.CompletableEmitter = require "Rx.emitter.completable"
-Rx.MaybeEmitter = require "Rx.emitter.maybe"
-Rx.SingleEmitter = require "Rx.emitter.single"
+RxLua.Emitter = require "RxLua.emitter"
+RxLua.ObservableEmitter = require "RxLua.emitter.observable"
+RxLua.CompletableEmitter = require "RxLua.emitter.completable"
+RxLua.MaybeEmitter = require "RxLua.emitter.maybe"
+RxLua.SingleEmitter = require "RxLua.emitter.single"
 
-Rx.ObservableOnSubscribe = require "Rx.onSubscribe.observable"
-Rx.CompletableOnSubscribe = require "Rx.onSubscribe.completable"
-Rx.MaybeOnSubscribe = require "Rx.onSubscribe.maybe"
-Rx.SingleOnSubscribe = require "Rx.onSubscribe.single"
+RxLua.ObservableOnSubscribe = require "RxLua.onSubscribe.observable"
+RxLua.CompletableOnSubscribe = require "RxLua.onSubscribe.completable"
+RxLua.MaybeOnSubscribe = require "RxLua.onSubscribe.maybe"
+RxLua.SingleOnSubscribe = require "RxLua.onSubscribe.single"
 
-Rx.ObservableSource = require "Rx.source.observable"
-Rx.CompletableSource = require "Rx.source.completable"
-Rx.MaybeSource = require "Rx.source.maybe"
-Rx.SingleSource = require "Rx.source.single"
+RxLua.ObservableSource = require "RxLua.source.observable"
+RxLua.CompletableSource = require "RxLua.source.completable"
+RxLua.MaybeSource = require "RxLua.source.maybe"
+RxLua.SingleSource = require "RxLua.source.single"
 
-Rx.Observable = require "Rx.observable"
-Rx.Completable = require "Rx.completable"
-Rx.Maybe = require "Rx.maybe"
-Rx.Single = require "Rx.single"
+RxLua.Observable = require "RxLua.observable"
+RxLua.Completable = require "RxLua.completable"
+RxLua.Maybe = require "RxLua.maybe"
+RxLua.Single = require "RxLua.single"
 
-return Rx
+return RxLua

@@ -21,21 +21,21 @@
 ]] 
 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
 
-local CompletableObserver = require "Rx.observer.completable"
-local CompletableOnSubscribe = require "Rx.onSubscribe.completable"
+local CompletableObserver = require "RxLua.observer.completable"
+local CompletableOnSubscribe = require "RxLua.onSubscribe.completable"
 
-local set = require "Rx.disposable.helper.set"
-local dispose = require "Rx.disposable.helper.dispose"
-local isDisposed = require "Rx.disposable.helper.isDisposed"
+local set = require "RxLua.disposable.helper.set"
+local dispose = require "RxLua.disposable.helper.dispose"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
 
-local CompletableEmitter = require "Rx.emitter.completable"
-local Disposable = require "Rx.disposable"
+local CompletableEmitter = require "RxLua.emitter.completable"
+local Disposable = require "RxLua.disposable"
 --[[
     The emitter class that emits the signals on the receiver.
 ]]
@@ -107,14 +107,14 @@ local function produceSubscribe(sc)
     return false
 end     
 --[[
-    Since the we require the Observable class and the Observable module requires this module,
-    we need to asynchronously load the Observable class to prevent recursive requires
+    Since the we require the Completable class and the Completable module requires this module,
+    we need to asynchronously load the Completable class to prevent recursive requires
 ]]
 local notLoaded = true 
 local function asyncLoad()
     if(notLoaded) then
         notLoaded = false 
-        Completable = require "Rx.completable"
+        Completable = require "RxLua.completable"
         CompletableCreate = class("CompletableCreate", Completable){
             new = function (self, source)
                 source = produceSubscribe(source)

@@ -19,9 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local clear = require "Rx.disposable.composite.clear"
+local clear = require "RxLua.disposable.composite.clear"
 
 return function (self)
     if(self.disposed) then 

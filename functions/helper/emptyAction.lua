@@ -20,6 +20,6 @@
     SOFTWARE.
 ]] 
 
-local Action = require "Rx.functions.action"
+local Action = require "RxLua.functions.action"
 
 return Action(function () end)

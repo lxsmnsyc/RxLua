@@ -20,11 +20,11 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local SingleEmitter = require "Rx.emitter.single"
+local SingleEmitter = require "RxLua.emitter.single"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
 return class "SingleOnSubscribe"{
     new = function (self, fn)

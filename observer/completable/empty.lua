@@ -20,17 +20,17 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local Disposable = require "Rx.disposable"
-local CompletableObserver = require "Rx.observer"
+local Disposable = require "RxLua.disposable"
+local CompletableObserver = require "RxLua.observer"
 
-local Action = require "Rx.functions.action"
-local Consumer = require "Rx.functions.consumer"
+local Action = require "RxLua.functions.action"
+local Consumer = require "RxLua.functions.consumer"
 
-local setOnce = require "Rx.disposable.helper.setOnce"
-local dispose = require "Rx.disposable.helper.dispose"
-local isDisposed = require "Rx.disposable.helper.isDisposed"
+local setOnce = require "RxLua.disposable.helper.setOnce"
+local dispose = require "RxLua.disposable.helper.dispose"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
 return class ("EmptyCompletableObserver", Disposable, CompletableObserver){
     onSubscribe = function (self, disposable) 

@@ -19,19 +19,19 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local CompletableObserver = require "Rx.observer"
+local CompletableObserver = require "RxLua.observer"
 
-local CallbackCompletableObserver = require "Rx.observer.completable.callback"
-local EmptyCompletableObserver = require "Rx.observer.completable.empty"
+local CallbackCompletableObserver = require "RxLua.observer.completable.callback"
+local EmptyCompletableObserver = require "RxLua.observer.completable.empty"
 
-local Action = require "Rx.functions.action"
+local Action = require "RxLua.functions.action"
 
-local ProduceAction = require "Rx.functions.helper.produceAction"
-local ProduceConsumer = require "Rx.functions.helper.produceConsumer"
+local ProduceAction = require "RxLua.functions.helper.produceAction"
+local ProduceConsumer = require "RxLua.functions.helper.produceConsumer"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
 return function (self, onComplete, onError, onSubscribe)
     local observer 

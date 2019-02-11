@@ -20,9 +20,9 @@
     SOFTWARE.
 ]] 
 
-local Action = require "Rx.functions.action"
+local Action = require "RxLua.functions.action"
 
-local EmptyAction = require "Rx.functions.helper.emptyAction"
+local EmptyAction = require "RxLua.functions.helper.emptyAction"
 
 return function (fn)
     if(type(fn) == "function") then 

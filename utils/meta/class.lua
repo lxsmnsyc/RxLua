@@ -20,7 +20,7 @@
     SOFTWARE.
 ]] 
 
-local badArgument = require "Rx.utils.badArgument"
+local badArgument = require "RxLua.utils.badArgument"
 
 local function is(class)
     return type(class) == "table" and class._class

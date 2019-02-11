@@ -20,11 +20,11 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local ObservableEmitter = require "Rx.emitter.observable"
+local ObservableEmitter = require "RxLua.emitter.observable"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
 return class "ObservableOnSubscribe"{
     new = function (self, fn)

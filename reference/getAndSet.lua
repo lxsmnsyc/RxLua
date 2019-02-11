@@ -19,9 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-
---[[
-    This table holds every Disposable state of every Disposable 
-    Reference set through DisposableHelper
-]]
-return {}
+local FIELD = require "RxLua.reference.FIELD"
+return function (field, value)
+    local old = FIELD[field]
+    FIELD[field] = value 
+    return old
+end 

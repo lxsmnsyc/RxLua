@@ -20,9 +20,9 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local CompletableObserver = require "Rx.observer.completable"
+local CompletableObserver = require "RxLua.observer.completable"
 
 
 return class "CompletableSource"{

@@ -20,6 +20,6 @@
     SOFTWARE.
 ]] 
 
-local Consumer = require "Rx.functions.consumer"
+local Consumer = require "RxLua.functions.consumer"
 
 return Consumer(function () end)

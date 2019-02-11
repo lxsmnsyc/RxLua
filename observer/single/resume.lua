@@ -20,14 +20,14 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local Disposable = require "Rx.disposable"
-local SingleObserver = require "Rx.observer.single"
+local Disposable = require "RxLua.disposable"
+local SingleObserver = require "RxLua.observer.single"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
-local replace = require "Rx.disposable.helper.replace"
+local replace = require "RxLua.disposable.helper.replace"
 
 return class ("ResumeSingleObserver", SingleObserver){
     new = function (self, disposable, observer)

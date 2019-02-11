@@ -19,11 +19,11 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
-local delete = require "Rx.disposable.composite.delete"
+local delete = require "RxLua.disposable.composite.delete"
 
 return function (self, disposable)
     local status, result = pcall(function ()

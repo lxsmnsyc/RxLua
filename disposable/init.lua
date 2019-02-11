@@ -20,7 +20,7 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
 return class("Disposable"){
     isDisposed = function (self) end, 

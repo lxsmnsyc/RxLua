@@ -19,9 +19,32 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local FIELD = require "Rx.disposable.helper.FIELD"
-return function (field, value)
-    local old = FIELD[field]
-    FIELD[field] = value 
-    return old
+
+local class = require "RxLua.utils.meta.class"
+
+local SingleObserver = require "RxLua.observer.single"
+
+local CompositeDisposable = require "RxLua.disposable.composite"
+
+local AmbSingleObserver = class("AmbSingleObserver", SingleObserver){
+    new = function (self, once, set, observer)
+        self._once = once 
+        self._set = set 
+        self._observer = observer
+    end,
+
+    onSubscribe = function (self, d)
+        self._upstream = d 
+        set._set:add(d)
+    end, 
+
+    onSuccess = function (self, x)
+        if(self._once) then 
+
+        end
+    end,
+}
+
+return function (source)
+
 end 

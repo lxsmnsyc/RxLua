@@ -20,9 +20,9 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
 return class "MaybeObserver"{
     onSubscribe = function (self, disposable) end,

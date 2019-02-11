@@ -19,7 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local FIELD = require "Rx.disposable.helper.FIELD"
+local FIELD = require "RxLua.reference.FIELD"
 return function(field, expect, update)
     local current = FIELD[field]
     if(expect == current) then

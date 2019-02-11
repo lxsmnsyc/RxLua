@@ -20,13 +20,13 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local Disposable = require "Rx.disposable"
-local Observer = require "Rx.observer"
+local Disposable = require "RxLua.disposable"
+local Observer = require "RxLua.observer"
 
-local validate = require "Rx.disposable.helper.validate"
-local DISPOSED = require "Rx.disposable.helper.disposed"
+local validate = require "RxLua.disposable.helper.validate"
+local DISPOSED = require "RxLua.disposable.helper.disposed"
 
 return class ("DefaultObserver", Observer){
     onSubscribe = function (self, disposable) 

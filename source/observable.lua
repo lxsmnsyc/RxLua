@@ -20,9 +20,9 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local Observer = require "Rx.observer"
+local Observer = require "RxLua.observer"
 
 
 return class "ObservableSource"{

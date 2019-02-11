@@ -20,6 +20,8 @@
     SOFTWARE.
 ]] 
 
-local BiConsumer = require "RxLua.functions.biconsumer"
+local FIELD = require "RxLua.reference.FIELD"
 
-return BiConsumer(function () end)
+return function (field, value)
+    FIELD[field] = value
+end

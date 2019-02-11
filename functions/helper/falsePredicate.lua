@@ -20,6 +20,6 @@
     SOFTWARE.
 ]] 
 
-local Predicate = require "Rx.functions.predicate"
+local Predicate = require "RxLua.functions.predicate"
 
 return Predicate(function () return false end)

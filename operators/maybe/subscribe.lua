@@ -20,16 +20,16 @@
     SOFTWARE.
 ]] 
 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local MaybeObserver = require "Rx.observer.maybe"
+local MaybeObserver = require "RxLua.observer.maybe"
 
-local CallbackMaybeObserver = require "Rx.observer.maybe.callback"
+local CallbackMaybeObserver = require "RxLua.observer.maybe.callback"
 
-local ProduceAction = require "Rx.functions.helper.produceAction"
-local ProduceConsumer = require "Rx.functions.helper.produceConsumer"
+local ProduceAction = require "RxLua.functions.helper.produceAction"
+local ProduceConsumer = require "RxLua.functions.helper.produceConsumer"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
 return function (self, onSuccess, onError, onComplete)
     local observer 

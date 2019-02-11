@@ -19,9 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local ProtocolViolation = require "Rx.utils.protocolViolation"
+local ProtocolViolation = require "RxLua.utils.protocolViolation"
 
 return function (current, next)
     if(current ~= nil) then 

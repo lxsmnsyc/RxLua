@@ -20,22 +20,22 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local Disposable = require "Rx.disposable"
-local Observer = require "Rx.observer"
+local Disposable = require "RxLua.disposable"
+local Observer = require "RxLua.observer"
 
-local Action = require "Rx.functions.action"
-local Consumer = require "Rx.functions.consumer"
-local Predicate = require "Rx.functions.predicate"
+local Action = require "RxLua.functions.action"
+local Consumer = require "RxLua.functions.consumer"
+local Predicate = require "RxLua.functions.predicate"
 
-local BadArgument = require "Rx.utils.badArgument"
-local ProtocolViolation = require "Rx.utils.protocolViolation"
-local CompositeException = require "Rx.utils.compositeException"
+local BadArgument = require "RxLua.utils.badArgument"
+local ProtocolViolation = require "RxLua.utils.protocolViolation"
+local CompositeException = require "RxLua.utils.compositeException"
 
-local DISPOSED = require "Rx.disposable.helper.disposed"
+local DISPOSED = require "RxLua.disposable.helper.disposed"
 
-local validate = require "Rx.disposable.helper.validate"
+local validate = require "RxLua.disposable.helper.validate"
 
 return class ("DisposableLambdaObserver", Disposable, Observer){
     new = function (self, actual, onSubscribe, onDispose)

@@ -19,18 +19,19 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local DISPOSED = require "Rx.disposable.helper.disposed"
-local FIELD = require "Rx.disposable.helper.FIELD"
+local DISPOSED = require "RxLua.disposable.helper.disposed"
+local FIELD = require "RxLua.disposable.helper.FIELD"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
-local getAndSet = require "Rx.disposable.helper.getAndSet"
+local get = require "RxLua.reference.get"
+local getAndSet = require "RxLua.reference.getAndSet"
 
 return function (field)
     BadArgument(Disposable.instanceof(field, Disposable), 1, "Disposable")
-    local current = FIELD[field]
+    local current = get(field)
 
     if(current ~= DISPOSED) then 
         current = getAndSet(field, DISPOSED)

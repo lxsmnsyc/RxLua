@@ -19,8 +19,14 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local FIELD = require "Rx.disposable.helper.FIELD"
+local class = "RxLua.utils.meta.class"
 
-return function (field)
-    return FIELD[field]
-end
+local Observer = require "RxLua.observer"
+local Observable = require "RxLua.observable"
+
+return class("Subject", Observable, Observer){
+    hasObservers = function (self) end, 
+    hasError = function (self) end,
+    hasComplete = function (self) end,
+    getError = function (self) end,
+}

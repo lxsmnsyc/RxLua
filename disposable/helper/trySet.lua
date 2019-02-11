@@ -19,13 +19,13 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local isDisposed = require "Rx.disposable.helper.isDisposed"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
-local compareAndSet = require "Rx.disposable.helper.compareAndSet"
+local compareAndSet = require "RxLua.reference.compareAndSet"
 
 return function (field, disposable)
     BadArgument(Disposable.instanceof(field, Disposable), 1, "Disposable")

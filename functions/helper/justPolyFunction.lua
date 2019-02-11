@@ -20,7 +20,7 @@
     SOFTWARE.
 ]] 
 
-local PolyFunction = require "Rx.functions.polyfunction"
+local PolyFunction = require "RxLua.functions.polyfunction"
 
 return function (x)
     return PolyFunction(function () return x end)

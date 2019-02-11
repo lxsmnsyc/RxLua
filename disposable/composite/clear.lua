@@ -19,9 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local CompositeException = require "Rx.utils.compositeException"
+local CompositeException = require "RxLua.utils.compositeException"
 local function dispose(set)
     if(set == nil) then 
         return 

@@ -20,22 +20,21 @@
     SOFTWARE.
 ]] 
 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local DISPOSED = require "Rx.disposable.helper.disposed"
-local FIELD = require "Rx.disposable.helper.FIELD"
+local DISPOSED = require "RxLua.disposable.helper.disposed"
 
-local compareAndSet = require "Rx.disposable.helper.compareAndSet"
+local compareAndSet = require "RxLua.reference.compareAndSet"
+local get = require "RxLua.reference.get"
 
-local BadArgument = require "Rx.utils.badArgument"
-local ProtocolViolation = require "Rx.utils.protocolViolation"
+local BadArgument = require "RxLua.utils.badArgument"
 
 return function (field, disposable)
     BadArgument(Disposable.instanceof(field, Disposable), 1, "Disposable")
     BadArgument(Disposable.instanceof(disposable, Disposable) or disposable == nil, 2, "Disposable")
 
     while(1) do 
-        local current = FIELD[field]
+        local current = get(field)
 
         if(current == DISPOSED) then 
             if(disposable) then 

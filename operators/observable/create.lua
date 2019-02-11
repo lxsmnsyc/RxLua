@@ -21,21 +21,21 @@
 ]] 
 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
 
-local Observer = require "Rx.observer"
-local ObservableOnSubscribe = require "Rx.onSubscribe.observable"
+local Observer = require "RxLua.observer"
+local ObservableOnSubscribe = require "RxLua.onSubscribe.observable"
 
-local set = require "Rx.disposable.helper.set"
-local dispose = require "Rx.disposable.helper.dispose"
-local isDisposed = require "Rx.disposable.helper.isDisposed"
+local set = require "RxLua.disposable.helper.set"
+local dispose = require "RxLua.disposable.helper.dispose"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
 
-local ObservableEmitter = require "Rx.emitter.observable"
-local Disposable = require "Rx.disposable"
+local ObservableEmitter = require "RxLua.emitter.observable"
+local Disposable = require "RxLua.disposable"
 --[[
     The emitter class that emits the signals on the receiver.
 ]]
@@ -125,7 +125,7 @@ local notLoaded = true
 local function asyncLoad()
     if(notLoaded) then
         notLoaded = false 
-        Observable = require "Rx.observable"
+        Observable = require "RxLua.observable"
         ObservableCreate = class("ObservableCreate", Observable){
             new = function (self, source)
                 source = produceSubscribe(source)

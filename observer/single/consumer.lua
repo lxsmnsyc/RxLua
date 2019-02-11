@@ -20,17 +20,21 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local Disposable = require "Rx.disposable"
-local SingleObserver = require "Rx.observer.single"
+local Disposable = require "RxLua.disposable"
+local SingleObserver = require "RxLua.observer.single"
 
-local Consumer = require "Rx.functions.consumer"
+local Consumer = require "RxLua.functions.consumer"
 
-local CompositeException = require "Rx.utils.compositeException"
-local BadArgument = require "Rx.utils.badArgument"
+local CompositeException = require "RxLua.utils.compositeException"
+local BadArgument = require "RxLua.utils.badArgument"
 
-local ProduceConsumer = require "Rx.functions.helper.produceConsumer"
+local ProduceConsumer = require "RxLua.functions.helper.produceConsumer"
+
+local setOnce = require "RxLua.disposable.helper.setOnce"
+local dispose = require "RxLua.disposable.helper.dispose"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
 return class ("ConsumerSingleObserver", Disposable, SingleObserver){
     new = function (self, onSuccess, onError)
@@ -47,9 +51,9 @@ return class ("ConsumerSingleObserver", Disposable, SingleObserver){
     end,
     
     onSuccess = function (self, x)
-        defaultSet(self, DISPOSED)
+        dispose(self)
         local try, catch = pcall(function ()
-            self._onCallback:accept(x, nil)
+            self._onSuccess:accept(x)
         end)
 
         if(not try) then 
@@ -58,9 +62,9 @@ return class ("ConsumerSingleObserver", Disposable, SingleObserver){
     end,
     
     onError = function (self, t)
-        defaultSet(self, DISPOSED)
+        dispose(self)
         local try, catch = pcall(function ()
-            self._onCallback:accept(nil, t)
+            self._onError:accept(t)
         end)
 
         if(not try) then 

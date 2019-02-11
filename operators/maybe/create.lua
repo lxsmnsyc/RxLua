@@ -21,23 +21,23 @@
 ]] 
 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
 
-local MaybeObserver = require "Rx.observer.maybe"
-local MaybeOnSubscribe = require "Rx.onSubscribe.maybe"
+local MaybeObserver = require "RxLua.observer.maybe"
+local MaybeOnSubscribe = require "RxLua.onSubscribe.maybe"
 
-local DISPOSED = require "Rx.disposable.helper.disposed"
-local getAndSet = require "Rx.disposable.helper.getAndSet"
-local set = require "Rx.disposable.helper.set"
-local dispose = require "Rx.disposable.helper.dispose"
-local isDisposed = require "Rx.disposable.helper.isDisposed"
+local DISPOSED = require "RxLua.disposable.helper.disposed"
+local getAndSet = require "RxLua.disposable.helper.getAndSet"
+local set = require "RxLua.disposable.helper.set"
+local dispose = require "RxLua.disposable.helper.dispose"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
-local BadArgument = require "Rx.utils.badArgument"
+local BadArgument = require "RxLua.utils.badArgument"
 
 
-local MaybeEmitter = require "Rx.emitter.maybe"
-local Disposable = require "Rx.disposable"
+local MaybeEmitter = require "RxLua.emitter.maybe"
+local Disposable = require "RxLua.disposable"
 
 --[[
     The emitter class that emits the signals on the receiver.
@@ -53,9 +53,9 @@ local MaybeCreateEmitter = class("MaybeCreateEmitter", MaybeEmitter, Disposable)
         if(not isDisposed(self)) then 
             dispose(self)
             if(x == nil) then 
-                observer:onError("onSuccess called with null. Null values are generally not allowed.")
+                self._observer:onError("onSuccess called with null. Null values are generally not allowed.")
             else 
-                observer:onSuccess(x)
+                self._observer:onSuccess(x)
             end 
         end 
     end, 
@@ -121,14 +121,14 @@ local function produceSubscribe(sc)
     return false
 end     
 --[[
-    Since the we require the Observable class and the Observable module requires this module,
-    we need to asynchronously load the Observable class to prevent recursive requires
+    Since the we require the Maybe class and the Maybe module requires this module,
+    we need to asynchronously load the Maybe class to prevent recursive requires
 ]]
 local notLoaded = true 
 local function asyncLoad()
     if(notLoaded) then
         notLoaded = false 
-        Maybe = require "Rx.maybe"
+        Maybe = require "RxLua.maybe"
         MaybeCreate = class("MaybeCreate", Maybe){
             new = function (self, source)
                 source = produceSubscribe(source)

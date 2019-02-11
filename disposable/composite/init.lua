@@ -20,11 +20,11 @@
     SOFTWARE.
 ]] 
 
-local class = require "Rx.utils.meta.class"
+local class = require "RxLua.utils.meta.class"
 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local path = "Rx.disposable.composite"
+local path = "RxLua.disposable.composite"
 local function load(name)
     return require(path.."."..name)
 end

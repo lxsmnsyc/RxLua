@@ -19,11 +19,11 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local Disposable = require "Rx.disposable"
+local Disposable = require "RxLua.disposable"
 
-local Observer = require "Rx.observer"
+local Observer = require "RxLua.observer"
 
-local LambdaObserver = require "Rx.observer.lambda"
+local LambdaObserver = require "RxLua.observer.lambda"
 
 return function (self, onNext, onError, onComplete, onSubscribe)
     local observer 
