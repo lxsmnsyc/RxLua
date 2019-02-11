@@ -18,78 +18,61 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]]  
+]] 
+
 local Rx = {}
 
-local moduleName = "RxLua.src"
+Rx.Class = require "Rx.utils.meta.class"
 
-local function load(name)
-    return require(moduleName.."."..name)
-end
+Rx.Disposable = require "Rx.disposable"
+Rx.CompositeDisposable = require "Rx.disposable.composite"
 
-Rx.Interface = load("interface")
+Rx.Action = require "Rx.functions.action"
+Rx.Consumer = require "Rx.functions.consumer"
+Rx.BiConsumer = require "Rx.functions.biconsumer"
+Rx.Predicate = require "Rx.functions.predicate"
+Rx.BiPredicate = require "Rx.functions.predicate"
+Rx.PolyFunction = require "Rx.functions.polyfunction"
 
---[[
-    Disposable
-]]
-Rx.DisposableInterface = load("disposable.interface")
+Rx.Observer = require "Rx.observer"
+Rx.DefaultObserver = require "Rx.observer.default"
+Rx.DisposableObserver = require "Rx.observer.disposable"
+Rx.LambdaObserver = require "Rx.observer.lambda"
+Rx.DisposableLambdaObserver = require "Rx.observer.lambda.disposable"
 
-Rx.Disposable = load("disposable")
-Rx.CompositeDisposable = load("disposable.composite")
-Rx.EmptyDisposable = load("disposable.empty")
---[[
-    Observer
-]]
-Rx.ObserverInterface = load("observer.interface")
-Rx.Observer = load("observer")
-Rx.DisposableObserver = load("observer.disposable")
-Rx.DefaultObserver = load("observer.default")
-Rx.LambdaObserver = load("observer.lambda")
+Rx.CompletableObserver = require "Rx.observer.completable"
+Rx.CallbackCompletableObserver = require "Rx.observer.completable.callback"
+Rx.EmptyCompletableObserver = require "Rx.observer.completable.empty"
+Rx.DisposableCompletableObserver = require "Rx.observer.completable.disposable"
 
-Rx.MaybeObserverInterface = load("observer.maybe.interface")
-Rx.MaybeObserver = load("observer.maybe")
-Rx.DisposableMaybeObserver = load("observer.maybe.disposable")
-Rx.CallbackMaybeObserver = load("observer.maybe.callback")
+Rx.MaybeObserver = require "Rx.observer.maybe"
+Rx.DisposableMaybeObserver = require "Rx.observer.maybe"
 
-Rx.SingleObserverInterface = load("observer.single.interface")
-Rx.SingleObserver = load("observer.single")
-Rx.DisposableSingleObserver = load("observer.single.disposable")
-Rx.ConsumerSingleObserver = load("observer.single.consumer")
-Rx.BiConsumerSingleObserver = load("observer.single.biconsumer")
+Rx.SingleObserver = require "Rx.observer.single"
+Rx.DisposableSingleObserver = require "Rx.observer.single.disposable"
+Rx.ResumeSingleObserver = require "Rx.observer.single.resume"
+Rx.ConsumerSingleObserver = require "Rx.observer.single.consumer"
+Rx.BiConsumerSingleObserver = require "Rx.observer.single.biconsumer"
 
-Rx.CompletableObserverInterface = load("observer.completable.interface")
-Rx.CompletableObserver = load("observer.completable")
-Rx.DisposableCompletableObserver = load("observer.completable.disposable")
-Rx.EmptyCompletableObserver = load("observer.completable.empty")
-Rx.CallbackCompletableObserver = load("observer.completable.callback")
+Rx.Emitter = require "Rx.emitter"
+Rx.ObservableEmitter = require "Rx.emitter.observable"
+Rx.CompletableEmitter = require "Rx.emitter.completable"
+Rx.MaybeEmitter = require "Rx.emitter.maybe"
+Rx.SingleEmitter = require "Rx.emitter.single"
 
---[[
-    Emitter
-]]
-Rx.ObservableEmitter = load("emitter.observable")
-Rx.MaybeEmitter = load("emitter.maybe")
-Rx.CompletableEmitter = load("emitter.completable")
-Rx.SingleEmitter = load("emitter.single")
+Rx.ObservableOnSubscribe = require "Rx.onSubscribe.observable"
+Rx.CompletableOnSubscribe = require "Rx.onSubscribe.completable"
+Rx.MaybeOnSubscribe = require "Rx.onSubscribe.maybe"
+Rx.SingleOnSubscribe = require "Rx.onSubscribe.single"
 
---[[
-    OnSubscribe
-]]
-Rx.ObservableOnSubscribe = load("onSubscribe.observable")
-Rx.MaybeOnSubscribe = load("onSubscribe.maybe")
-Rx.CompletableOnSubscribe = load("onSubscribe.completable")
-Rx.SingleOnSubscribe = load("onSubscribe.single")
+Rx.ObservableSource = require "Rx.source.observable"
+Rx.CompletableSource = require "Rx.source.completable"
+Rx.MaybeSource = require "Rx.source.maybe"
+Rx.SingleSource = require "Rx.source.single"
 
---[[
-    Functions
-]]
-Rx.Action = load("functions.action")
-Rx.Consumer = load("functions.consumer")
-Rx.BiConsumer = load("functions.biconsumer")
---[[
-    Observable
-]]
-Rx.Observable = load("observable")
-Rx.Maybe = load("observable.maybe")
-Rx.Completable = load("observable.completable")
-Rx.Single = load("observable.single")
+Rx.Observable = require "Rx.observable"
+Rx.Completable = require "Rx.completable"
+Rx.Maybe = require "Rx.maybe"
+Rx.Single = require "Rx.single"
+
 return Rx
