@@ -43,9 +43,5 @@ return class ("DefaultObserver", Observer){
         local upstream = self.upstream 
         self.upstream = DISPOSED
         upstream = upstream:dispose()
-    end,
-
-    onStart = function (self)
-
     end
 }

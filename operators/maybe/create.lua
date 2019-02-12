@@ -27,8 +27,6 @@ local class = require "RxLua.utils.meta.class"
 local MaybeObserver = require "RxLua.observer.maybe"
 local MaybeOnSubscribe = require "RxLua.onSubscribe.maybe"
 
-local DISPOSED = require "RxLua.disposable.helper.disposed"
-local getAndSet = require "RxLua.disposable.helper.getAndSet"
 local set = require "RxLua.disposable.helper.set"
 local dispose = require "RxLua.disposable.helper.dispose"
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
@@ -42,10 +40,12 @@ local Disposable = require "RxLua.disposable"
 --[[
     The emitter class that emits the signals on the receiver.
 ]]
+
+local function tryOnError(self, t)
+end
+
 local MaybeCreateEmitter = class("MaybeCreateEmitter", MaybeEmitter, Disposable){
     new = function (self, observer)
-        BadArgument(MaybeObserver.instanceof(observer, MaybeObserver), 1, "MaybeObserver")
-
         self._observer = observer
     end,
 
@@ -61,31 +61,19 @@ local MaybeCreateEmitter = class("MaybeCreateEmitter", MaybeEmitter, Disposable)
     end, 
 
     onError = function (self, t)
-        if(not self:tryOnError(t)) then 
-            error(t)
-        end 
-    end,
-
-    tryOnError = function (self, t)
         if(t == nil) then 
             t = "onError called with null. Null values are generally not allowed."
         end
         if(not isDisposed(self)) then 
-            local try, catch = pcall(function ()
-                self._observer:onError(t)
-            end)
             dispose(self)
-            return true
+            self._observer:onError(t)
         end
-        return false
     end,
 
     onComplete = function (self)
-        if(not isDisposed(self)) then 
-            local try, catch = pcall(function ()
-                self._observer:onComplete()
-            end)
+        if(not isDisposed(self)) then
             dispose(self)
+            self._observer:onComplete()
         end
     end,
 

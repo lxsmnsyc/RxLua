@@ -36,13 +36,26 @@ local CompositeException = require "RxLua.utils.compositeException"
 local setOnce = require "RxLua.disposable.helper.setOnce"
 local dispose = require "RxLua.disposable.helper.dispose"
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
-local get = require "RxLua.disposable.helper.get"
+local get = require "RxLua.reference.get"
 
 local DISPOSED = require "RxLua.disposable.helper.disposed"
 
 
 local ProduceAction = require "RxLua.functions.helper.produceAction"
 local ProduceConsumer = require "RxLua.functions.helper.produceConsumer"
+
+local function errorHandler(self, t)
+    if(not isDisposed(self)) then 
+        dispose(self)
+        local try, catch = pcall(function ()
+            self._onError:accept(t)
+        end)
+
+        if(not try) then 
+            CompositeException(t, catch)
+        end 
+    end 
+end
 
 return class ("LambdaObserver", Disposable, Observer){
     new = function (self, onNext, onError, onComplete, onSubscribe)
@@ -70,40 +83,29 @@ return class ("LambdaObserver", Disposable, Observer){
     
             if(not try) then 
                 disposable:dispose()
-                self:onError(catch)
+                errorHandler(self, catch)
             end 
         end
     end,
 
     onNext = function (self, x)
-        if(not self:isDisposed()) then 
+        if(not isDisposed(self)) then 
             local try, catch = pcall(function ()
                 self._onNext:accept(x)
             end)
     
             if(not try) then 
-                get(self):dispose()
-                self:onError(catch)
+                dispose(self)
+                errorHandler(self, catch)
             end 
         end 
     end, 
 
-    onError = function (self, t)
-        if(not self:isDisposed()) then 
-            defaultSet(self, DISPOSED)
-            local try, catch = pcall(function ()
-                self._onError:accept(t)
-            end)
-    
-            if(not try) then 
-                CompositeException(t, catch)
-            end 
-        end 
-    end,
+    onError = errorHandler,
 
     onComplete = function (self) 
-        if(not self:isDisposed()) then
-            defaultSet(self, DISPOSED)
+        if(not isDisposed(self)) then
+            dispose(self)
             self._onComplete:run()
         end 
     end,

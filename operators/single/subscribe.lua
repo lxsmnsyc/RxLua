@@ -44,12 +44,12 @@ return function (self, onSuccess, onError)
         onError = ProduceConsumer(onError)
 
         BadArgument(onSuccess, 1, "Consumer, function or nil")
-        BadArgument(onError, 1, "Consumer, function or nil")
-
-        observer = ConsumerSingleObserver(onSuccess, onError, onComplete)
+        BadArgument(onError, 2, "Consumer, function or nil")
+        
+        observer = ConsumerSingleObserver(onSuccess, onError)
     end 
-    self:subscribeActual(observer)
 
+    self:subscribeActual(observer)
     if(Disposable.instanceof(observer, Disposable)) then 
         return observer
     end

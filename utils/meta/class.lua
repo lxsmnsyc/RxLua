@@ -84,7 +84,7 @@ return function (name, ...)
             C = setmetatable(C, {
                 __index = function (t, k)
                     for _, parent in ipairs(parents) do 
-                        for name, field in pairs(parent) do 
+                        for name, field in pairs(getmetatable(parent).__index) do 
                             if(name == k) then 
                                 return field 
                             end

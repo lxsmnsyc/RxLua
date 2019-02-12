@@ -19,22 +19,9 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local class = require "RxLua.utils.meta.class"
-
-local SingleSource = require "RxLua.source.single"
-
-local path = "RxLua.operators.single"
-
-local function loadOperator(name)
-    return require(path.."."..name)
+local FIELD = require "RxLua.reference.FIELD"
+return function (field)
+    local old = FIELD[field] or 0
+    FIELD[field] = old + 1
+    return old
 end 
-
-return class ("Single", SingleSource){
-    subscribeActual = function (self, observer) end,
-    
-    create = loadOperator("create"),
-    subscribe = loadOperator("subscribe"),
-
-    amb = loadOperator("amb"),
-    cache = loadOperator("cache")
-}

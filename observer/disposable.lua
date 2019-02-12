@@ -32,11 +32,11 @@ local dispose = require "RxLua.disposable.helper.dispose"
 
 return class ("DisposableObserver", Disposable, Observer){
     new = function (self)
-        self.upstream = Disposable()
+        self._upstream = Disposable()
     end, 
 
     onSubscribe = function (self, disposable) 
-        if(setOnce(self.upstream, disposable)) then 
+        if(setOnce(self._upstream, disposable)) then 
             self:onStart()
         end 
     end,
@@ -45,10 +45,10 @@ return class ("DisposableObserver", Disposable, Observer){
     end,
 
     isDisposed = function(self)
-        return isDisposed(self.upstream)
+        return isDisposed(self._upstream)
     end,
 
     dispose = function(self)
-        dispose(self.upstream)
+        dispose(self._upstream)
     end 
 }

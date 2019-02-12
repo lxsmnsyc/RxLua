@@ -24,10 +24,10 @@ local Disposable = require "RxLua.disposable"
 local clear = require "RxLua.disposable.composite.clear"
 
 return function (self)
-    if(self.disposed) then 
+    if(self._disposed) then 
         return 
     end 
 
-    self.disposed = true 
+    self._disposed = true 
     clear(self)
 end

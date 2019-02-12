@@ -39,16 +39,15 @@ local Disposable = require "RxLua.disposable"
 --[[
     The emitter class that emits the signals on the receiver.
 ]]
+
 local ObservableCreateEmitter = class("ObservableCreateEmitter", ObservableEmitter, Disposable){
     new = function (self, observer)
-        BadArgument(Observer.instanceof(observer, Observer), 1, "Observer")
-
         self._observer = observer
     end,
 
     onNext = function (self, x)
         if(x == nil) then 
-            self:onError("onNext called with null. Null values are generally not allowed.")
+            self._observer:onError(self, "onNext called with null. Null values are generally not allowed.")
             return
         end 
 
@@ -58,31 +57,19 @@ local ObservableCreateEmitter = class("ObservableCreateEmitter", ObservableEmitt
     end, 
 
     onError = function (self, t)
-        if(not self:tryOnError(t)) then 
-            error(t)
-        end 
-    end,
-
-    tryOnError = function (self, t)
         if(t == nil) then 
             t = "onError called with null. Null values are generally not allowed."
         end
         if(not isDisposed(self)) then 
-            local try, catch = pcall(function ()
-                self._observer:onError(t)
-            end)
             dispose(self)
-            return true
+            self._observer:onError(t)
         end
-        return false
     end,
 
     onComplete = function (self)
         if(not isDisposed(self)) then 
-            local try, catch = pcall(function ()
-                self._observer:onComplete()
-            end)
             dispose(self)
+            self._observer:onComplete()
         end
     end,
 

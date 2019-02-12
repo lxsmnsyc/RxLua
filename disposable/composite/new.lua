@@ -38,8 +38,8 @@ return function (self, ...)
         end
     end 
 
-    self.resources = resources
-    self.indeces = indeces
-    self.size = size
-    self.disposed = false
+    self._resources = resources
+    self._indeces = indeces
+    self._size = size
+    self._disposed = false
 end

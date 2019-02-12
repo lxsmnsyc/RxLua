@@ -19,22 +19,16 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]] 
-local class = require "RxLua.utils.meta.class"
+local path = "RxLua.reference"
 
-local SingleSource = require "RxLua.source.single"
-
-local path = "RxLua.operators.single"
-
-local function loadOperator(name)
+local function load(name)
     return require(path.."."..name)
 end 
 
-return class ("Single", SingleSource){
-    subscribeActual = function (self, observer) end,
-    
-    create = loadOperator("create"),
-    subscribe = loadOperator("subscribe"),
-
-    amb = loadOperator("amb"),
-    cache = loadOperator("cache")
+return {
+    get = load("get"),
+    set = load("set"),
+    getAndSet = load("getAndSet"),
+    getAndIncrement = load("getAndIncrement"),
+    compareAndSet = load("compareAndSet")
 }

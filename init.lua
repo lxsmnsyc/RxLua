@@ -23,6 +23,7 @@
 local RxLua = {}
 
 RxLua.Class = require "RxLua.utils.meta.class"
+RxLua.Reference = require "RxLua.reference"
 
 RxLua.Disposable = require "RxLua.disposable"
 RxLua.CompositeDisposable = require "RxLua.disposable.composite"

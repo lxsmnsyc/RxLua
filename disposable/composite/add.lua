@@ -25,10 +25,10 @@ local BadArgument = require "RxLua.utils.badArgument"
 
 return function (self, ...)
     local ds = {...}
-    if(not self.disposed) then 
-        local resources = self.resources 
-        local indeces = self.indeces
-        local size = self.size 
+    if(not self._disposed) then 
+        local resources = self._resources 
+        local indeces = self._indeces
+        local size = self._size 
         for _, disposable in ipairs(ds) do 
             local status, result = pcall(function ()
                 return disposable:instanceof(Disposable)
@@ -39,7 +39,7 @@ return function (self, ...)
             resources[size] = disposable
             indeces[disposable] = size
         end 
-        self.size = size 
+        self._size = size 
 
         return true 
     end 

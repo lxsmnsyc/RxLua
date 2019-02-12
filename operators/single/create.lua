@@ -27,8 +27,6 @@ local class = require "RxLua.utils.meta.class"
 local SingleObserver = require "RxLua.observer.single"
 local SingleOnSubscribe = require "RxLua.onSubscribe.single"
 
-local DISPOSED = require "RxLua.disposable.helper.disposed"
-local getAndSet = require "RxLua.disposable.helper.getAndSet"
 local set = require "RxLua.disposable.helper.set"
 local dispose = require "RxLua.disposable.helper.dispose"
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
@@ -42,10 +40,11 @@ local Disposable = require "RxLua.disposable"
 --[[
     The emitter class that emits the signals on the receiver.
 ]]
+local function tryOnError(self, t)
+end
+
 local SingleCreateEmitter = class("SingleCreateEmitter", SingleEmitter, Disposable){
     new = function (self, observer)
-        BadArgument(SingleObserver.instanceof(observer, SingleObserver), 1, "SingleObserver")
-
         self._observer = observer
     end,
 
@@ -61,23 +60,13 @@ local SingleCreateEmitter = class("SingleCreateEmitter", SingleEmitter, Disposab
     end, 
 
     onError = function (self, t)
-        if(not self:tryOnError(t)) then 
-            error(t)
-        end 
-    end,
-
-    tryOnError = function (self, t)
         if(t == nil) then 
             t = "onError called with null. Null values are generally not allowed."
         end
         if(not isDisposed(self)) then 
-            local try, catch = pcall(function ()
-                self._observer:onError(t)
-            end)
             dispose(self)
-            return true
+            self._observer:onError(t)
         end
-        return false
     end,
 
     setDisposable = function (self, disposable)
@@ -130,7 +119,6 @@ local function asyncLoad()
         
             subscribeActual = function (self, observer)
                 BadArgument(SingleObserver.instanceof(observer, SingleObserver), 1, "SingleObserver")
-        
                 local parent = SingleCreateEmitter(observer)
                 observer:onSubscribe(parent)
         

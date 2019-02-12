@@ -27,7 +27,6 @@ local Observer = require "RxLua.observer"
 
 local Action = require "RxLua.functions.action"
 local Consumer = require "RxLua.functions.consumer"
-local Predicate = require "RxLua.functions.predicate"
 
 local BadArgument = require "RxLua.utils.badArgument"
 local CompositeException = require "RxLua.utils.compositeException"
@@ -36,6 +35,36 @@ local setOnce = require "RxLua.disposable.helper.setOnce"
 local dispose = require "RxLua.disposable.helper.dispose"
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
 local defaultSet = require "RxLua.disposable.helper.defaultSet"
+
+local function errorHandler(self, t) 
+    if(self._done) then 
+        error(t)
+        return
+    end 
+    self._done = true 
+    local try, catch = pcall(function ()
+        self._onError:accept(t)
+    end)
+
+    if(not try) then 
+        CompositeException(t, catch)
+    end 
+end
+
+local function completeHandler(self) 
+    if(self._done) then 
+        error(t)
+        return
+    end 
+    self._done = true 
+    local try, catch = pcall(function ()
+        self._onComplete:run()
+    end)
+
+    if(not try) then 
+        error(catch)
+    end 
+end
 
 return class ("ForEachWhileObserver", Disposable, Observer){
     new = function (self, onNext, onError, onComplete)
@@ -65,43 +94,17 @@ return class ("ForEachWhileObserver", Disposable, Observer){
         if(try) then 
             if(not catch) then 
                 dispose(self)
-                self:onComplete()
+                completeHandler(self)
             end 
         else 
             dispose(self)
-            self:onError(catch)
+            errorHandler(self, catch)
         end 
     end, 
 
-    onError = function (self, t) 
-        if(self._done) then 
-            error(t)
-            return
-        end 
-        self._done = true 
-        local try, catch = pcall(function ()
-            self._onError:accept(t)
-        end)
+    onError = errorHandler,
 
-        if(not try) then 
-            CompositeException(t, catch)
-        end 
-    end,
-
-    onComplete = function (self) 
-        if(self._done) then 
-            error(t)
-            return
-        end 
-        self._done = true 
-        local try, catch = pcall(function ()
-            self._onComplete:run()
-        end)
-
-        if(not try) then 
-            error(catch)
-        end 
-    end,
+    onComplete = completeHandler,
 
     isDisposed = function(self)
         return isDisposed(self)

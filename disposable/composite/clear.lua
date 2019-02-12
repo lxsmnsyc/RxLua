@@ -51,13 +51,13 @@ local function dispose(set)
 end 
 
 return function (self)
-    if(self.disposed) then 
+    if(self._disposed) then 
         return 
     end 
 
-    dispose(self.resources)
+    dispose(self._resources)
 
-    self.resources = {}
-    self.size = 0
-    self.indeces = {}
+    self._resources = {}
+    self._size = 0
+    self._indeces = {}
 end

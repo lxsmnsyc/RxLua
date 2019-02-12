@@ -55,7 +55,6 @@ return class ("ConsumerSingleObserver", Disposable, SingleObserver){
         local try, catch = pcall(function ()
             self._onSuccess:accept(x)
         end)
-
         if(not try) then 
             error(catch)
         end 

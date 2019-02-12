@@ -22,7 +22,6 @@
 local Disposable = require "RxLua.disposable"
 
 local DISPOSED = require "RxLua.disposable.helper.disposed"
-local FIELD = require "RxLua.disposable.helper.FIELD"
 
 local BadArgument = require "RxLua.utils.badArgument"
 

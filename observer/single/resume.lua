@@ -34,19 +34,19 @@ return class ("ResumeSingleObserver", SingleObserver){
         BadArgument(Disposable.instanceof(disposable, Disposable), 1, "Disposable")
         BadArgument(SingleObserver.instanceof(observer, SingleObserver), 2, "SingleObserver")
         
-        self.parent = disposable
-        self.downstream = observer
+        self._parent = disposable
+        self._downstream = observer
     end,
 
     onSubscribe = function (self, disposable) 
-        replace(self.parent, disposable)
+        replace(self._parent, disposable)
     end,
     
     onSuccess = function (self, x)
-        self.downstream:onSuccess(x)
+        self._downstream:onSuccess(x)
     end,
     
     onError = function (self, t)
-        self.downstream:onError(t)
+        self._downstream:onError(t)
     end
 }

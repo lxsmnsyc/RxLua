@@ -26,10 +26,7 @@ local BadArgument = require "RxLua.utils.badArgument"
 local delete = require "RxLua.disposable.composite.delete"
 
 return function (self, disposable)
-    local status, result = pcall(function ()
-        return disposable:instanceof(Disposable)
-    end)
-    BadArgument(status and result, _ + 1, "Disposable")
+    BadArgument(Disposable.instanceof(disposable, Disposable), 1, "Disposable")
 
     if(delete(self, disposable)) then 
         disposable:dispose()

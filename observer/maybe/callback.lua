@@ -35,7 +35,7 @@ local CompositeException = require "RxLua.utils.compositeException"
 local setOnce = require "RxLua.disposable.helper.setOnce"
 local dispose = require "RxLua.disposable.helper.dispose"
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
-local get = require "RxLua.disposable.helper.get"
+local get = require "RxLua.reference.get"
 
 local DISPOSED = require "RxLua.disposable.helper.disposed"
 

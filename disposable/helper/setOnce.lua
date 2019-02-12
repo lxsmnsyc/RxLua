@@ -24,7 +24,7 @@ local Disposable = require "RxLua.disposable"
 
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
-local compareAndSet = require "RxLua.disposable.helper.compareAndSet"
+local compareAndSet = require "RxLua.reference.compareAndSet"
 
 local BadArgument = require "RxLua.utils.badArgument"
 local ProtocolViolation = require "RxLua.utils.protocolViolation"

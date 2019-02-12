@@ -21,7 +21,7 @@
 ]] 
 local class = require "RxLua.utils.meta.class"
 
-local MaybeSource = require "RxLua.source.completable"
+local MaybeSource = require "RxLua.source.maybe"
 
 local path = "RxLua.operators.maybe"
 

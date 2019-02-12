@@ -48,7 +48,7 @@ return class ("BiConsumerSingleObserver", Disposable, SingleObserver){
     
     onSuccess = function (self, x)
         local try, catch = pcall(function ()
-            defaultSet(self, DISPOSED)
+            dispose(self)
 
             self._onCallback:accept(x, nil)
         end)
@@ -60,7 +60,7 @@ return class ("BiConsumerSingleObserver", Disposable, SingleObserver){
     
     onError = function (self, t)
         local try, catch = pcall(function ()
-            defaultSet(self, DISPOSED)
+            dispose(self)
 
             self._onCallback:accept(nil, t)
         end)

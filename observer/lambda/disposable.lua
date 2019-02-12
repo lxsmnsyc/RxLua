@@ -43,7 +43,7 @@ return class ("DisposableLambdaObserver", Disposable, Observer){
         BadArgument(Consumer.instanceof(onSubscribe, Consumer), 2, "Consumer")
         BadArgument(Action.instanceof(onDispose, Action), 2, "Action")
 
-        self.downstream = actual 
+        self._downstream = actual 
         self._onSubscribe = onSubscribe
         self._onDispose = onDispose
     end,
@@ -55,48 +55,48 @@ return class ("DisposableLambdaObserver", Disposable, Observer){
 
         if(not catch) then 
             disposable:dispose()
-            self.upstream = DISPOSED
-            EMPTY.error(self.downstream, catch)
+            self._upstream = DISPOSED
+            EMPTY.error(self._downstream, catch)
             return
         end 
 
-        if(validate(self.upstream, disposable)) then 
-            self.upstream = disposable
-            self.downstream:onSubscribe(disposable)
+        if(validate(self._upstream, disposable)) then 
+            self._upstream = disposable
+            self._downstream:onSubscribe(disposable)
         end 
     end,
 
     onNext = function (self, x)
-        self.downstream:onNext(x)
+        self._downstream:onNext(x)
     end, 
 
     onError = function (self, t)
-        if(self.upstream ~= DISPOSED) then 
-            self.upstream = DISPOSED
-            self.downstream:onError(t)
+        if(self._upstream ~= DISPOSED) then 
+            self._upstream = DISPOSED
+            self._downstream:onError(t)
         else 
             error(t)
         end
     end,
 
     onComplete = function (self) 
-        if(self.upstream ~= DISPOSED) then 
-            self.upstream = DISPOSED
-            self.downstream:onComplete(t)
+        if(self._upstream ~= DISPOSED) then 
+            self._upstream = DISPOSED
+            self._downstream:onComplete(t)
         end
     end,
 
     isDisposed = function(self)
-        return self.upstream:isDisposed()
+        return self._upstream:isDisposed()
     end,
 
     dispose = function(self)
-        local d = self.upstream 
+        local d = self._upstream 
 
         if(d ~= DISPOSED) then 
-            self.upstream = DISPOSED
+            self._upstream = DISPOSED
             local try, catch = pcall(function ()
-                self._onDispose:run()
+                self.__onDispose:run()
             end)
 
             if(try) then 
