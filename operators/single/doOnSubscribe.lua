@@ -65,8 +65,6 @@ local DoSubSingleObserver = class("DoSubSingleObserver", SingleObserver){
 local Single 
 local SingleDoOnSubscribe
 
-
-
 local notLoaded = true 
 local function asyncLoad()
     if(notLoaded) then
