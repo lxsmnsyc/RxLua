@@ -65,13 +65,25 @@ return function (name, ...)
     ]]
     local parents = {...}
     local count = #parents 
+    local super = function () end
+
+    local mt_parents = {}
     if(count > 0) then 
         --[[
             Validate parents
         ]]
+        local supers = {}
         for k, v in ipairs(parents) do 
             badArgument(is(v), k + 1, "Class")
+            local mt = getmetatable(v).__index 
+            supers[k] = mt._inner 
         end 
+
+        super = function(self, ...)
+            for k,v in ipairs(supers) do 
+                v(self, ...)
+            end 
+        end
         --[[
             If there is only one parent, set it for indexing
         ]]
@@ -103,7 +115,9 @@ return function (name, ...)
 
     local function caller(t)
         return new()
-    end 
+    end
+
+    local inner = function () end
     --[[
         To only allow the closure to be called once
     ]]
@@ -137,6 +151,7 @@ return function (name, ...)
                             field(self, ...)
                             return self
                         end 
+                        inner = field
                     else
                         C[name] = field
                     end
@@ -149,6 +164,8 @@ return function (name, ...)
             C._parents = parents
             C._className = name
             C.instanceof = instanceof
+            C._inner = inner 
+            C.super = super
             return setmetatable({
                 _class = true
             }, {
