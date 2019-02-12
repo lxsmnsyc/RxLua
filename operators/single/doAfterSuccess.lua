@@ -24,55 +24,42 @@ local class = require "RxLua.utils.meta.class"
 local SingleObserver = require "RxLua.observer.single"
 local Disposable = require "RxLua.disposable"
 
-local DISPOSED = require "RxLua.disposable.helper.disposed"
+local Consumer = require "RxLua.functions.consumer"
+
 local validate = require "RxLua.disposable.helper.validate"
 
-local DetachSingleObserver = class("DetachSingleObserver", SingleObserver, Disposable){
-    new = function (self, downstream)
+local DASSingleObserver = class("DASSingleObserver", SingleObserver, Disposable){
+    new = function (self, downstream, actual)
         self._downstream = downstream
+        self._actual = actual
     end, 
 
     dispose = function (self)
-        self._downstream = nil 
         self._upstream:dispose()
-        self._upstream = DISPOSED
     end,
     isDisposed = function ()
         return self._upstream:isDisposed()
     end,
 
+    onSuccess = function (self, x)
+        self._downstream:onSuccess(x)
+        self._actual:accept(x)
+    end,
+    onError = function (self, t)
+        self._downstream:onError(t)
+    end,
+
     onSubscribe = function (self, d)
         if(validate(self._upstream, d)) then 
             self._upstream = d
-
-            self._downstream:onSubscribe(d)
+            self._downstream:onSubscribe(self)
         end 
-    end,
-
-    onSuccess = function (self, x)
-        self._upstream = DISPOSED
-
-        local downstream = self._downstream 
-        if(downstream) then 
-            self._downstream = nil 
-            downstream:onSuccess(x)
-        end 
-    end ,
-
-    onSuccess = function (self, x)
-        self._upstream = DISPOSED
-
-        local downstream = self._downstream 
-        if(downstream) then 
-            self._downstream = nil 
-            downstream:onError(x)
-        end 
-    end 
-
+    end
 }
 
 local Single 
-local SingleDetach 
+local SingleDoAfterSuccess
+
 
 
 local notLoaded = true 
@@ -80,18 +67,26 @@ local function asyncLoad()
     if(notLoaded) then
         notLoaded = false 
         Single = require "RxLua.single"
-        SingleDetach = class("SingleDetach", Single){
-            new = function (self, source)
+        SingleDoAfterSuccess = class("SingleDoAfterSuccess", Single){
+            new = function (self, source, actual)
                 self._source = source 
+                self._actual = actual
             end, 
             subscribeActual = function (self, observer)
-                self._source:subscribe(DetachSingleObserver(observer))
+                self._source:subscribe(DASSingleObserver(observer, self._actual))
             end, 
         }
     end 
 end
 
-return function (self)
+local BadArgument = require "RxLua.utils.badArgument"
+
+return function (source, afterSuccess)
+    if((not Consumer.instanceof(afterSuccess, Consumer)) and type(afterSuccess) == "function") then 
+        afterSuccess = Consumer(afterSuccess)
+    else 
+        BadArgument(false, 1, "Consumer or function")
+    end
     asyncLoad()
-    return SingleDetach(self)
-end 
+    return SingleDoAfterSuccess(source, afterSuccess)
+end

@@ -36,7 +36,18 @@ return class ("Single", SingleSource){
     subscribe = loadOperator("subscribe"),
 
     amb = loadOperator("amb"),
+
     cache = loadOperator("cache"),
     contains = loadOperator("contains"),
-    defer = loadOperator("defer")
+
+    defer = loadOperator("defer"),
+    doAfterSuccess = loadOperator("doAfterSuccess"),
+    doAfterTerminate = loadOperator("doAfterTerminate"),
+    doFinally = loadOperator("doFinally"),
+    doOnDispose = loadOperator("doOnDispose"),
+    doOnError = loadOperator("doOnError"),
+    doOnEvent = loadOperator("doOnEvent"),
+    doOnSubscribe = loadOperator("doOnSubscribe"),
+    doOnSuccess = loadOperator("doOnSuccess"),
+    doOnTerminate = loadOperator("doOnTerminate"),
 }

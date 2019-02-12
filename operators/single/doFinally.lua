@@ -24,55 +24,51 @@ local class = require "RxLua.utils.meta.class"
 local SingleObserver = require "RxLua.observer.single"
 local Disposable = require "RxLua.disposable"
 
-local DISPOSED = require "RxLua.disposable.helper.disposed"
+local Action = require "RxLua.functions.action"
+
+local compareAndSet = require "RxLua.reference.compareAndSet"
 local validate = require "RxLua.disposable.helper.validate"
 
-local DetachSingleObserver = class("DetachSingleObserver", SingleObserver, Disposable){
-    new = function (self, downstream)
+local function runFinally(self)
+    if(compareAndSet(self._reference, nil, 1)) then 
+        self._actual:run()
+    end 
+end
+
+local DFSingleObserver = class("DFSingleObserver", SingleObserver, Disposable){
+    new = function (self, downstream, actual)
+        self._reference = {}
         self._downstream = downstream
+        self._actual = actual
     end, 
 
     dispose = function (self)
-        self._downstream = nil 
         self._upstream:dispose()
-        self._upstream = DISPOSED
+        runFinally(self)
     end,
     isDisposed = function ()
         return self._upstream:isDisposed()
     end,
 
+    onSuccess = function (self, x)
+        self._downstream:onSuccess(x)
+        runFinally(self)
+    end,
+    onError = function (self, t)
+        self._downstream:onError(t)
+        runFinally(self)
+    end,
+
     onSubscribe = function (self, d)
         if(validate(self._upstream, d)) then 
             self._upstream = d
-
-            self._downstream:onSubscribe(d)
+            self._downstream:onSubscribe(self)
         end 
-    end,
-
-    onSuccess = function (self, x)
-        self._upstream = DISPOSED
-
-        local downstream = self._downstream 
-        if(downstream) then 
-            self._downstream = nil 
-            downstream:onSuccess(x)
-        end 
-    end ,
-
-    onSuccess = function (self, x)
-        self._upstream = DISPOSED
-
-        local downstream = self._downstream 
-        if(downstream) then 
-            self._downstream = nil 
-            downstream:onError(x)
-        end 
-    end 
-
+    end
 }
 
 local Single 
-local SingleDetach 
+local SingleDoFinally
 
 
 local notLoaded = true 
@@ -80,18 +76,26 @@ local function asyncLoad()
     if(notLoaded) then
         notLoaded = false 
         Single = require "RxLua.single"
-        SingleDetach = class("SingleDetach", Single){
-            new = function (self, source)
+        SingleDoFinally = class("SingleDoFinally", Single){
+            new = function (self, source, actual)
                 self._source = source 
+                self._actual = actual
             end, 
             subscribeActual = function (self, observer)
-                self._source:subscribe(DetachSingleObserver(observer))
+                self._source:subscribe(DFSingleObserver(observer, self._actual))
             end, 
         }
     end 
 end
 
-return function (self)
+local BadArgument = require "RxLua.utils.badArgument"
+
+return function (source, doFinally)
+    if((not Action.instanceof(doFinally, Action)) and type(doFinally) == "function") then 
+        doFinally = Action(doFinally)
+    else 
+        BadArgument(false, 1, "Action or function")
+    end
     asyncLoad()
-    return SingleDetach(self)
-end 
+    return SingleDoFinally(source, doFinally)
+end
