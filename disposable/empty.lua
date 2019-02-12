@@ -25,7 +25,7 @@ local Disposable = require "RxLua.disposable"
 local BadArgument = require "RxLua.utils.badArgument"
 
 local Observer = require "RxLua.observer"
-local CompletableObserver = requrie "RxLua.observer.completable"
+local CompletableObserver = require "RxLua.observer.completable"
 local MaybeObserver = require "RxLua.observer.maybe"
 local SingleObserver = require "RxLua.observer.single"
 

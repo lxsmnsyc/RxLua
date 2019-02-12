@@ -21,22 +21,47 @@
 ]] 
 local class = require "RxLua.utils.meta.class"
 
+local EmptyDisposable = require "RxLua.disposable.empty"
+
 local SingleSource = require "RxLua.source.single"
+local Single 
+local SingleDefer 
 
-local path = "RxLua.operators.single"
+local notLoaded = true 
+local function asyncLoad()
+    if(notLoaded) then
+        notLoaded = false 
+        Single = require "RxLua.single"
 
-local function loadOperator(name)
-    return require(path.."."..name)
+        SingleDefer = class("SingleDefer", Single){
+            new = function (self, callable)
+                self._callable = callable
+            end, 
+
+            subscribeActual = function (self, observer)
+                local try, catch = pcall(function ()
+                    return self._callable()
+                end)
+
+                if(try) then 
+                    if(SingleSource.instanceof(catch, SingleSource)) then 
+                        catch:subscribe(observer)
+                    else 
+                        EmptyDisposable.error(observer, "The defer function did not return a SingleSource.")
+                    end 
+                else 
+                    error(catch)
+                    EmptyDisposable.error(observer, catch)
+                end 
+            end
+        }
+    end 
+end
+
+local BadArgument = require "RxLua.utils.badArgument"
+
+return function (callable)
+    BadArgument(type(callable) == "function", 1, "function", type(callable))
+    asyncLoad()
+    return SingleDefer(callable)
 end 
-
-return class ("Single", SingleSource){
-    subscribeActual = function (self, observer) end,
-    
-    create = loadOperator("create"),
-    subscribe = loadOperator("subscribe"),
-
-    amb = loadOperator("amb"),
-    cache = loadOperator("cache"),
-    contains = loadOperator("contains"),
-    defer = loadOperator("defer")
-}

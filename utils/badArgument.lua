@@ -28,7 +28,11 @@ return function (eval, argNumber, expectedType, receivedType)
         Format message
     ]]
     argNumber = "bad argument #"..(argNumber or 1)
-    context = " to '"..context.."' "
+    if(context) then 
+        context = " to '"..context.."' "
+    else 
+        context = ""
+    end 
     expectedType = '(expected '..expectedType
     if(receivedType) then 
         expectedType = expectedType..", received "..receivedType
