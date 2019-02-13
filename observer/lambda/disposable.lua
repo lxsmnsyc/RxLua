@@ -37,6 +37,8 @@ local DISPOSED = require "RxLua.disposable.helper.disposed"
 
 local validate = require "RxLua.disposable.helper.validate"
 
+local HostError = require "RxLua.utils.hostError"
+
 return class ("DisposableLambdaObserver", Disposable, Observer){
     new = function (self, actual, onSubscribe, onDispose)
         BadArgument(Observer.instanceof(actual, Observer), 1, "Observer")
@@ -75,7 +77,7 @@ return class ("DisposableLambdaObserver", Disposable, Observer){
             self._upstream = DISPOSED
             self._downstream:onError(t)
         else 
-            error(t)
+            HostError(t)
         end
     end,
 
@@ -102,7 +104,7 @@ return class ("DisposableLambdaObserver", Disposable, Observer){
             if(try) then 
                 d:dispose()
             else 
-                error(catch)
+                HostError(catch)
             end 
         end 
     end 

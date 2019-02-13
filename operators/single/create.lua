@@ -32,6 +32,7 @@ local dispose = require "RxLua.disposable.helper.dispose"
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
 local BadArgument = require "RxLua.utils.badArgument"
+local HostError = require "RxLua.utils.hostError"
 
 
 local SingleEmitter = require "RxLua.emitter.single"
@@ -40,8 +41,6 @@ local Disposable = require "RxLua.disposable"
 --[[
     The emitter class that emits the signals on the receiver.
 ]]
-local function tryOnError(self, t)
-end
 
 local SingleCreateEmitter = class("SingleCreateEmitter", SingleEmitter, Disposable){
     new = function (self, observer)
@@ -66,6 +65,8 @@ local SingleCreateEmitter = class("SingleCreateEmitter", SingleEmitter, Disposab
         if(not isDisposed(self)) then 
             dispose(self)
             self._observer:onError(t)
+        else
+            HostError(t) 
         end
     end,
 

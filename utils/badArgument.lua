@@ -19,6 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
+local HostError = require "RxLua.utils.hostError"
 return function (eval, argNumber, expectedType, receivedType)
     --[[
         Get the calling function
@@ -31,7 +32,7 @@ return function (eval, argNumber, expectedType, receivedType)
     if(context) then 
         context = " to '"..context.."' "
     else 
-        context = ""
+        context = " "
     end 
     expectedType = '(expected '..expectedType
     if(receivedType) then 
@@ -42,6 +43,6 @@ return function (eval, argNumber, expectedType, receivedType)
         Assert
     ]]
     if(not eval) then 
-        assert(false, argNumber..context..expectedType)
+        HostError(argNumber..context..expectedType, 2)
     end
 end 

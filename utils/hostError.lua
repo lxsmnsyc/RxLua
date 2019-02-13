@@ -18,42 +18,5 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]] 
-
-local class = require "RxLua.utils.meta.class"
-
-local Disposable = require "RxLua.disposable"
-local CompletableObserver = require "RxLua.observer"
-
-local Action = require "RxLua.functions.action"
-local Consumer = require "RxLua.functions.consumer"
-
-local setOnce = require "RxLua.disposable.helper.setOnce"
-local dispose = require "RxLua.disposable.helper.dispose"
-local isDisposed = require "RxLua.disposable.helper.isDisposed"
-
-local HostError = require "RxLua.utils.hostErro"
-
-return class ("EmptyCompletableObserver", Disposable, CompletableObserver){
-    onSubscribe = function (self, disposable) 
-        setOnce(self, disposable)
-    end,
-    
-    onComplete = function (self)
-        dispose(self)
-    end,
-    
-    onError = function (self, t)
-        dispose(self)
-        HostError(t)
-    end,
-
-
-    dispose = function (self)
-        dispose(self)
-    end,
-
-    isDisposed = function (self)
-        return isDisposed(self)
-    end 
-}
+]]  
+return print

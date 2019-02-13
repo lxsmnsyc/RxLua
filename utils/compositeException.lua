@@ -20,11 +20,13 @@
     SOFTWARE.   
 ]]
 
+local HostError = require "RxLua.utils.hostError"
+
 return function (...)
     local args = {...}
     if(#args == 1 and type(args[1]) == "table") then 
         args = args[1]
     end 
 
-    error(table.concat(args, "\n"))
+    HostError(table.concat(args, "\n"))
 end 

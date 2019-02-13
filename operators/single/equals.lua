@@ -28,6 +28,8 @@ local incrementAndGet = require "RxLua.reference.incrementAndGet"
 local compareAndSet = require "RxLua.reference.compareAndSet"
 local get = require "RxLua.reference.get"
 
+local HostError = require "RxLua.utils.hostError"
+
 local EqualsSingleObserver = class("EqualsSingleObserver", SingleObserver){
     new = function (self, index, set, values, observer, count)
         self._index = index 
@@ -55,6 +57,7 @@ local EqualsSingleObserver = class("EqualsSingleObserver", SingleObserver){
             local reference = self._count 
             local state = get(reference)
             if(state >= 2) then 
+                HostError(t)
                 return 
             end
 

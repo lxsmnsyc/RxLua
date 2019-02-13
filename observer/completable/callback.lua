@@ -36,6 +36,8 @@ local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
 local ProduceConsumer = require "RxLua.functions.helper.produceConsumer"
 
+local HostError = require "RxLua.utils.hostError"
+
 return class ("CallbackCompletableObserver", Disposable, CompletableObserver){
     new = function (self, onComplete, onError)
         if((not Action.instanceof(onComplete, Action)) and type(onComplete) == "function") then 
@@ -58,7 +60,13 @@ return class ("CallbackCompletableObserver", Disposable, CompletableObserver){
     onComplete = function (self)
         if(not isDisposed(self)) then 
             dispose(self)
-            self._onComplete:run()
+            local try, catch = pcall(function ()
+                self._onComplete:run()
+            end)
+
+            if(not try) then 
+                HostError(catch)
+            end 
         end
     end,
     
@@ -69,7 +77,7 @@ return class ("CallbackCompletableObserver", Disposable, CompletableObserver){
                 self._onError:accept(t)
             end)
             if(not try) then 
-                error(catch)
+                HostError(catch)
             end
         end
     end,

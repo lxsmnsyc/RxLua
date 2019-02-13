@@ -28,6 +28,8 @@ local Action = require "RxLua.functions.action"
 
 local validate = require "RxLua.disposable.helper.validate"
 
+local HostError = require "RxLua.utils.hostError"
+
 local DATSingleObserver = class("DATSingleObserver", SingleObserver, Disposable){
     new = function (self, downstream, actual)
         self._downstream = downstream
@@ -43,11 +45,24 @@ local DATSingleObserver = class("DATSingleObserver", SingleObserver, Disposable)
 
     onSuccess = function (self, x)
         self._downstream:onSuccess(x)
-        self._actual:run()
+
+        local try, catch = pcall(function()
+            self._actual:run()
+        end)
+
+        if(not try) then 
+            HostError(catch)
+        end
     end,
     onError = function (self, t)
         self._downstream:onError(t)
-        self._actual:run()
+        local try, catch = pcall(function()
+            self._actual:run()
+        end)
+
+        if(not try) then 
+            HostError(catch)
+        end
     end,
 
     onSubscribe = function (self, d)

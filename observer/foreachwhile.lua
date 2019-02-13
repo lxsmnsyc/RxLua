@@ -36,9 +36,11 @@ local dispose = require "RxLua.disposable.helper.dispose"
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
 local defaultSet = require "RxLua.disposable.helper.defaultSet"
 
+local HostError = require "RxLua.utils.hostError"
+
 local function errorHandler(self, t) 
     if(self._done) then 
-        error(t)
+        HostError(t)
         return
     end 
     self._done = true 
@@ -53,7 +55,6 @@ end
 
 local function completeHandler(self) 
     if(self._done) then 
-        error(t)
         return
     end 
     self._done = true 
@@ -62,7 +63,7 @@ local function completeHandler(self)
     end)
 
     if(not try) then 
-        error(catch)
+        HostError(catch)
     end 
 end
 

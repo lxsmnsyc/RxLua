@@ -44,6 +44,8 @@ local DISPOSED = require "RxLua.disposable.helper.disposed"
 local ProduceAction = require "RxLua.functions.helper.produceAction"
 local ProduceConsumer = require "RxLua.functions.helper.produceConsumer"
 
+local HostError = require "RxLua.utils.hostError"
+
 local function errorHandler(self, t)
     if(not isDisposed(self)) then 
         dispose(self)
@@ -54,6 +56,8 @@ local function errorHandler(self, t)
         if(not try) then 
             CompositeException(t, catch)
         end 
+    else 
+        HostError(t)
     end 
 end
 
@@ -106,7 +110,14 @@ return class ("LambdaObserver", Disposable, Observer){
     onComplete = function (self) 
         if(not isDisposed(self)) then
             dispose(self)
-            self._onComplete:run()
+
+            local try, catch = pcall(function ()
+                self._onComplete:run()
+            end)
+
+            if(not try) then 
+                HostError(catch)
+            end
         end 
     end,
 

@@ -25,6 +25,8 @@ local SingleObserver = require "RxLua.observer.single"
 
 local Consumer = require "RxLua.functions.consumer"
 
+local HostError = require "RxLua.utils.hostError"
+
 local DOESingleObserver = class("DOESingleObserver", SingleObserver){
     new = function (self, downstream, actual)
         self._downstream = downstream
@@ -36,7 +38,13 @@ local DOESingleObserver = class("DOESingleObserver", SingleObserver){
     end,
 
     onError = function (self, t)
-        self._actual:accept(t)
+        local try, catch = pcall(function()
+            self._actual:accept(t)
+        end)
+
+        if(not try) then 
+            t = t.."\n"..catch
+        end
         self._downstream:onError(t)
     end,
 

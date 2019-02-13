@@ -29,17 +29,22 @@ local Action = require "RxLua.functions.action"
 local compareAndSet = require "RxLua.reference.compareAndSet"
 local validate = require "RxLua.disposable.helper.validate"
 
+local HostError = require "RxLua.utils.hostError"
+
 local DODSingleObserver = class("DODSingleObserver", SingleObserver, Disposable){
     new = function (self, downstream, actual)
-        self._reference = {}
         self._downstream = downstream
         self._actual = actual
     end, 
 
     dispose = function (self)
-        if(compareAndSet(self._reference, nil, 1)) then 
+        local try, catch = pcall(function()
             self._actual:run()
-        end 
+        end)
+
+        if(not try) then 
+            HostError(catch)
+        end
         self._upstream:dispose()
     end,
     isDisposed = function ()

@@ -25,6 +25,8 @@ local SingleObserver = require "RxLua.observer.single"
 
 local BiConsumer = require "RxLua.functions.biconsumer"
 
+local HostError = require "RxLua.utils.hostError"
+
 local DoOnEventSingleObserver = class("DoOnEventSingleObserver", SingleObserver){
     new = function (self, downstream, actual)
         self._downstream = downstream
@@ -32,12 +34,25 @@ local DoOnEventSingleObserver = class("DoOnEventSingleObserver", SingleObserver)
     end, 
 
     onSuccess = function (self, x)
-        self._actual:accept(x, nil)
+        local try, catch = pcall(function()
+            self._actual:accept(x, nil)
+        end)
+
+        if(not try) then 
+            self._downstream:onError(catch)
+            return
+        end
         self._downstream:onSuccess(x)
     end,
 
     onError = function (self, t)
-        self._actual:accept(nil, t)
+        local try, catch = pcall(function()
+            self._actual:accept(nil, t)
+        end)
+
+        if(not try) then 
+            t = t.."\n"..catch
+        end
         self._downstream:onError(t)
     end,
 

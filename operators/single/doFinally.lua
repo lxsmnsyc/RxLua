@@ -28,16 +28,22 @@ local Action = require "RxLua.functions.action"
 
 local compareAndSet = require "RxLua.reference.compareAndSet"
 local validate = require "RxLua.disposable.helper.validate"
+local HostError = require "RxLua.utils.hostError"
 
 local function runFinally(self)
-    if(compareAndSet(self._reference, nil, 1)) then 
-        self._actual:run()
+    if(compareAndSet(self._reference, nil, 1)) then
+        local try, catch = pcall(function()
+            self._actual:run()
+        end)
+
+        if(not try) then 
+            HostError(catch)
+        end
     end 
 end
 
 local DFSingleObserver = class("DFSingleObserver", SingleObserver, Disposable){
     new = function (self, downstream, actual)
-        self._reference = {}
         self._downstream = downstream
         self._actual = actual
     end, 

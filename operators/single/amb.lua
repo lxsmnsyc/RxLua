@@ -30,6 +30,7 @@ local CompositeDisposable = require "RxLua.disposable.composite"
 local compareAndSet = require "RxLua.reference.compareAndSet"
 
 local BadArgument = require "RxLua.utils.badArgument"
+local HostError = require "RxLua.utils.hostError"
 
 local AmbSingleObserver = class("AmbSingleObserver", SingleObserver){
     new = function (self, once, set, observer)
@@ -59,7 +60,9 @@ local AmbSingleObserver = class("AmbSingleObserver", SingleObserver){
             set:delete(self._upstream)
             set:dispose()
 
-            self._downstream:onError(t)
+            self._downstream:onError(t) 
+        else 
+            HostError(t)
         end
     end 
 }

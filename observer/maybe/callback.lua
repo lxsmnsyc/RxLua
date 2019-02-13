@@ -65,7 +65,13 @@ return class ("CallbackMaybeObserver", Disposable, MaybeObserver){
     onSuccess = function (self, x)
         if(not isDisposed(self)) then 
             dispose(self)
-            self._onSuccess:accept(x)
+            local try, catch = pcall(function ()
+                self._onSuccess:accept(x)
+            end)
+
+            if(not try) then 
+                HostError(catch)
+            end 
         end
     end, 
 
@@ -85,7 +91,13 @@ return class ("CallbackMaybeObserver", Disposable, MaybeObserver){
     onComplete = function (self) 
         if(not dispose(self)) then
             dispose(self)
-            self._onComplete:run()
+            local try, catch = pcall(function()
+                self._onComplete:run()
+            end)
+
+            if(not try) then 
+                HostError(catch)
+            end 
         end 
     end,
 

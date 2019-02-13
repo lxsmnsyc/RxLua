@@ -36,6 +36,8 @@ local setOnce = require "RxLua.disposable.helper.setOnce"
 local dispose = require "RxLua.disposable.helper.dispose"
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
+local HostError = require "RxLua.utils.hostError"
+
 return class ("ConsumerSingleObserver", Disposable, SingleObserver){
     new = function (self, onSuccess, onError)
         onSuccess = ProduceConsumer(onSuccess)
@@ -56,7 +58,7 @@ return class ("ConsumerSingleObserver", Disposable, SingleObserver){
             self._onSuccess:accept(x)
         end)
         if(not try) then 
-            error(catch)
+            HostError(catch)
         end 
     end,
     
@@ -67,7 +69,7 @@ return class ("ConsumerSingleObserver", Disposable, SingleObserver){
         end)
 
         if(not try) then 
-            error(catch)
+            HostError(catch)
         end 
     end,
 

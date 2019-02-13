@@ -33,8 +33,15 @@ local DOSSingleObserver = class("DOSSingleObserver", SingleObserver){
     end, 
 
     onSuccess = function (self, x)
-        self._actual:accept(x)
-        self._downstream:onSuccess(x)
+        local try, catch = pcall(function ()
+            self._actual:accept(x)
+        end)
+
+        if(try) then
+            self._downstream:onSuccess(x)
+        else
+            self._downstream:onError(catch)
+        end 
     end,
     onError = function (self, t)
         self._downstream:onError(t)

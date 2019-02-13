@@ -28,6 +28,8 @@ local Consumer = require "RxLua.functions.consumer"
 
 local validate = require "RxLua.disposable.helper.validate"
 
+local HostError = require "RxLua.utils.hostError"
+
 local DASSingleObserver = class("DASSingleObserver", SingleObserver, Disposable){
     new = function (self, downstream, actual)
         self._downstream = downstream
@@ -43,7 +45,14 @@ local DASSingleObserver = class("DASSingleObserver", SingleObserver, Disposable)
 
     onSuccess = function (self, x)
         self._downstream:onSuccess(x)
-        self._actual:accept(x)
+
+        local try, catch = pcall(function ()
+            self._actual:accept(x)
+        end)
+        
+        if(not try) then 
+            HostError(catch)
+        end
     end,
     onError = function (self, t)
         self._downstream:onError(t)

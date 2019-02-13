@@ -35,6 +35,8 @@ local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
 local DISPOSED = require "RxLua.disposable.helper.disposed"
 
+local HostError = require "RxLua.utils.hostError"
+
 return class ("BiConsumerSingleObserver", Disposable, SingleObserver){
     new = function (self, onCallback)
         BadArgument(BiConsumer.instanceof(onCallback, BiConsumer), 1, "BiConsumer")
@@ -54,7 +56,7 @@ return class ("BiConsumerSingleObserver", Disposable, SingleObserver){
         end)
 
         if(not try) then 
-            error(catch)
+            HostError(catch)
         end 
     end,
     
@@ -66,7 +68,7 @@ return class ("BiConsumerSingleObserver", Disposable, SingleObserver){
         end)
 
         if(not try) then 
-            error(catch)
+            HostError(catch)
         end 
     end,
 

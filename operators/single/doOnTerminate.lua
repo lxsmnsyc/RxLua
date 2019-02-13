@@ -33,11 +33,24 @@ local DOTSingleObserver = class("DOTSingleObserver", SingleObserver){
     end, 
 
     onSuccess = function (self, x)
-        self._actual:run()
-        self._downstream:onSuccess(x)
+        local try, catch = pcall(function ()
+            self._actual:run()
+        end)
+
+        if(try) then
+            self._downstream:onSuccess(x)
+        else
+            self._downstream:onError(catch)
+        end 
     end,
     onError = function (self, t)
-        self._actual:run()
+        local try, catch = pcall(function ()
+            self._actual:run()
+        end)
+
+        if(not try) then 
+            t = t.."\n"..catch 
+        end
         self._downstream:onError(t)
     end,
 

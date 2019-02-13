@@ -20,6 +20,7 @@
     SOFTWARE.
 ]]  
 
+local HostError = require "RxLua.utils.hostError"
 return function (msg)
-    error("Protocol Violation: "..msg)
+    HostError("Protocol Violation: "..msg)
 end 
