@@ -51,5 +51,6 @@ return class ("Single", SingleSource){
     doOnSuccess = loadOperator("doOnSuccess"),
     doOnTerminate = loadOperator("doOnTerminate"),
 
-    equals = loadOperator("equals")
+    equals = loadOperator("equals"),
+    error = loadOperator("error")
 }

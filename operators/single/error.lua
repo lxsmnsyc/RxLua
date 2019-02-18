@@ -20,3 +20,37 @@
     SOFTWARE.
 ]] 
 local class = require "RxLua.utils.meta.class"
+
+local EmptyDisposable = require "RxLua.disposable.empty"
+
+local SingleError 
+
+local notLoaded = true 
+local function asyncLoad()
+    if(notLoaded) then
+        notLoaded = false 
+        
+        local Single = require "RxLua.single"
+        SingleError = class("SingleError", Single){
+            new = function (self, supplier)
+                self._supplier = supplier
+            end,
+
+            subscribeActual = function (self, observer)
+                local try, catch = pcall(self._supplier)
+
+                local error = catch 
+
+                EmptyDisposable.error(observer, error)
+            end
+        }
+    end
+end
+
+local BadArgument = require "RxLua.utils.badArgument"
+return function (fn)
+    BadArgument(type(fn) == "function", 1, "Function")
+    asyncLoad()
+
+    return SingleError(fn)
+end

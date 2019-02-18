@@ -32,7 +32,7 @@ local setOnce = require "RxLua.disposable.helper.setOnce"
 local dispose = require "RxLua.disposable.helper.dispose"
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
 
-local HostError = require "RxLua.utils.hostErro"
+local HostError = require "RxLua.utils.hostError"
 
 return class ("EmptyCompletableObserver", Disposable, CompletableObserver){
     onSubscribe = function (self, disposable) 
