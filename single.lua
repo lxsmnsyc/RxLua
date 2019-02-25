@@ -52,5 +52,7 @@ return class ("Single", SingleSource){
     doOnTerminate = loadOperator("doOnTerminate"),
 
     equals = loadOperator("equals"),
-    error = loadOperator("error")
+    error = loadOperator("error"),
+
+    flatMap = loadOperator("flatmap")
 }
