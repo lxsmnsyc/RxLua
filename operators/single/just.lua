@@ -20,3 +20,29 @@
     SOFTWARE.
 ]] 
 local class = require "RxLua.utils.meta.class"
+
+local EmptyDisposable = require "RxLua.disposable.empty"
+
+local Single 
+local SingleJust
+
+local notLoaded = true 
+local function asyncLoad()
+    if(notLoaded) then
+        notLoaded = false 
+        Single = require "RxLua.single"
+        SingleJust = class("SingleJust", Single){
+            new = function (self, value)
+                self._value = value 
+            end, 
+            subscribeActual = function (self, observer)
+                EmptyDisposable.success(observer, self._value)
+            end, 
+        }
+    end 
+end
+
+return function (value)
+    asyncLoad()
+    return SingleJust(value)
+end

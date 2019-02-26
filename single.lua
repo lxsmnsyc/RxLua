@@ -61,5 +61,7 @@ return class ("Single", SingleSource){
     fromCallable = loadOperator("fromCallable"),
     -- fromUnsafeSource = loadOperator("fromUnsafeSource"),
 
-    hide = loadOperator("hide")
+    hide = loadOperator("hide"),
+
+    just = loadOperator("just")
 }

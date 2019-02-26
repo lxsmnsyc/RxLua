@@ -75,5 +75,5 @@ end
 
 return function (self)
     asyncLoad()
-    return SingleHide(self, fn)
+    return SingleHide(self)
 end
