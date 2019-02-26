@@ -23,41 +23,30 @@ local class = require "RxLua.utils.meta.class"
 
 local SingleSource = require "RxLua.source.single"
 
-local path = "RxLua.operators.single"
+local Single 
+local SingleFromUnsafeSource
 
-local function loadOperator(name)
-    return require(path.."."..name)
-end 
+local notLoaded = true 
+local function asyncLoad()
+    if(notLoaded) then
+        notLoaded = false 
+        Single = require "RxLua.single"
+        SingleFromUnsafeSource = class("SingleFromUnsafeSource", Single){
+            new = function (self, source)
+                self._source = source 
+            end, 
+            subscribeActual = function (self, observer)
+                self._source:subscribe(observer)
+            end, 
+        }
+    end 
+end
 
-return class ("Single", SingleSource){
-    subscribeActual = function (self, observer) end,
-    
-    create = loadOperator("create"),
-    subscribe = loadOperator("subscribe"),
 
-    amb = loadOperator("amb"),
+local BadArgument = require "RxLua.utils.badArgument"
 
-    cache = loadOperator("cache"),
-    contains = loadOperator("contains"),
-
-    defer = loadOperator("defer"),
-    -- detach = loadOperator("detach"),
-    doAfterSuccess = loadOperator("doAfterSuccess"),
-    doAfterTerminate = loadOperator("doAfterTerminate"),
-    doFinally = loadOperator("doFinally"),
-    doOnDispose = loadOperator("doOnDispose"),
-    doOnError = loadOperator("doOnError"),
-    doOnEvent = loadOperator("doOnEvent"),
-    doOnSubscribe = loadOperator("doOnSubscribe"),
-    doOnSuccess = loadOperator("doOnSuccess"),
-    doOnTerminate = loadOperator("doOnTerminate"),
-
-    equals = loadOperator("equals"),
-    error = loadOperator("error"),
-
-    flatMap = loadOperator("flatmap"),
-    flatMapCompletable = loadOperator("flatMapCompletable"),
-    flatMapMaybe = loadOperator("flatMapMaybe"),
-    fromCallable = loadOperator("fromCallable"),
-    -- fromUnsafeSource = loadOperator("fromUnsafeSource")
-}
+return function (source)
+    BadArgument(SingleSource.instanceof(source, SingleSource), 1, "SingleSource")
+    asyncLoad()
+    return SingleFromUnsafeSource(source)
+end
