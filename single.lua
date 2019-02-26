@@ -59,5 +59,7 @@ return class ("Single", SingleSource){
     flatMapCompletable = loadOperator("flatMapCompletable"),
     flatMapMaybe = loadOperator("flatMapMaybe"),
     fromCallable = loadOperator("fromCallable"),
-    -- fromUnsafeSource = loadOperator("fromUnsafeSource")
+    -- fromUnsafeSource = loadOperator("fromUnsafeSource"),
+
+    hide = loadOperator("hide")
 }

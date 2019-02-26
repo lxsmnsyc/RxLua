@@ -23,3 +23,57 @@ local class = require "RxLua.utils.meta.class"
 
 local Disposable = require "RxLua.disposable"
 local SingleObserver = require "RxLua.observer.single"
+
+local validate = require "RxLua.disposable.helper.validate"
+
+local HideSingleObserver = class("HideSingleObserver", SingleObserver, Disposable){
+    new = function (self, downstream)
+        self._downstream = downstream
+    end,
+
+    dispose = function (self)
+        self._upstream:dispose()
+    end,
+
+    isDisposed = function (self)
+        return self._upstream:isDisposed()
+    end,
+
+    onSubscribe = function (self, d)
+        if(validate(self._upstream, d)) then 
+            self._upstream = d
+            self._downstream:onSubscribe(self)
+        end
+    end,
+    onSuccess = function (self, x)
+        self._downstream:onSuccess(x)
+    end,
+    onError = function (self, t)
+        self._downstream:onError(t)
+    end,
+}
+
+
+local Single 
+local SingleHide
+
+local notLoaded = true 
+local function asyncLoad()
+    if(notLoaded) then
+        notLoaded = false 
+        Single = require "RxLua.single"
+        SingleHide = class("SingleHide", Single){
+            new = function (self, source, actual)
+                self._source = source 
+            end, 
+            subscribeActual = function (self, observer)
+                self._source:subscribe(HideSingleObserver(observer))
+            end, 
+        }
+    end 
+end
+
+return function (self)
+    asyncLoad()
+    return SingleHide(self, fn)
+end
