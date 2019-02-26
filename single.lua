@@ -28,7 +28,6 @@ local path = "RxLua.operators.single"
 local function loadOperator(name)
     return require(path.."."..name)
 end 
-
 return class ("Single", SingleSource){
     subscribeActual = function (self, observer) end,
     
