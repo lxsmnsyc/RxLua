@@ -23,9 +23,10 @@ local class = require "RxLua.utils.meta.class"
 
 local Predicate = require "RxLua.functions.predicate"
 
-local SingleSource = require "RxLua.source.single"
+local CompletableSource = require "RxLua.source.completable"
 
 local SingleObserver = require "RxLua.observer.single"
+local CompletableObserver = require "RxLua.observer.completable"
 local Disposable = require "RxLua.disposable"
 
 local dispose = require "RxLua.disposable.helper.dispose"
@@ -33,23 +34,9 @@ local isDisposed = require "RxLua.disposable.helper.isDisposed"
 local replace = require "RxLua.disposable.helper.replace"
 local setOnce = require "RxLua.disposable.helper.setOnce"
 
-local FlatMapSingleObserver = class("FlatMapSingleObserver", SingleObserver){
-    new = function (self, parent, downstream)
-        self._parent = parent 
-        self._downstream = downstream
-    end,
-    onSubscribe = function (self, d)
-        replace(self._parent, d)
-    end,
-    onSuccess = function (self, x)
-        self._downstream:onSuccess(x)
-    end,
-    onError = function (self, t)
-        self._downstream:onError(t)
-    end,
-}
+local ProtocolViolation = require "RxLua.utils.protocolViolation"
 
-local SingleFlatMapCallback = class("SingleFlatMapCallback", Disposable, SingleObserver){
+local FlatMapCompletableObserver = class("FlatMapCompletableObserver", SingleObserver, CompletableObserver, Disposable){
     new = function (self, actual, mapper)
         self._downstream = actual 
         self._mapper = mapper 
@@ -64,19 +51,18 @@ local SingleFlatMapCallback = class("SingleFlatMapCallback", Disposable, SingleO
     end,
 
     onSubscribe = function (self, d)
-        if(setOnce(self, d)) then 
-            self._downstream:onSubscribe(self)
-        end
+        replace(self, d)
     end,
 
     onSuccess = function (self, x)
         local try, result = pcall(function ()
             local cs = self._mapper:test(x)
+            
             if(cs == nil) then 
-                ProtocolViolation("FlatMapCompletable mapper returned a null SingleSource")
+                ProtocolViolation("FlatMapCompletable mapper returned a null CompletableSource")
                 return
-            elseif(not SingleSource.is(cs, SingleSource)) then 
-                ProtocolViolation("FlatMapCompletable mapper returned a non-SingleSource")
+            elseif(not CompletableSource.instanceof(cs, CompletableSource)) then 
+                ProtocolViolation("FlatMapCompletable mapper returned a non-CompletableSource")
                 return
             end
             return cs
@@ -84,32 +70,39 @@ local SingleFlatMapCallback = class("SingleFlatMapCallback", Disposable, SingleO
 
         if(try) then 
             if(not isDisposed(self)) then 
-                result:subscribe(FlatMapSingleObserver(self, self._downstream))
+                result:subscribe(self)
             end
         else
             self._downstream:onError(result)
         end
     end,
+
     onError = function (self, t)
         self._downstream:onError(t)
     end,
+
+    onComplete = function (self)
+        self._downstream:onComplete()
+    end
 }
 
-local Single 
-local SingleFlatMap
+local Completable 
+local SingleFlatMapCompletable
 
 local notLoaded = true 
 local function asyncLoad()
     if(notLoaded) then
         notLoaded = false 
-        Single = require "RxLua.single"
-        SingleFlatMap = class("SingleFlatMap", Single){
+        Completable = require "RxLua.completable"
+        SingleFlatMapCompletable = class("SingleFlatMapCompletable", Completable){
             new = function (self, source, actual)
                 self._source = source 
                 self._actual = actual
             end, 
             subscribeActual = function (self, observer)
-                self._source:subscribe(SingleFlatMapCallback(observer, self._actual))
+                local parent = FlatMapCompletableObserver(observer, self._actual)
+                observer:onSubscribe(parent)
+                self._source:subscribe(parent)
             end, 
         }
     end 
@@ -124,5 +117,5 @@ return function (self, fn)
         BadArgument(false, 1, "Predicate or function")
     end
     asyncLoad()
-    return SingleFlatMap(self, fn)
+    return SingleFlatMapCompletable(self, fn)
 end

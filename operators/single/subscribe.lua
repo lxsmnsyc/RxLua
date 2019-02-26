@@ -48,7 +48,6 @@ return function (self, onSuccess, onError)
         
         observer = ConsumerSingleObserver(onSuccess, onError)
     end 
-
     self:subscribeActual(observer)
     if(Disposable.instanceof(observer, Disposable)) then 
         return observer

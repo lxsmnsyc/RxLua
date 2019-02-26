@@ -21,7 +21,7 @@
 ]] 
 local Disposable = require "RxLua.disposable"
 
-local CompletableObserver = require "RxLua.observer"
+local CompletableObserver = require "RxLua.observer.completable"
 
 local CallbackCompletableObserver = require "RxLua.observer.completable.callback"
 local EmptyCompletableObserver = require "RxLua.observer.completable.empty"
@@ -36,7 +36,7 @@ local BadArgument = require "RxLua.utils.badArgument"
 return function (self, onComplete, onError, onSubscribe)
     local observer 
     if(CompletableObserver.instanceof(onComplete, CompletableObserver)) then 
-        observer = onNext 
+        observer = onComplete 
     elseif(type(onComplete) == "function" or Action.instanceof(onComplete, Action)) then 
         onError = ProduceConsumer(onError)
         BadArgument(onError, 2, "Consumer, function or nil")

@@ -54,5 +54,6 @@ return class ("Single", SingleSource){
     equals = loadOperator("equals"),
     error = loadOperator("error"),
 
-    flatMap = loadOperator("flatmap")
+    flatMap = loadOperator("flatmap"),
+    flatMapCompletable = loadOperator("flatMapCompletable")
 }

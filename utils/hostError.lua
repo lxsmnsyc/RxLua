@@ -19,4 +19,6 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 ]]  
-return print
+return (function (msg)
+    error(msg, 2)
+end) or print
