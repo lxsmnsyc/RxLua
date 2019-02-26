@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Home - RxLua</title>
+    <title>Action - RxLua</title>
     
     <meta name="description" content="Reactive Extensions for Lua" />
     
@@ -45,31 +45,209 @@
 
 <div id="main">
     
-
+    <h1 class="page-title">Action</h1>
     
-
-
-
-    
-
-
-    <section class="package">
-        <h3> </h3>		
-    </section>
-
-
-
-
-
-
-
-
 
     
 
 
 
 
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="Rx.html">Rx</a>.</span>
+        
+        Action
+        </h2>
+        
+            <div class="class-description"><p>A functional interface similar to Runnable but allows throwing a checked exception.</p></div>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+            
+
+            
+                <h3>Example</h3>
+                
+    <pre class="prettyprint"><code>local Action = require "RxLua.functions.action"
+
+local action = Action(function ()
+    print("Hello World")
+end)</code></pre>
+
+            
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="run"><span class="type-signature"></span>run<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Runs the action and optionally throws a checked exception.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+    <div class="param-desc">
+    
+        <p>Exception if the implementation wishes to throw a checked exception</p>
+    
+    </div>
+
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

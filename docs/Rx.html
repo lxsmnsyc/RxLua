@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Home - RxLua</title>
+    <title>Rx - RxLua</title>
     
     <meta name="description" content="Reactive Extensions for Lua" />
     
@@ -45,31 +45,172 @@
 
 <div id="main">
     
-
+    <h1 class="page-title">Rx</h1>
     
-
-
-
-    
-
-
-    <section class="package">
-        <h3> </h3>		
-    </section>
-
-
-
-
-
-
-
-
 
     
 
 
 
 
+<section>
+
+<header>
+    
+        <h2>
+        Rx
+        </h2>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li><a href="mailto:alexis.munsayac@gmail.com">Alexis Munsayac</a></li>
+        </ul>
+    </dd>
+    
+
+    
+    <dt class="tag-copyright">Copyright:</dt>
+    <dd class="tag-copyright"><ul class="dummy"><li>2019 Alexis Munsayac</li></ul></dd>
+    
+
+    
+    <dt class="tag-license">License:</dt>
+    <dd class="tag-license"><ul class="dummy"><li>MIT</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+            
+
+            
+                <h3>Example</h3>
+                
+    <pre class="prettyprint"><code>local Rx = require "RxLua"
+
+Rx.Observable.create(function (e)
+    e:onNext("Hello")
+    e:onNext("World")
+    e:onComplete()
+end)
+:subscribe(
+    print, 
+    function (t)
+        print("an error occured!", t)
+    end, 
+    function ()
+        print("Completed!")
+    end 
+)</code></pre>
+
+            
+        
+        </div>
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="Rx.CompositeDisposable.html">CompositeDisposable</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Rx.Single.html">Single</a></dt>
+            <dd></dd>
+        </dl>
+    
+    
+    		
+	    <h3 class="subsection-title">Interfaces</h3>		
+	
+	    <dl>		
+	        <dt><a href="Rx.Action.html">Action</a></dt>		
+	        <dd></dd>		
+	    		
+	        <dt><a href="Rx.BiConsumer.html">BiConsumer</a></dt>		
+	        <dd></dd>		
+	    		
+	        <dt><a href="Rx.BiPredicate.html">BiPredicate</a></dt>		
+	        <dd></dd>		
+	    		
+	        <dt><a href="Rx.Consumer.html">Consumer</a></dt>		
+	        <dd></dd>		
+	    		
+	        <dt><a href="Rx.Disposable.html">Disposable</a></dt>		
+	        <dd></dd>		
+	    		
+	        <dt><a href="Rx.Predicate.html">Predicate</a></dt>		
+	        <dd></dd>		
+	    		
+	        <dt><a href="Rx.SingleEmitter.html">SingleEmitter</a></dt>		
+	        <dd></dd>		
+	    		
+	        <dt><a href="Rx.SingleObserver.html">SingleObserver</a></dt>		
+	        <dd></dd>		
+	    		
+	        <dt><a href="Rx.SingleOnSubscribe.html">SingleOnSubscribe</a></dt>		
+	        <dd></dd>		
+	    </dl>		
+	
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
