@@ -35,6 +35,16 @@ function EMPTY:isDisposed()
     return true 
 end 
 
+function EMPTY.success(observer, x)
+    BadArgument(
+        SingleObserver.instanceof(observer, SingleObserver) or 
+        MaybeObserver.instanceof(observer, MaybeObserver),
+        1, "SingleObserver or MaybeObserver"
+    )
+    observer:onSubscribe(EMPTY)
+    observer:onSuccess(x)
+end
+
 function EMPTY.complete(observer)
     BadArgument(
         Observer.instanceof(observer, Observer) or 

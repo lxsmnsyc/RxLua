@@ -21,41 +21,50 @@
 ]] 
 local class = require "RxLua.utils.meta.class"
 
-local SingleSource = require "RxLua.source.single"
+local EmptyDisposable = require "RxLua.disposable.empty"
 
-local path = "RxLua.operators.single"
+local Single 
+local SingleFromCallable
 
-local function loadOperator(name)
-    return require(path.."."..name)
-end 
+local notLoaded = true 
+local function asyncLoad()
+    if(notLoaded) then
+        notLoaded = false 
+        Single = require "RxLua.single"
+        SingleFromCallable = class("SingleFromCallable", Single){
+            new = function (self, source)
+                self._handler = source 
+            end, 
+            subscribeActual = function (self, observer)
+                local try, catch = pcall(self._handler)
+                if(try) then 
+                    EmptyDisposable.success(observer, catch)
+                else
+                    EmptyDisposable.error(observer, catch) 
+                end
+            end, 
+        }
+    end 
+end
 
-return class ("Single", SingleSource){
-    subscribeActual = function (self, observer) end,
-    
-    create = loadOperator("create"),
-    subscribe = loadOperator("subscribe"),
 
-    amb = loadOperator("amb"),
+local BadArgument = require "RxLua.utils.badArgument"
 
-    cache = loadOperator("cache"),
-    contains = loadOperator("contains"),
+local function isCallable(x)
+    local xt = type(x)
+    if(xt == "function") then 
+        return true 
+    elseif(xt == "table") then 
+        local mt = getmetatable(x)
+        if(mt) then 
+            return type(mt.__call) == "function"
+        end
+    end
+    return false 
+end
 
-    defer = loadOperator("defer"),
-    doAfterSuccess = loadOperator("doAfterSuccess"),
-    doAfterTerminate = loadOperator("doAfterTerminate"),
-    doFinally = loadOperator("doFinally"),
-    doOnDispose = loadOperator("doOnDispose"),
-    doOnError = loadOperator("doOnError"),
-    doOnEvent = loadOperator("doOnEvent"),
-    doOnSubscribe = loadOperator("doOnSubscribe"),
-    doOnSuccess = loadOperator("doOnSuccess"),
-    doOnTerminate = loadOperator("doOnTerminate"),
-
-    equals = loadOperator("equals"),
-    error = loadOperator("error"),
-
-    flatMap = loadOperator("flatmap"),
-    flatMapCompletable = loadOperator("flatMapCompletable"),
-    flatMapMaybe = loadOperator("flatMapMaybe"),
-    fromCallable = loadOperator("fromCallable")
-}
+return function (fn)
+    BadArgument(isCallable(fn), 1, "function")
+    asyncLoad()
+    return SingleFromCallable(fn)
+end

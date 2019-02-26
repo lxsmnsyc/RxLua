@@ -20,5 +20,5 @@
     SOFTWARE.
 ]]  
 return (function (msg)
-    error(msg, 2)
+    error(msg, 0)
 end) or print
