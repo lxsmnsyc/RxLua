@@ -23,8 +23,9 @@ local class = require "RxLua.utils.meta.class"
 
 local Predicate = require "RxLua.functions.predicate"
 
-local SingleSource = require "RxLua.source.single"
+local MaybeSource = require "RxLua.source.maybe"
 
+local MaybeObserver = require "RxLua.observer.maybe"
 local SingleObserver = require "RxLua.observer.single"
 local Disposable = require "RxLua.disposable"
 
@@ -35,7 +36,7 @@ local setOnce = require "RxLua.disposable.helper.setOnce"
 
 local ProtocolViolation = require "RxLua.utils.protocolViolation"
 
-local FlatMapSingleObserver = class("FlatMapSingleObserver", SingleObserver){
+local FlatMapMaybeObserver = class("FlatMapMaybeObserver", MaybeObserver){
     new = function (self, parent, downstream)
         self._parent = parent 
         self._downstream = downstream
@@ -49,9 +50,12 @@ local FlatMapSingleObserver = class("FlatMapSingleObserver", SingleObserver){
     onError = function (self, t)
         self._downstream:onError(t)
     end,
+    onComplete = function (self)
+        self._downstream:onComplete()
+    end,
 }
 
-local SingleFlatMapCallback = class("SingleFlatMapCallback", Disposable, SingleObserver){
+local FlatMapMaybeSingleObserver = class("FlatMapMaybeSingleObserver", Disposable, SingleObserver){
     new = function (self, actual, mapper)
         self._downstream = actual 
         self._mapper = mapper 
@@ -75,10 +79,10 @@ local SingleFlatMapCallback = class("SingleFlatMapCallback", Disposable, SingleO
         local try, result = pcall(function ()
             local cs = self._mapper:test(x)
             if(cs == nil) then 
-                ProtocolViolation("FlatMapCompletable mapper returned a null SingleSource")
+                ProtocolViolation("FlatMapCompletable mapper returned a null MaybeSource")
                 return
-            elseif(not SingleSource.instanceof(cs, SingleSource)) then 
-                ProtocolViolation("FlatMapCompletable mapper returned a non-SingleSource")
+            elseif(not MaybeSource.instanceof(cs, MaybeSource)) then 
+                ProtocolViolation("FlatMapCompletable mapper returned a non-MaybeSource")
                 return
             end
             return cs
@@ -86,7 +90,7 @@ local SingleFlatMapCallback = class("SingleFlatMapCallback", Disposable, SingleO
 
         if(try) then 
             if(not isDisposed(self)) then 
-                result:subscribe(FlatMapSingleObserver(self, self._downstream))
+                result:subscribe(FlatMapMaybeObserver(self, self._downstream))
             end
         else
             self._downstream:onError(result)
@@ -98,20 +102,20 @@ local SingleFlatMapCallback = class("SingleFlatMapCallback", Disposable, SingleO
 }
 
 local Single 
-local SingleFlatMap
+local SingleFlatMapMaybe
 
 local notLoaded = true 
 local function asyncLoad()
     if(notLoaded) then
         notLoaded = false 
         Single = require "RxLua.single"
-        SingleFlatMap = class("SingleFlatMap", Single){
+        SingleFlatMapMaybe = class("SingleFlatMapMaybe", Single){
             new = function (self, source, actual)
                 self._source = source 
                 self._actual = actual
             end, 
             subscribeActual = function (self, observer)
-                self._source:subscribe(SingleFlatMapCallback(observer, self._actual))
+                self._source:subscribe(FlatMapMaybeSingleObserver(observer, self._actual))
             end, 
         }
     end 
@@ -126,5 +130,5 @@ return function (self, fn)
         BadArgument(false, 1, "Predicate or function")
     end
     asyncLoad()
-    return SingleFlatMap(self, fn)
+    return SingleFlatMapMaybe(self, fn)
 end

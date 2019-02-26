@@ -55,5 +55,6 @@ return class ("Single", SingleSource){
     error = loadOperator("error"),
 
     flatMap = loadOperator("flatmap"),
-    flatMapCompletable = loadOperator("flatMapCompletable")
+    flatMapCompletable = loadOperator("flatMapCompletable"),
+    flatMapMaybe = loadOperator("flatMapMaybe")
 }
