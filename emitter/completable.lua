@@ -32,7 +32,5 @@ return class "CompletableEmitter"{
 
     setDisposable = function (self, disposable) end,
     
-    isDisposed = function (self) end,
-
-    tryOnError = function (t) end
+    isDisposed = function (self) end
 }
