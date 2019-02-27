@@ -23,7 +23,6 @@
 local RxLua = {}
 
 RxLua.Class = require "RxLua.utils.meta.class"
-RxLua.Reference = require "RxLua.reference"
 
 RxLua.Disposable = require "RxLua.disposable"
 RxLua.CompositeDisposable = require "RxLua.disposable.composite"
@@ -38,12 +37,8 @@ RxLua.PolyFunction = require "RxLua.functions.polyfunction"
 RxLua.Observer = require "RxLua.observer"
 RxLua.DefaultObserver = require "RxLua.observer.default"
 RxLua.DisposableObserver = require "RxLua.observer.disposable"
-RxLua.LambdaObserver = require "RxLua.observer.lambda"
-RxLua.DisposableLambdaObserver = require "RxLua.observer.lambda.disposable"
 
 RxLua.CompletableObserver = require "RxLua.observer.completable"
-RxLua.CallbackCompletableObserver = require "RxLua.observer.completable.callback"
-RxLua.EmptyCompletableObserver = require "RxLua.observer.completable.empty"
 RxLua.DisposableCompletableObserver = require "RxLua.observer.completable.disposable"
 
 RxLua.MaybeObserver = require "RxLua.observer.maybe"
@@ -51,9 +46,6 @@ RxLua.DisposableMaybeObserver = require "RxLua.observer.maybe"
 
 RxLua.SingleObserver = require "RxLua.observer.single"
 RxLua.DisposableSingleObserver = require "RxLua.observer.single.disposable"
-RxLua.ResumeSingleObserver = require "RxLua.observer.single.resume"
-RxLua.ConsumerSingleObserver = require "RxLua.observer.single.consumer"
-RxLua.BiConsumerSingleObserver = require "RxLua.observer.single.biconsumer"
 
 RxLua.Emitter = require "RxLua.emitter"
 RxLua.ObservableEmitter = require "RxLua.emitter.observable"
