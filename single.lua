@@ -40,7 +40,7 @@ return class ("Single", SingleSource){
     contains = loadOperator("contains"),
 
     defer = loadOperator("defer"),
-    -- detach = loadOperator("detach"),
+    detach = loadOperator("detach"),
     doAfterSuccess = loadOperator("doAfterSuccess"),
     doAfterTerminate = loadOperator("doAfterTerminate"),
     doFinally = loadOperator("doFinally"),
