@@ -27,7 +27,11 @@ local Disposable = require "RxLua.disposable"
 local Action = require "RxLua.functions.action"
 
 local compareAndSet = require "RxLua.reference.compareAndSet"
-local validate = require "RxLua.disposable.helper.validate"
+
+local dispose = require "RxLua.disposable.helper.dispose"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
+local setOnce = require "RxLua.disposable.helper.setOnce"
+
 local HostError = require "RxLua.utils.hostError"
 
 local function runFinally(self)
@@ -49,11 +53,11 @@ local DFSingleObserver = class("DFSingleObserver", SingleObserver, Disposable){
     end, 
 
     dispose = function (self)
-        self._upstream:dispose()
+        dispose(self)
         runFinally(self)
     end,
     isDisposed = function ()
-        return self._upstream:isDisposed()
+        return isDisposed(self)
     end,
 
     onSuccess = function (self, x)
@@ -66,10 +70,9 @@ local DFSingleObserver = class("DFSingleObserver", SingleObserver, Disposable){
     end,
 
     onSubscribe = function (self, d)
-        if(validate(self._upstream, d)) then 
-            self._upstream = d
+        if(setOnce(self, d)) then 
             self._downstream:onSubscribe(self)
-        end 
+        end
     end
 }
 

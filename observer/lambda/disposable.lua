@@ -37,6 +37,11 @@ local DISPOSED = require "RxLua.disposable.helper.disposed"
 
 local validate = require "RxLua.disposable.helper.validate"
 
+
+local setOnce = require "RxLua.disposable.helper.setOnce"
+local isDisposed = require "RxLua.disposable.helper.isDisposed"
+local dispose = require "RxLua.disposable.helper.dispose"
+
 local HostError = require "RxLua.utils.hostError"
 
 return class ("DisposableLambdaObserver", Disposable, Observer){
@@ -57,13 +62,11 @@ return class ("DisposableLambdaObserver", Disposable, Observer){
 
         if(not catch) then 
             disposable:dispose()
-            self._upstream = DISPOSED
             EMPTY.error(self._downstream, catch)
             return
         end 
 
-        if(validate(self._upstream, disposable)) then 
-            self._upstream = disposable
+        if(setOnce(self, disposable)) then 
             self._downstream:onSubscribe(disposable)
         end 
     end,
@@ -73,8 +76,8 @@ return class ("DisposableLambdaObserver", Disposable, Observer){
     end, 
 
     onError = function (self, t)
-        if(self._upstream ~= DISPOSED) then 
-            self._upstream = DISPOSED
+        if(not isDisposed(self)) then 
+            dispose(self)
             self._downstream:onError(t)
         else 
             HostError(t)
@@ -82,8 +85,8 @@ return class ("DisposableLambdaObserver", Disposable, Observer){
     end,
 
     onComplete = function (self) 
-        if(self._upstream ~= DISPOSED) then 
-            self._upstream = DISPOSED
+        if(not isDisposed(self)) then 
+            dispose(self)
             self._downstream:onComplete(t)
         end
     end,
@@ -93,16 +96,13 @@ return class ("DisposableLambdaObserver", Disposable, Observer){
     end,
 
     dispose = function(self)
-        local d = self._upstream 
-
-        if(d ~= DISPOSED) then 
-            self._upstream = DISPOSED
+        if(not isDisposed(self)) then 
             local try, catch = pcall(function ()
                 self.__onDispose:run()
             end)
 
             if(try) then 
-                d:dispose()
+                dispose(self)
             else 
                 HostError(catch)
             end 

@@ -18,7 +18,7 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-]] 
+]]
 local class = require "RxLua.utils.meta.class"
 
 local Disposable = require "RxLua.disposable"
@@ -28,53 +28,15 @@ local dispose = require "RxLua.disposable.helper.dispose"
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
 local setOnce = require "RxLua.disposable.helper.setOnce"
 
-local HideSingleObserver = class("HideSingleObserver", SingleObserver, Disposable){
-    new = function (self, downstream)
+local ResumeNextSingleObserver = class("ResumeNextSingleObserver", Disposable, SingleObserver){
+    new = function (self, downstream, nextFunction)
         self._downstream = downstream
-    end,
-
-    dispose = function (self)
-        dispose(self)
-    end,
-
-    isDisposed = function (self)
-        return isDisposed(self)
+        self._nextFunction = nextFunctionfc
     end,
 
     onSubscribe = function (self, d)
         if(setOnce(self, d)) then 
             self._downstream:onSubscribe(self)
         end
-    end,
-    onSuccess = function (self, x)
-        self._downstream:onSuccess(x)
-    end,
-    onError = function (self, t)
-        self._downstream:onError(t)
-    end,
+    end
 }
-
-
-local Single 
-local SingleHide
-
-local notLoaded = true 
-local function asyncLoad()
-    if(notLoaded) then
-        notLoaded = false 
-        Single = require "RxLua.single"
-        SingleHide = class("SingleHide", Single){
-            new = function (self, source, actual)
-                self._source = source 
-            end, 
-            subscribeActual = function (self, observer)
-                self._source:subscribe(HideSingleObserver(observer))
-            end, 
-        }
-    end 
-end
-
-return function (self)
-    asyncLoad()
-    return SingleHide(self)
-end

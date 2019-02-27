@@ -31,7 +31,6 @@ local Disposable = require "RxLua.disposable"
 
 local dispose = require "RxLua.disposable.helper.dispose"
 local isDisposed = require "RxLua.disposable.helper.isDisposed"
-local replace = require "RxLua.disposable.helper.replace"
 local setOnce = require "RxLua.disposable.helper.setOnce"
 
 local ProtocolViolation = require "RxLua.utils.protocolViolation"
@@ -51,7 +50,9 @@ local FlatMapCompletableObserver = class("FlatMapCompletableObserver", SingleObs
     end,
 
     onSubscribe = function (self, d)
-        replace(self, d)
+        if(setOnce(self, d)) then 
+            self._downstream:onSubscribe(self)
+        end
     end,
 
     onSuccess = function (self, x)
