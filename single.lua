@@ -65,4 +65,6 @@ return class ("Single", SingleSource){
     just = loadOperator("just"),
 
     map = loadOperator("map"),
+
+    never = loadOperator("never")
 }
