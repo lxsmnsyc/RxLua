@@ -66,5 +66,7 @@ return class ("Single", SingleSource){
 
     map = loadOperator("map"),
 
-    never = loadOperator("never")
+    never = loadOperator("never"),
+
+    onErrorReturn = loadOperator("onErrorReturn")
 }
