@@ -39,6 +39,7 @@ M.__index = {
     blockingLast = operator("blockingLast"),
 
     contains = operator("contains"),
+    count = operator("count"),
     create = operator("create"),
 
     defer = operator("defer"),
