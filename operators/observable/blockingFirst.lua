@@ -26,10 +26,10 @@ local isDisposed = require "RxLua.disposable.isDisposed"
 
 local HostError = require "RxLua.utils.hostError"
 
-return function (self)
-    local value
+return function (self, default)
+    local value = default
 
-    local done = true
+    local done = false
     local upstream
 
     self:subscribe({
@@ -44,23 +44,32 @@ return function (self)
             if(done) then 
                 return 
             end
-            if(not isDisposed(x)) then 
+            if(not isDisposed(upstream)) then 
                 value = x
                 dispose(upstream)
+                done = true 
             end
         end,
         onError = function (t)
             if(done) then 
                 return 
             end
-            if(not isDisposed(x)) then 
-                value = nil
+            if(not isDisposed(upstream)) then 
+                dispose(upstream)
+                done = true 
+            end
         end,
         onComplete = function ()
-            value = nil
+            if(done) then 
+                return 
+            end
+            if(not isDisposed(upstream)) then 
+                dispose(upstream)
+                done = true 
+            end
         end
     })
-    while(1) do
-        local va
+    while(not done) do
     end
+    return value
 end

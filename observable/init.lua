@@ -34,6 +34,7 @@ M.__index = {
 
     all = operator("all"),
     any = operator("any"),
+    blockingFirst = operator("blockingFirst"),
     contains = operator("contains"),
     isEmpty = operator("isEmpty"),
     map = operator("map")
