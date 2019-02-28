@@ -19,43 +19,43 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local M = require "RxLua.observable.M"
+local new = require "RxLua.observable.new"
 
-M.__call = require "RxLua.observable.new"
+local function subscribeActual(self, observer)
+    local onComplete = observer.onComplete
+    local onError = observer.onError
 
-local function operator(name)
-    return require("RxLua.operators.observable."..name)
-end 
+    local onFinally = self._onFinally
+    
+    observer.onComplete = function (x)
+        pcall(onComplete)
+        pcall(onFinally)
+    end
 
-M.__index = {
+    observer.onError = function (x)
+        pcall(onError, x)
+        pcall(onFinally)
+    end
+    
+    local disposable = self._source:subscribe(observer)
+    local dispose = disposable.dispose
 
-    amb = operator("amb"),
-    all = operator("all"),
-    any = operator("any"),
+    disposable.dispose = function (self)
+        dispose(self)
+        pcall(onFinally)
+    end
 
-    blockingFirst = operator("blockingFirst"),
-    blockingForEach = operator("blockingForEach"),
-    blockingIterable = operator("blockingIterable"),
-    blockingLast = operator("blockingLast"),
+    return disposable
+end
 
-    contains = operator("contains"),
-    count = operator("count"),
-    create = operator("create"),
+return function (self, onFinally)
+    if(type(onFinally) == "function") then 
+        local observable = new()
 
-    defer = operator("defer"),
-    doAfterNext = operator("doAfterNext"),
-    doAfterTerminate = operator("doAfterTerminate"),
-    doFinally = operator("doFinally"),
+        observable._source = self 
+        observable._onFinally = onFinally
+        observable.subscribe = subscribeActual
 
-    empty = operator("empty"),
-    error = operator("error"),
-
-    ignoreElements = operator("ignoreElements"),
-    isEmpty = operator("isEmpty"),
-
-    just = operator("just"),
-
-    map = operator("map")
-}
-
-return setmetatable({}, M)
+        return observable
+    end
+end
