@@ -56,6 +56,7 @@ M.__index = {
     doOnTerminate = operator("doOnTerminate"),
     
     elementAt = operator("elementAt"),
+    elementAtOrDefault = operator("elementAtOrDefault"),
     empty = operator("empty"),
     error = operator("error"),
 
