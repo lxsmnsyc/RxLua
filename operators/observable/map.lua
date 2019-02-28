@@ -30,9 +30,9 @@ local function subscribeActual(self, observer)
     observer.onNext = function (x)
         local try, catch = pcall(self._mapperFunction, x)
         if(try) then
-            onNext(catch)
+            pcall(onNext, catch)
         else 
-            onError(catch)
+            pcall(onError, catch)
         end
     end
 

@@ -67,7 +67,7 @@ local function subscribeActual(self, observer)
                     disposeAll()
                 end
                 if(winner == upstream) then 
-                    observer.onNext(x)
+                    pcall(observer.onNext, x)
                 end
             end,
             onError = function (t)
@@ -76,7 +76,7 @@ local function subscribeActual(self, observer)
                     disposeAll()
                 end
                 if(winner == upstream) then 
-                    observer.onError(t)
+                    pcall(observer.onError, t)
                 end
             end,
             onComplete = function ()
@@ -85,7 +85,7 @@ local function subscribeActual(self, observer)
                     disposeAll()
                 end
                 if(winner == upstream) then 
-                    observer.onComplete()
+                    pcall(observer.onComplete)
                 end
             end,
         })

@@ -20,24 +20,18 @@
     SOFTWARE.
 --]] 
 local new = require "RxLua.observable.new"
+local M = require "RxLua.observable.M"
 
 local HostError = require "RxLua.utils.hostError"
 
 local function subscribeActual(self, observer)
-    local try, catch = pcall(self._errorFunction)
-
-    pcall(observer.onError, catch)
+    pcall(observer.onComplete)
 end
 
-return function (fn)
-    if(type(fn) == "function") then 
-        local observable = new()
+local EMPTY = new()
 
-        observable._errorFunction = fn
-        observable.subscribe = subscribeActual
+EMPTY.subscribe = subscribeActual
 
-        return observable
-    else 
-        HostError("bad argument #1 to 'Observable.error' (function expected, got"..type(fn)..")")
-    end
+return function ()
+    return EMPTY
 end

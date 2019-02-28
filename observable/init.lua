@@ -28,9 +28,6 @@ local function operator(name)
 end 
 
 M.__index = {
-    create = operator("create"),
-    defer = operator("defer"),
-    error = operator("error"),
 
     amb = operator("amb"),
     all = operator("all"),
@@ -42,6 +39,12 @@ M.__index = {
     blockingLast = operator("blockingLast"),
 
     contains = operator("contains"),
+    create = operator("create"),
+
+    defer = operator("defer"),
+
+    empty = operator("empty"),
+    error = operator("error"),
 
     isEmpty = operator("isEmpty"),
 

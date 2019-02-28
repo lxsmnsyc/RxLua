@@ -52,9 +52,9 @@ local function emitOnSuccess(self, x)
     if(not isDisposed(self)) then 
         local try, catch = pcall(function ()
             if(x == nil) then 
-                self._onError("Emitter onSuccess received a nil value. Nil values are not allowed.")
+                pcall(self._onError, "Emitter onSuccess received a nil value. Nil values are not allowed.")
             else 
-                self._onSuccess(x)
+                pcall(self._onSuccess, x)
             end
         end)
         dispose(self)

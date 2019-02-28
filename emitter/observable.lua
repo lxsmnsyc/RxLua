@@ -54,7 +54,7 @@ local function emitOnNext(self, x)
     end
 
     if(not isDisposed(self)) then
-        self._onNext(x)
+        pcall(self._onNext, x)
     end
 end
 
