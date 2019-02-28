@@ -50,6 +50,7 @@ M.__index = {
     doOnDispose = operator("doOnDispose"),
     doOnEach = operator("doOnEach"),
     doOnError = operator("doOnError"),
+    doOnLifecycle = operator("doOnLifecycle"),
     
     empty = operator("empty"),
     error = operator("error"),

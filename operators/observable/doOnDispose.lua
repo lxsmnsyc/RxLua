@@ -19,30 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local new = require "RxLua.observable.new"
-
-local function subscribeActual(self, observer)
-    local onDispose = self._onDispose
-    
-    local disposable = self._source:subscribe(observer)
-    local dispose = disposable.dispose
-
-    disposable.dispose = function (self)
-        dispose(self)
-        pcall(onDispose)
-    end
-
-    return disposable
-end
-
+local doOnLifecycle = require "RxLua.operators.observable.doOnLifecycle"
 return function (self, onDispose)
-    if(type(onDispose) == "function") then 
-        local observable = new()
-
-        observable._source = self 
-        observable._onDispose = onDispose
-        observable.subscribe = subscribeActual
-
-        return observable
-    end
+    return doOnLifecycle(self, nil, onDispose)
 end

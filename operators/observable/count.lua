@@ -24,7 +24,7 @@ local new = require "RxLua.single.new"
 local function subscribeActual(self, observer)
     local count = 0
 
-    self._source:subscribe{
+    return self._source:subscribe{
         onNext = function (x)
             count = count + 1
         end,
