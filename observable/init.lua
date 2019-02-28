@@ -38,6 +38,7 @@ M.__index = {
     blockingFirst = operator("blockingFirst"),
     blockingForEach = operator("blockingForEach"),
     blockingIterable = operator("blockingIterable"),
+    blockingLast = operator("blockingLast"),
 
     contains = operator("contains"),
 

@@ -21,13 +21,8 @@
 --]] 
 local blockingIterable = require "RxLua.operators.observable.blockingIterable"
 
-return function (self, consumer)
+return function (self)
     local result = blockingIterable(self)
 
-    for i = 1, #result do 
-        local try, catch = pcall(consumer, result[i])
-        if(not try) then 
-            return 
-        end
-    end 
+    return result[#result]
 end
