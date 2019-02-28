@@ -32,6 +32,7 @@ M.__index = {
     defer = operator("defer"),
     error = operator("error"),
 
+    amb = operator("amb"),
     all = operator("all"),
     any = operator("any"),
 
