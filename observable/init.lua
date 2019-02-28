@@ -55,6 +55,7 @@ M.__index = {
     doOnSubscribe = operator("doOnSubscribe"),
     doOnTerminate = operator("doOnTerminate"),
     
+    elementAt = operator("elementAt"),
     empty = operator("empty"),
     error = operator("error"),
 
