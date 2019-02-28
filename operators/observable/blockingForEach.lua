@@ -19,63 +19,12 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local new = require "RxLua.observable.new"
-
-local dispose = require "RxLua.disposable.dispose"
-local isDisposed = require "RxLua.disposable.isDisposed"
-
-local HostError = require "RxLua.utils.hostError"
+local blockingIterable = require "RxLua.operators.observable.blockingIterable"
 
 return function (self, consumer)
-    if(type(consumer) == "function") then 
-        local pending = false
-        local value = nil
+    local result = blockingIterable(self)
 
-        local done = false
-        local upstream
-
-        self:subscribe({
-            onSubscribe = function (d)
-                if(upstream) then 
-                    dispose(d)
-                else 
-                    upstream = d
-                end
-            end,
-            onNext = function (x)
-                if(done) then 
-                    return 
-                end
-                if(not isDisposed(upstream)) then 
-                    pending = true
-                    value = x
-                end
-            end,
-            onError = function (t)
-                if(done) then 
-                    return 
-                end
-                if(not isDisposed(upstream)) then 
-                    dispose(upstream)
-                    done = true 
-                end
-            end,
-            onComplete = function ()
-                if(done) then 
-                    return 
-                end
-                if(not isDisposed(upstream)) then 
-                    dispose(upstream)
-                    done = true 
-                end
-            end
-        })
-        while(not done) do
-            if(pending) then 
-                consumer(value)
-                pending = false 
-                value = nil
-            end
-        end
-    end
+    for i = 1, #result do 
+        consumer(result[i])
+    end 
 end
