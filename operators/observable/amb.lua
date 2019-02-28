@@ -50,6 +50,10 @@ local function subscribeActual(self, observer)
         return disposed and isDisposed(winner)
     end
 
+    local onNext = observer.onNext 
+    local onComplete = observer.onComplete 
+    local onError = observer.onError
+
     for k, v in pairs(self._sources) do 
         local upstream
         v:subscribe({
@@ -67,7 +71,7 @@ local function subscribeActual(self, observer)
                     disposeAll()
                 end
                 if(winner == upstream) then 
-                    pcall(observer.onNext, x)
+                    pcall(onNext, x)
                 end
             end,
             onError = function (t)
@@ -76,7 +80,7 @@ local function subscribeActual(self, observer)
                     disposeAll()
                 end
                 if(winner == upstream) then 
-                    pcall(observer.onError, t)
+                    pcall(onError, t)
                 end
             end,
             onComplete = function ()
@@ -85,7 +89,7 @@ local function subscribeActual(self, observer)
                     disposeAll()
                 end
                 if(winner == upstream) then 
-                    pcall(observer.onComplete)
+                    pcall(onComplete)
                 end
             end,
         })
