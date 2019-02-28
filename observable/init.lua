@@ -62,6 +62,7 @@ M.__index = {
     error = operator("error"),
 
     filter = operator("filter"),
+    firstElement = operator("firstElement"),
 
     ignoreElements = operator("ignoreElements"),
     isEmpty = operator("isEmpty"),
