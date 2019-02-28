@@ -19,46 +19,41 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local M = require "RxLua.observable.M"
+local new = require "RxLua.observable.new"
 
-M.__call = require "RxLua.observable.new"
+local function subscribeActual(self, observer)
+    local onNext = observer.onNext
+    local onError = observer.onError
+    local onComplete = observer.onComplete
 
-local function operator(name)
-    return require("RxLua.operators.observable."..name)
-end 
-
-M.__index = {
-
-    amb = operator("amb"),
-    all = operator("all"),
-    any = operator("any"),
-
-    blockingFirst = operator("blockingFirst"),
-    blockingForEach = operator("blockingForEach"),
-    blockingIterable = operator("blockingIterable"),
-    blockingLast = operator("blockingLast"),
-
-    contains = operator("contains"),
-    count = operator("count"),
-    create = operator("create"),
-
-    defer = operator("defer"),
-    doAfterNext = operator("doAfterNext"),
-    doAfterTerminate = operator("doAfterTerminate"),
-    doFinally = operator("doFinally"),
-    doOnComplete = operator("doOnComplete"),
-    doOnDispose = operator("doOnDispose"),
-    doOnEach = operator("doOnEach"),
+    local doOnNext = self._doOnNext
+    local doOnError = self._doOnError
+    local doOnComplete = self._doOnComplete
     
-    empty = operator("empty"),
-    error = operator("error"),
+    observer.onNext = function (x)
+        pcall(doOnNext, x)
+        pcall(onNext, x)
+    end
+    observer.onError = function (x)
+        pcall(doOnError, x)
+        pcall(onError, x)
+    end
+    observer.onComplete = function ()
+        pcall(doOnComplete)
+        pcall(onComplete)
+    end
 
-    ignoreElements = operator("ignoreElements"),
-    isEmpty = operator("isEmpty"),
+    return self._source:subscribe(observer)
+end
 
-    just = operator("just"),
+return function (self, doOnNext, doOnError, doOnComplete)
+    local observable = new()
 
-    map = operator("map")
-}
+    observable._source = self 
+    observable._doOnNext = doOnNext
+    observable._doOnError = doOnError
+    observable._doOnComplete = doOnComplete
+    observable.subscribe = subscribeActual
 
-return setmetatable({}, M)
+    return observable
+end

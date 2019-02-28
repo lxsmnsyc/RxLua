@@ -19,46 +19,28 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local M = require "RxLua.observable.M"
+local new = require "RxLua.observable.new"
 
-M.__call = require "RxLua.observable.new"
+local function subscribeActual(self, observer)
+    local onComplete = observer.onComplete
 
-local function operator(name)
-    return require("RxLua.operators.observable."..name)
-end 
-
-M.__index = {
-
-    amb = operator("amb"),
-    all = operator("all"),
-    any = operator("any"),
-
-    blockingFirst = operator("blockingFirst"),
-    blockingForEach = operator("blockingForEach"),
-    blockingIterable = operator("blockingIterable"),
-    blockingLast = operator("blockingLast"),
-
-    contains = operator("contains"),
-    count = operator("count"),
-    create = operator("create"),
-
-    defer = operator("defer"),
-    doAfterNext = operator("doAfterNext"),
-    doAfterTerminate = operator("doAfterTerminate"),
-    doFinally = operator("doFinally"),
-    doOnComplete = operator("doOnComplete"),
-    doOnDispose = operator("doOnDispose"),
-    doOnEach = operator("doOnEach"),
+    local doOnComplete = self._doOnComplete
     
-    empty = operator("empty"),
-    error = operator("error"),
+    observer.onComplete = function (x)
+        pcall(onComplete)
+        pcall(doOnComplete)
+    end
+    return self._source:subscribe(observer)
+end
 
-    ignoreElements = operator("ignoreElements"),
-    isEmpty = operator("isEmpty"),
+return function (self, doOnComplete)
+    if(type(doOnComplete) == "function") then 
+        local observable = new()
 
-    just = operator("just"),
+        observable._source = self 
+        observable._doOnComplete = doOnComplete
+        observable.subscribe = subscribeActual
 
-    map = operator("map")
-}
-
-return setmetatable({}, M)
+        return observable
+    end
+end
