@@ -19,47 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local M = require "RxLua.observable.M"
-
-M.__call = require "RxLua.observable.new"
-
-local function operator(name)
-    return require("RxLua.operators.observable."..name)
-end 
-
-M.__index = {
-
-    amb = operator("amb"),
-    all = operator("all"),
-    any = operator("any"),
-
-    blockingFirst = operator("blockingFirst"),
-    blockingForEach = operator("blockingForEach"),
-    blockingIterable = operator("blockingIterable"),
-    blockingLast = operator("blockingLast"),
-
-    contains = operator("contains"),
-    count = operator("count"),
-    create = operator("create"),
-
-    defer = operator("defer"),
-    doAfterNext = operator("doAfterNext"),
-    doAfterTerminate = operator("doAfterTerminate"),
-    doFinally = operator("doFinally"),
-    doOnComplete = operator("doOnComplete"),
-    doOnDispose = operator("doOnDispose"),
-    doOnEach = operator("doOnEach"),
-    doOnError = operator("doOnError"),
-    
-    empty = operator("empty"),
-    error = operator("error"),
-
-    ignoreElements = operator("ignoreElements"),
-    isEmpty = operator("isEmpty"),
-
-    just = operator("just"),
-
-    map = operator("map")
-}
-
-return setmetatable({}, M)
+local doOnEach = require "RxLua.operators.observable.doOnEach"
+return function (self, doOnError)
+    return doOnEach(self, nil, doOnError, nil)
+end
