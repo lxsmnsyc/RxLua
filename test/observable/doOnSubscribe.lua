@@ -7,4 +7,4 @@ end)
         print("Subscribed!", d)
     end
 )
-:subscribe({}):dispose()
+:subscribe({})

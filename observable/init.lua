@@ -53,6 +53,7 @@ M.__index = {
     doOnLifecycle = operator("doOnLifecycle"),
     doOnNext = operator("doOnNext"),
     doOnSubscribe = operator("doOnSubscribe"),
+    doOnTerminate = operator("doOnTerminate"),
     
     empty = operator("empty"),
     error = operator("error"),
