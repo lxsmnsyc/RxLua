@@ -19,28 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local new = require "RxLua.observable.new"
-
-local function subscribeActual(self, observer)
-    local onComplete = observer.onComplete
-
-    local doOnComplete = self._doOnComplete
-    
-    observer.onComplete = function (x)
-        pcall(onComplete)
-        pcall(doOnComplete)
-    end
-    return self._source:subscribe(observer)
-end
-
+local doOnEach = require "RxLua.operators.observable.doOnEach"
 return function (self, doOnComplete)
-    if(type(doOnComplete) == "function") then 
-        local observable = new()
-
-        observable._source = self 
-        observable._doOnComplete = doOnComplete
-        observable.subscribe = subscribeActual
-
-        return observable
-    end
+    return doOnEach(self, nil, nil, doOnComplete)
 end
