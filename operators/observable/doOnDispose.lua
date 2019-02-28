@@ -19,44 +19,30 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local M = require "RxLua.observable.M"
+local new = require "RxLua.observable.new"
 
-M.__call = require "RxLua.observable.new"
+local function subscribeActual(self, observer)
+    local onDispose = self._onDispose
+    
+    local disposable = self._source:subscribe(observer)
+    local dispose = disposable.dispose
 
-local function operator(name)
-    return require("RxLua.operators.observable."..name)
-end 
+    disposable.dispose = function (self)
+        dispose(self)
+        pcall(onDispose)
+    end
 
-M.__index = {
+    return disposable
+end
 
-    amb = operator("amb"),
-    all = operator("all"),
-    any = operator("any"),
+return function (self, onDispose)
+    if(type(onDispose) == "function") then 
+        local observable = new()
 
-    blockingFirst = operator("blockingFirst"),
-    blockingForEach = operator("blockingForEach"),
-    blockingIterable = operator("blockingIterable"),
-    blockingLast = operator("blockingLast"),
+        observable._source = self 
+        observable._onDispose = onDispose
+        observable.subscribe = subscribeActual
 
-    contains = operator("contains"),
-    count = operator("count"),
-    create = operator("create"),
-
-    defer = operator("defer"),
-    doAfterNext = operator("doAfterNext"),
-    doAfterTerminate = operator("doAfterTerminate"),
-    doFinally = operator("doFinally"),
-    doOnDispose = operator("doOnDispose"),
-
-    empty = operator("empty"),
-    error = operator("error"),
-
-    ignoreElements = operator("ignoreElements"),
-    isEmpty = operator("isEmpty"),
-
-    just = operator("just"),
-
-    map = operator("map")
-}
-
-return setmetatable({}, M)
+        return observable
+    end
+end
