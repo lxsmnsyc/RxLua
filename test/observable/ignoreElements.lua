@@ -1,0 +1,13 @@
+local Observable = require "RxLua.observable"
+
+Observable.create(function (e)
+    e:onNext("hello")
+    e:onNext("world")
+    e:onComplete()
+end)
+:ignoreElements()
+:subscribe{
+    onComplete = function ()
+        print("Completed")
+    end
+}
