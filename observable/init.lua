@@ -34,9 +34,15 @@ M.__index = {
 
     all = operator("all"),
     any = operator("any"),
+
     blockingFirst = operator("blockingFirst"),
+    blockingForEach = operator("blockingForEach"),
+    blockingIterable = operator("blockingIterable"),
+
     contains = operator("contains"),
+
     isEmpty = operator("isEmpty"),
+
     map = operator("map")
 }
 
