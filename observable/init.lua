@@ -57,6 +57,7 @@ M.__index = {
     
     elementAt = operator("elementAt"),
     elementAtOrDefault = operator("elementAtOrDefault"),
+    elementAtOrError = operator("elementAtOrError"),
     empty = operator("empty"),
     error = operator("error"),
 
