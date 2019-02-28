@@ -19,38 +19,18 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local M = require "RxLua.observable.M"
+local new = require "RxLua.observable.new"
 
-M.__call = require "RxLua.observable.new"
+local HostError = require "RxLua.utils.hostError"
 
-local function operator(name)
-    return require("RxLua.operators.observable."..name)
-end 
+local function subscribeActual(self, observer)
+    observer.onNext(self._value)
+    observer.onComplete()
+end
 
-M.__index = {
-
-    amb = operator("amb"),
-    all = operator("all"),
-    any = operator("any"),
-
-    blockingFirst = operator("blockingFirst"),
-    blockingForEach = operator("blockingForEach"),
-    blockingIterable = operator("blockingIterable"),
-    blockingLast = operator("blockingLast"),
-
-    contains = operator("contains"),
-    create = operator("create"),
-
-    defer = operator("defer"),
-
-    empty = operator("empty"),
-    error = operator("error"),
-
-    isEmpty = operator("isEmpty"),
-
-    just = operator("just"),
-
-    map = operator("map")
-}
-
-return setmetatable({}, M)
+return function (value)
+    local observable = new()
+    observable._value = value
+    observable.subscribe = subscribeActual
+    return observable
+end
