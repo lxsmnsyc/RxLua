@@ -19,41 +19,29 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local M = require "RxLua.observable.M"
+local new = require "RxLua.observable.new"
 
-M.__call = require "RxLua.observable.new"
+local function subscribeActual(self, observer)
+    local onNext = observer.onNext
 
-local function operator(name)
-    return require("RxLua.operators.observable."..name)
-end 
+    local afterNext = self._afterNext
+    
+    observer.onNext = function (x)
+        pcall(onNext, x)
+        pcall(afterNext, x)
+    end
 
-M.__index = {
+    return self._source:subscribe(observer)
+end
 
-    amb = operator("amb"),
-    all = operator("all"),
-    any = operator("any"),
+return function (self, afterNext)
+    if(type(afterNext) == "function") then 
+        local observable = new()
 
-    blockingFirst = operator("blockingFirst"),
-    blockingForEach = operator("blockingForEach"),
-    blockingIterable = operator("blockingIterable"),
-    blockingLast = operator("blockingLast"),
+        observable._source = self 
+        observable._afterNext = afterNext
+        observable.subscribe = subscribeActual
 
-    contains = operator("contains"),
-    count = operator("count"),
-    create = operator("create"),
-
-    defer = operator("defer"),
-    doAfterNext = operator("doAfterNext"),
-
-    empty = operator("empty"),
-    error = operator("error"),
-
-    ignoreElements = operator("ignoreElements"),
-    isEmpty = operator("isEmpty"),
-
-    just = operator("just"),
-
-    map = operator("map")
-}
-
-return setmetatable({}, M)
+        return observable
+    end
+end

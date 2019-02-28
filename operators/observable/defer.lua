@@ -33,10 +33,10 @@ local function subscribeActual(self, observer)
                 return catch:subscribe(observer)
             end
         else 
-            observer.onError("The deferred function returned a non-Single value.")
+            pcall(observer.onError, "The deferred function returned a non-Single value.")
         end
     else 
-        observer.onError("The deferred function encountered an error: "..catch)
+        pcall(observer.onError, "The deferred function encountered an error: "..catch)
     end
 end
 

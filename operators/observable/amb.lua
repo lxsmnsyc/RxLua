@@ -19,7 +19,7 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local new = require "RxLua.single.new"
+local new = require "RxLua.observable.new"
 
 local dispose = require "RxLua.disposable.dispose"
 local isDisposed = require "RxLua.disposable.isDisposed"
