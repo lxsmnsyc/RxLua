@@ -27,12 +27,14 @@ local function subscribeActual(self, observer)
     local onNext = observer.onNext
     local onError = observer.onError
 
-    local mapper = self._mapperFunction
+    local filter = self._filterFunction
     
     observer.onNext = function (x)
-        local try, catch = pcall(mapper, x)
+        local try, catch = pcall(filter, x)
         if(try) then
-            pcall(onNext, catch)
+            if(catch) then 
+                pcall(onNext, x)
+            end
         else 
             pcall(onError, catch)
         end
@@ -46,11 +48,11 @@ return function (self, fn)
         local observable = new()
 
         observable._source = self
-        observable._mapperFunction = fn
+        observable._filterFunction = fn
         observable.subscribe = subscribeActual
 
         return observable
     else 
-        HostError("bad argument #2 to 'Observable.map' (function expected, got"..type(fn)..")")
+        HostError("bad argument #2 to 'Observable.filter' (function expected, got"..type(fn)..")")
     end
 end
