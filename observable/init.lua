@@ -79,7 +79,8 @@ M.__index = {
 
     ofType = operator("ofType"),
 
-    repeatFor = operator("repeat")
+    repeatFor = operator("repeatFor"),
+    repeatUntil = operator("repeatUntil"),
 }
 
 return setmetatable({}, M)
