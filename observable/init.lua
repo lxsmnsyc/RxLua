@@ -78,6 +78,8 @@ M.__index = {
     map = operator("map"),
 
     ofType = operator("ofType"),
+
+    repeatFor = operator("repeat")
 }
 
 return setmetatable({}, M)
