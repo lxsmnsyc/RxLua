@@ -84,6 +84,7 @@ M.__index = {
     retry = operator("retry"),
     
     singleElement = operator("singleElement"),
+    singleElementOrDefault = operator("singleElementOrDefault"),
 }
 
 return setmetatable({}, M)
