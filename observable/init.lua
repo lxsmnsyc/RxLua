@@ -75,7 +75,9 @@ M.__index = {
     lastElementOrDefault = operator("lastElementOrDefault"),
     lastElementOrError = operator("lastElementOrError"),
 
-    map = operator("map")
+    map = operator("map"),
+
+    ofType = operator("ofType"),
 }
 
 return setmetatable({}, M)
