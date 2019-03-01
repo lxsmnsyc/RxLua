@@ -85,6 +85,7 @@ M.__index = {
     
     singleElement = operator("singleElement"),
     singleElementOrDefault = operator("singleElementOrDefault"),
+    singleElementOrError = operator("singleElementOrError"),
 }
 
 return setmetatable({}, M)

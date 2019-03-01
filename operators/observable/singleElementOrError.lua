@@ -22,44 +22,42 @@
 local new = require "RxLua.single.new"
 
 local dispose = require "RxLua.disposable.dispose"
-local isDisposed = require "RxLua.disposable.isDisposed"
 
 local function subscribeActual(self, observer)
     local last
-
-    local done 
-    local upstream
-
-    return self._source:subscribe({
+    local upstream 
+    return self._source:subscribe{
         onSubscribe = function (d)
-            upstream = d
-            pcall(observer.onSubscribe, d)
+            upstream = d 
         end,
         onNext = function (x)
-            if(not isDisposed(upstream)) then 
-                last = x 
-            end
+            if(last ~= nil) then 
+                pcall(observer.onError, "Observable.singleElement: Observable emitted more than one item.")
+                dispose(upstream)
+            else 
+                last = x
+            end 
         end,
         onError = function (x)
             pcall(observer.onError, x)
         end,
         onComplete = function ()
             if(last == nil) then 
-                pcall(observer.onError, self._defaultValue)
+                pcall(observer.onError, self._default)
             else 
                 pcall(observer.onSuccess, last)
             end
-        end
-    })
+        end 
+    }
 end
 
 local Assert = require "RxLua.utils.assert"
 return function (self, default)
-    if(Assert(default ~= nil, "bad argument #2 to 'Observable.lastElementOrError' (expected a non-nil value)")) then 
+    if(Assert(default ~= nil, "bad argument #2 to 'Observable.singleElementOrDefault' (expected a non-nil value)")) then 
         local single = new()
-        single._source = self
-        single._defaultValue = default
+        single._source = self 
+        single._default = default
         single.subscribe = subscribeActual
-        return single
+        return single 
     end
 end

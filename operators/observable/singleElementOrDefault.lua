@@ -24,7 +24,7 @@ local new = require "RxLua.single.new"
 local dispose = require "RxLua.disposable.dispose"
 
 local function subscribeActual(self, observer)
-    local last = self._default 
+    local last
     local upstream 
     return self._source:subscribe{
         onSubscribe = function (d)
@@ -42,6 +42,9 @@ local function subscribeActual(self, observer)
             pcall(observer.onError, x)
         end,
         onComplete = function ()
+            if(last == nil) then 
+                last = self._default
+            end
             pcall(observer.onSuccess, last)
         end 
     }
