@@ -95,10 +95,14 @@ local function subscribeActual(self, observer)
         })
     end
 
-    return {
+    local disposable = {
         dispose = disposeAll,
         isDisposed = isDisposedAll
     }
+
+    pcall(observer.onSubscribe, disposable)
+
+    return disposable
 end
 
 return function (sources)
