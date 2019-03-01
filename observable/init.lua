@@ -87,6 +87,7 @@ M.__index = {
     singleElementOrDefault = operator("singleElementOrDefault"),
     singleElementOrError = operator("singleElementOrError"),
     skip = operator("skip"),
+    skipLast = operator("skipLast"),
 }
 
 return setmetatable({}, M)
