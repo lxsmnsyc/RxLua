@@ -82,6 +82,8 @@ M.__index = {
     repeatFor = operator("repeatFor"),
     repeatUntil = operator("repeatUntil"),
     retry = operator("retry"),
+    
+    singleElement = operator("singleElement"),
 }
 
 return setmetatable({}, M)

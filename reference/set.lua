@@ -24,7 +24,8 @@ local FIELD = require "RxLua.reference.FIELD"
 
 return function (field, value)
     if(field == nil) then 
-        return nil 
+        return false 
     end
     FIELD[field] = value
+    return true
 end

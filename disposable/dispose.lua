@@ -23,5 +23,5 @@ local set = require "RxLua.reference.set"
 local DISPOSED = require "RxLua.disposable.disposed"
 
 return function (self)
-    set(self, DISPOSED)
+    return set(self, DISPOSED) 
 end

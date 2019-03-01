@@ -21,10 +21,39 @@
 --]] 
 local new = require "RxLua.maybe.new"
 
-local function subscribeActual(self, observer)
+local dispose = require "RxLua.disposable.dispose"
 
+local function subscribeActual(self, observer)
+    local last 
+    local upstream 
+    return self._source:subscribe{
+        onSubscribe = function (d)
+            upstream = d 
+        end,
+        onNext = function (x)
+            if(last ~= nil) then 
+                pcall(observer.onError, "Observable.singleElement: Observable emitted more than one item.")
+                dispose(upstream)
+            else 
+                last = x
+            end 
+        end,
+        onError = function (x)
+            pcall(observer.onError, x)
+        end,
+        onComplete = function ()
+            if(last ~= nil) then 
+                pcall(observer.onSuccess, last)
+            else 
+                pcall(observer.onComplete)
+            end
+        end 
+    }
 end
 
 return function (self)
-
+    local maybe = new()
+    maybe._source = self 
+    maybe.subscribe = subscribeActual
+    return maybe 
 end
