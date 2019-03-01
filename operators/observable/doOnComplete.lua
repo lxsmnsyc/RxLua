@@ -20,6 +20,12 @@
     SOFTWARE.
 --]] 
 local doOnEach = require "RxLua.operators.observable.doOnEach"
+local HostError = require "RxLua.utils.hostError"
+
 return function (self, doOnComplete)
-    return doOnEach(self, nil, nil, doOnComplete)
+    if(type(doOnComplete) == "function")then
+        return doOnEach(self, nil, nil, doOnComplete)
+    else 
+        HostError("bad argument #2 to 'Observable.doOnComplete' (function expected, got"..type(fn)..")")
+    end
 end

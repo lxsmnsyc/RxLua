@@ -20,6 +20,7 @@
     SOFTWARE.
 --]] 
 local new = require "RxLua.observable.new"
+local HostError = require "RxLua.utils.hostError"
 
 local function subscribeActual(self, observer)
     local onNext = observer.onNext
@@ -43,5 +44,7 @@ return function (self, afterNext)
         observable.subscribe = subscribeActual
 
         return observable
+    else 
+        HostError("bad argument #2 to 'Observable.doAfterNext' (function expected, got"..type(fn)..")")
     end
 end

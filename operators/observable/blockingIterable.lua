@@ -34,37 +34,18 @@ return function (self)
 
     self:subscribe({
         onSubscribe = function (d)
-            if(upstream) then 
-                dispose(d)
-            else 
-                upstream = d
-            end
+            upstream = d
         end,
         onNext = function (x)
-            if(done) then 
-                return 
-            end
             if(not isDisposed(upstream)) then 
                 iterable[#iterable + 1] = x
             end
         end,
         onError = function (t)
-            if(done) then 
-                return 
-            end
-            if(not isDisposed(upstream)) then 
-                dispose(upstream)
-                done = true 
-            end
+            done = true 
         end,
         onComplete = function ()
-            if(done) then 
-                return 
-            end
-            if(not isDisposed(upstream)) then 
-                dispose(upstream)
-                done = true 
-            end
+            done = true 
         end
     })
     while(not done) do

@@ -29,45 +29,26 @@ local HostError = require "RxLua.utils.hostError"
 return function (self, default)
     local value = default
 
-    local done = false
+    local done 
     local upstream
+
+    local function endSub()
+        done = true 
+    end
 
     self:subscribe({
         onSubscribe = function (d)
-            if(upstream) then 
-                dispose(d)
-            else 
-                upstream = d
-            end
+            upstream = d
         end,
         onNext = function (x)
-            if(done) then 
-                return 
-            end
             if(not isDisposed(upstream)) then 
                 value = x
                 dispose(upstream)
                 done = true 
             end
         end,
-        onError = function (t)
-            if(done) then 
-                return 
-            end
-            if(not isDisposed(upstream)) then 
-                dispose(upstream)
-                done = true 
-            end
-        end,
-        onComplete = function ()
-            if(done) then 
-                return 
-            end
-            if(not isDisposed(upstream)) then 
-                dispose(upstream)
-                done = true 
-            end
-        end
+        onError = endSub,
+        onComplete = endSub,
     })
     while(not done) do
     end

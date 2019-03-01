@@ -19,21 +19,12 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local blockingIterable = require "RxLua.operators.observable.blockingIterable"
+local new = require "RxLua.maybe.new"
 
-local HostError = require "RxLua.utils.hostError"
+local function subscribeActual(self, observer)
 
-return function (self, consumer)
-    if(type(consumer) == "function") then 
-        local result = blockingIterable(self)
+end
 
-        for i = 1, #result do 
-            local try, catch = pcall(consumer, result[i])
-            if(not try) then 
-                return 
-            end
-        end 
-    else 
-        HostError("bad argument #2 to 'Observable.blockingForEach' (function expected, got"..type(fn)..")")
-    end
+return function (self)
+
 end

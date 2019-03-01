@@ -20,6 +20,7 @@
     SOFTWARE.
 --]] 
 local new = require "RxLua.observable.new"
+local is = require "RxLua.observable.is"
 
 local dispose = require "RxLua.disposable.dispose"
 local isDisposed = require "RxLua.disposable.isDisposed"
@@ -55,44 +56,46 @@ local function subscribeActual(self, observer)
     local onError = observer.onError
 
     for k, v in pairs(self._sources) do 
-        local upstream
-        v:subscribe({
-            onSubscribe = function (d)
-                if(upstream) then 
-                    dispose(d)
-                else 
-                    upstream = d
-                    disposables[#disposables + 1] = d 
-                end
-            end,
-            onNext = function (x)
-                if(not winner) then 
-                    winner = upstream
-                    disposeAll()
-                end
-                if(winner == upstream) then 
-                    pcall(onNext, x)
-                end
-            end,
-            onError = function (t)
-                if(not winner) then 
-                    winner = upstream
-                    disposeAll()
-                end
-                if(winner == upstream) then 
-                    pcall(onError, t)
-                end
-            end,
-            onComplete = function ()
-                if(not winner) then 
-                    winner = upstream
-                    disposeAll()
-                end
-                if(winner == upstream) then 
-                    pcall(onComplete)
-                end
-            end,
-        })
+        if(is(v)) then 
+            local upstream
+            v:subscribe({
+                onSubscribe = function (d)
+                    if(upstream) then 
+                        dispose(d)
+                    else 
+                        upstream = d
+                        disposables[#disposables + 1] = d 
+                    end
+                end,
+                onNext = function (x)
+                    if(not winner) then 
+                        winner = upstream
+                        disposeAll()
+                    end
+                    if(winner == upstream) then 
+                        pcall(onNext, x)
+                    end
+                end,
+                onError = function (t)
+                    if(not winner) then 
+                        winner = upstream
+                        disposeAll()
+                    end
+                    if(winner == upstream) then 
+                        pcall(onError, t)
+                    end
+                end,
+                onComplete = function ()
+                    if(not winner) then 
+                        winner = upstream
+                        disposeAll()
+                    end
+                    if(winner == upstream) then 
+                        pcall(onComplete)
+                    end
+                end,
+            })
+        end
     end
 
     local disposable = {

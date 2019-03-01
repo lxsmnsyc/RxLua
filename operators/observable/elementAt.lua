@@ -24,6 +24,8 @@ local new = require "RxLua.maybe.new"
 local dispose = require "RxLua.disposable.dispose"
 local isDisposed = require "RxLua.disposable.isDisposed"
 
+local HostError = require "RxLua.utils.hostError"
+
 local function subscribeActual(self, observer)
     local index = self._targetIndex
 
@@ -76,9 +78,17 @@ local function subscribeActual(self, observer)
 end
 
 return function (self, index)
-    local maybe = new()
-    maybe._source = self
-    maybe._targetIndex = index
-    maybe.subscribe = subscribeActual
-    return maybe
+    if(type(index) == "number") then
+        if(index >= 1) then  
+            local maybe = new()
+            maybe._source = self
+            maybe._targetIndex = index
+            maybe.subscribe = subscribeActual
+            return maybe
+        else 
+            HostError("'Observable.elementAt': index out of bounds (index: "..index..")")
+        end
+    else 
+        HostError("bad argument #2 to 'Observable.elementAt' (number expected, got"..type(fn)..")")
+    end
 end

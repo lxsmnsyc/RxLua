@@ -24,6 +24,8 @@ local new = require "RxLua.single.new"
 local dispose = require "RxLua.disposable.dispose"
 local isDisposed = require "RxLua.disposable.isDisposed"
 
+local HostError = require "RxLua.utils.hostError"
+
 local function subscribeActual(self, observer)
     local index = self._targetIndex
 
@@ -76,10 +78,18 @@ local function subscribeActual(self, observer)
 end
 
 return function (self, index, default)
-    local single = new()
-    single._source = self
-    single._defaultValue = default
-    single._targetIndex = index
-    single.subscribe = subscribeActual
-    return single
+    if(type(index) == "number") then
+        if(index >= 1) then  
+            local single = new()
+            single._source = self
+            single._defaultValue = default
+            single._targetIndex = index
+            single.subscribe = subscribeActual
+            return single
+        else 
+            HostError("'Observable.elementAtOrError': index out of bounds (index: "..index..")")
+        end
+    else 
+        HostError("bad argument #2 to 'Observable.elementAtOrError' (number expected, got"..type(fn)..")")
+    end
 end

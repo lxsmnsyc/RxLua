@@ -19,10 +19,35 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local blockingIterable = require "RxLua.operators.observable.blockingIterable"
+local new = require "RxLua.observable.new"
 
-return function (self)
-    local result = blockingIterable(self)
+local dispose = require "RxLua.disposable.dispose"
+local isDisposed = require "RxLua.disposable.isDisposed"
 
-    return result[#result]
+local HostError = require "RxLua.utils.hostError"
+
+return function (self, default)
+    local upstream
+    local value = default
+
+    local function endSub()
+        done = true 
+    end
+
+
+    self:subscribe({
+        onSubscribe = function (d)
+            upstream = d
+        end,
+        onNext = function (x)
+            if(not isDisposed(upstream)) then 
+                value = x
+            end
+        end,
+        onError = endSub,
+        onComplete = endSub,
+    })
+    while(not done) do
+    end
+    return value
 end

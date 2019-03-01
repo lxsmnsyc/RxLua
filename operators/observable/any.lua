@@ -43,7 +43,7 @@ local function subscribeActual(self, observer)
         pcall(onError, t)
     end
 
-    observer = {
+    return self._source:subscribe{
         onSubscribe = function (d)
             if(upstream) then 
                 dispose(d)
@@ -78,8 +78,6 @@ local function subscribeActual(self, observer)
             end
         end
     }
-
-    return self._source:subscribe(observer)
 end 
 
 return function (self, fn)

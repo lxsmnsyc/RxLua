@@ -48,5 +48,7 @@ return function (self, afterTerminate)
         observable.subscribe = subscribeActual
 
         return observable
+    else 
+        HostError("bad argument #2 to 'Observable.doAfterTerminate' (function expected, got"..type(fn)..")")
     end
 end
