@@ -73,6 +73,7 @@ M.__index = {
 
     lastElement = operator("lastElement"),
     lastElementOrDefault = operator("lastElementOrDefault"),
+    lastElementOrError = operator("lastElementOrError"),
 
     map = operator("map")
 }
