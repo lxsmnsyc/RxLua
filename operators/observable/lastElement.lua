@@ -1,0 +1,82 @@
+--[[
+    Reactive Extensions for Lua
+	
+    MIT License
+    Copyright (c) 2019 Alexis Munsayac
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+--]] 
+local new = require "RxLua.maybe.new"
+
+local dispose = require "RxLua.disposable.dispose"
+local isDisposed = require "RxLua.disposable.isDisposed"
+
+local function subscribeActual(self, observer)
+    local last 
+
+    local done 
+    local upstream
+
+    return self._source:subscribe({
+        onSubscribe = function (d)
+            if(upstream) then 
+                dispose(d)
+            else 
+                upstream = d
+                pcall(observer.onSubscribe, d)
+            end
+        end,
+        onNext = function (x)
+            if(done) then 
+                return 
+            end
+            if(not isDisposed(upstream)) then 
+                last = x 
+            end
+        end,
+        onError = function (x)
+            if(done) then 
+                return 
+            end
+            if(not isDisposed(upstream)) then 
+                pcall(observer.onError, x)
+                dispose(upstream)
+                done = true 
+            end
+        end,
+        onComplete = function ()
+            if(done) then 
+                return 
+            end
+            if(not isDisposed(upstream)) then
+                if(last == nil) then 
+                    pcall(observer.onComplete)
+                else  
+                    pcall(observer.onSuccess, last)
+                end
+                dispose(upstream)
+                done = true 
+            end
+        end
+    })
+end
+
+return function (self)
+    local maybe = new()
+    maybe._source = self
+    maybe.subscribe = subscribeActual
+    return maybe
+end

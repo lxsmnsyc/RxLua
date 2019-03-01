@@ -71,6 +71,8 @@ M.__index = {
 
     just = operator("just"),
 
+    lastElement = operator("lastElement"),
+
     map = operator("map")
 }
 
