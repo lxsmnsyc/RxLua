@@ -35,16 +35,16 @@ local function subscribeActual(self, observer)
     return self._source:subscribe(observer)
 end
 
-return function (self, afterNext)
-    if(type(afterNext) == "function") then 
-        local observable = new()
 
+local Assert = require "RxLua.utils.assert"
+return function (self, afterNext)
+    if(Assert(type(afterNext) == "function", "bad argument #2 to 'Observable.doAfterNext' (function expected, got"..type(fn)..")")) then 
+        local observable = new()
+    
         observable._source = self 
         observable._afterNext = afterNext
         observable.subscribe = subscribeActual
-
+    
         return observable
-    else 
-        HostError("bad argument #2 to 'Observable.doAfterNext' (function expected, got"..type(fn)..")")
     end
 end

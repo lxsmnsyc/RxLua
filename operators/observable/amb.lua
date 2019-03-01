@@ -108,11 +108,14 @@ local function subscribeActual(self, observer)
     return disposable
 end
 
+local Assert = require "RxLua.utils.assert"
 return function (sources)
-    local observable = new()
-
-    observable._sources = sources 
-    observable.subscribe = subscribeActual
-
-    return observable
+    if(Assert(type(sources) == "table", "bad argument #1 to 'Observable.amb' (table expected, got "..type(sources)..")")) then 
+        local observable = new()
+    
+        observable._sources = sources 
+        observable.subscribe = subscribeActual
+    
+        return observable
+    end
 end

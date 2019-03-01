@@ -22,7 +22,7 @@
 local new = require "RxLua.observable.new"
 local M = require "RxLua.observable.M"
 
-local HostError = require "RxLua.utils.hostError"
+local Error = require "RxLua.disposable.error"
 
 local function subscribeActual(self, observer)
     local try, catch = pcall(self._deferredFunction)
@@ -33,22 +33,21 @@ local function subscribeActual(self, observer)
                 return catch:subscribe(observer)
             end
         else 
-            pcall(observer.onError, "The deferred function returned a non-Single value.")
+            return Error(observer, "The deferred function returned a non-Single value.")
         end
     else 
-        pcall(observer.onError, "The deferred function encountered an error: "..catch)
+        return Error(observer, "The deferred function encountered an error: "..catch)
     end
 end
 
+local Assert = require "RxLua.utils.assert"
 return function (fn)
-    if(type(fn) == "function") then 
+    if(Assert(type(fn) == "function", "bad argument #1 to 'Observable.defer' (function expected, got"..type(fn)..")")) then 
         local observable = new()
-
+    
         observable._deferredFunction = fn
         observable.subscribe = subscribeActual
-
+    
         return observable
-    else 
-        HostError("bad argument #1 to 'Observable.defer' (function expected, got"..type(fn)..")")
     end
 end

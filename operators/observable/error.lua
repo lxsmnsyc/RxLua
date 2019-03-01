@@ -21,23 +21,23 @@
 --]] 
 local new = require "RxLua.observable.new"
 
-local HostError = require "RxLua.utils.hostError"
+local Error = require "RxLua.disposable.error"
 
 local function subscribeActual(self, observer)
     local try, catch = pcall(self._errorFunction)
 
-    pcall(observer.onError, catch)
+    return Error(observer, catch)
 end
 
+local Assert = require "RxLua.utils.assert"
 return function (fn)
-    if(type(fn) == "function") then 
+
+    if(Assert(type(fn) == "function", "bad argument #1 to 'Observable.error' (function expected, got"..type(fn)..")")) then 
         local observable = new()
 
         observable._errorFunction = fn
         observable.subscribe = subscribeActual
 
         return observable
-    else 
-        HostError("bad argument #1 to 'Observable.error' (function expected, got"..type(fn)..")")
     end
 end

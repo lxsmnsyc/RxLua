@@ -22,7 +22,7 @@
 
 local all = require "RxLua.operators.observable.all"
 
-return function (self, value)
+return function (self)
     return all(self, function (x)
         return false
     end)

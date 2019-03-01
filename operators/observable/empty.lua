@@ -20,12 +20,11 @@
     SOFTWARE.
 --]] 
 local new = require "RxLua.observable.new"
-local M = require "RxLua.observable.M"
 
-local HostError = require "RxLua.utils.hostError"
+local complete = require "RxLua.disposable.complete"
 
 local function subscribeActual(self, observer)
-    pcall(observer.onComplete)
+    return complete(observer)
 end
 
 local EMPTY = new()

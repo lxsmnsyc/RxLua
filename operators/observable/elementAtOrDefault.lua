@@ -24,8 +24,6 @@ local new = require "RxLua.single.new"
 local dispose = require "RxLua.disposable.dispose"
 local isDisposed = require "RxLua.disposable.isDisposed"
 
-local HostError = require "RxLua.utils.hostError"
-
 local function subscribeActual(self, observer)
     local index = self._targetIndex
 
@@ -34,17 +32,10 @@ local function subscribeActual(self, observer)
 
     return self._source:subscribe({
         onSubscribe = function (d)
-            if(upstream) then 
-                dispose(d)
-            else 
-                upstream = d
-                pcall(observer.onSubscribe, d)
-            end
+            upstream = d
+            pcall(observer.onSubscribe, d)
         end,
         onNext = function (x)
-            if(done) then 
-                return 
-            end
             if(not isDisposed(upstream)) then 
                 index = index - 1
                 if(index == 0) then 
@@ -55,41 +46,25 @@ local function subscribeActual(self, observer)
             end
         end,
         onError = function (x)
-            if(done) then 
-                return 
-            end
-            if(not isDisposed(upstream)) then 
-                pcall(observer.onError, x)
-                dispose(upstream)
-                done = true 
-            end
+            pcall(observer.onError, x)
         end,
         onComplete = function ()
-            if(done) then 
-                return 
-            end
-            if(not isDisposed(upstream)) then 
-                pcall(observer.onSuccess, self._defaultValue)
-                dispose(upstream)
-                done = true 
-            end
+            pcall(observer.onSuccess, self._defaultValue)
         end
     })
 end
 
+local Assert = require "RxLua.utils.assert"
 return function (self, index, default)
-    if(type(index) == "number") then
-        if(index >= 1) then  
-            local single = new()
-            single._source = self
-            single._defaultValue = default
-            single._targetIndex = index
-            single.subscribe = subscribeActual
-            return single
-        else 
-            HostError("'Observable.elementAtOrDefault': index out of bounds (index: "..index..")")
-        end
-    else 
-        HostError("bad argument #2 to 'Observable.elementAtOrDefault' (number expected, got"..type(fn)..")")
+    if
+        Assert(type(index) == "number", "bad argument #2 to 'Observable.elementAtOrDefault' (number expected, got"..type(fn)..")") and
+        Assert(index >= 1, "'Observable.elementAtOrDefault': index out of bounds (index: "..index..")")
+    then 
+        local single = new()
+        single._source = self
+        single._defaultValue = default
+        single._targetIndex = index
+        single.subscribe = subscribeActual
+        return single
     end
 end

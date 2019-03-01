@@ -19,36 +19,13 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-local new = require "RxLua.observable.new"
+local Disposable = require "RxLua.disposable"
 
-local dispose = require "RxLua.disposable.dispose"
-local isDisposed = require "RxLua.disposable.isDisposed"
-
-return function (self, default)
-    local value = default
-
-    local done 
-    local upstream
-
-    local function endSub()
-        done = true 
-    end
-
-    self:subscribe({
-        onSubscribe = function (d)
-            upstream = d
-        end,
-        onNext = function (x)
-            if(not isDisposed(upstream)) then 
-                value = x
-                dispose(upstream)
-                done = true 
-            end
-        end,
-        onError = endSub,
-        onComplete = endSub,
-    })
-    while(not done) do
-    end
-    return value
+return function (observer, error)
+    if(type(observer) == "table" and (observer.onComplete and type(observer.onComplete) == "function")) then 
+        local disposable = Disposable()
+        pcall(observer.onSubscribe, disposable)
+        observer.onComplete(error)
+        return disposable
+    end 
 end

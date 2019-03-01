@@ -18,37 +18,13 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
---]] 
-local new = require "RxLua.observable.new"
+--]]
+local HostError = require "RxLua.utils.hostError"
 
-local dispose = require "RxLua.disposable.dispose"
-local isDisposed = require "RxLua.disposable.isDisposed"
-
-return function (self, default)
-    local value = default
-
-    local done 
-    local upstream
-
-    local function endSub()
-        done = true 
-    end
-
-    self:subscribe({
-        onSubscribe = function (d)
-            upstream = d
-        end,
-        onNext = function (x)
-            if(not isDisposed(upstream)) then 
-                value = x
-                dispose(upstream)
-                done = true 
-            end
-        end,
-        onError = endSub,
-        onComplete = endSub,
-    })
-    while(not done) do
-    end
-    return value
+return function (eval, msg)
+    if(eval) then 
+        return true
+    end 
+    HostError(msg)
+    return false
 end

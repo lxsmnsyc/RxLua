@@ -32,48 +32,30 @@ local function subscribeActual(self, observer)
 
     return self._source:subscribe({
         onSubscribe = function (d)
-            if(upstream) then 
-                dispose(d)
-            else 
-                upstream = d
-                pcall(observer.onSubscribe, d)
-            end
+            upstream = d
+            pcall(observer.onSubscribe, d)
         end,
         onNext = function (x)
-            if(done) then 
-                return 
-            end
             if(not isDisposed(upstream)) then 
                 last = x 
             end
         end,
         onError = function (x)
-            if(done) then 
-                return 
-            end
-            if(not isDisposed(upstream)) then 
-                pcall(observer.onError, x)
-                dispose(upstream)
-                done = true 
-            end
+            pcall(observer.onError, x)
         end,
         onComplete = function ()
-            if(done) then 
-                return 
-            end
-            if(not isDisposed(upstream)) then
-                pcall(observer.onSuccess, last)
-                dispose(upstream)
-                done = true 
-            end
+            pcall(observer.onSuccess, last)
         end
     })
 end
 
+local Assert = require "RxLua.utils.assert"
 return function (self, default)
-    local single = new()
-    single._source = self
-    single._defaultValue = default
-    single.subscribe = subscribeActual
-    return single
+    if(Assert(default ~= nil, "bad argument #2 to 'Observable.lastElementOrDefault' (expected a non-nil value)")) then 
+        local single = new()
+        single._source = self
+        single._defaultValue = default
+        single.subscribe = subscribeActual
+        return single
+    end
 end

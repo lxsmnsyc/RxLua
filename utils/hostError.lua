@@ -19,6 +19,12 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]] 
-return (function (msg)
+local function unsafeHostError(msg)
     error(msg, 0)
-end) or print
+end
+
+local function safeHostError(msg)
+    print(debug.traceback(msg))
+end
+
+return safeHostError

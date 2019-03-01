@@ -21,8 +21,6 @@
 --]] 
 local new = require "RxLua.single.new"
 
-local HostError = require "RxLua.utils.hostError"
-
 local dispose = require "RxLua.disposable.dispose"
 local isDisposed = require "RxLua.disposable.isDisposed"
 
@@ -80,16 +78,15 @@ local function subscribeActual(self, observer)
     }
 end 
 
+local Assert = require "RxLua.utils.assert"
 return function (self, fn)
-    if(type(fn) == "function") then 
+    if(Assert(type(fn) == "function", "bad argument #2 to 'Observable.any' (function expected, got"..type(fn)..")")) then 
         local single = new()
-
+    
         single._source = self
         single._predicate = fn
         single.subscribe = subscribeActual
-
+    
         return single
-    else 
-        HostError("bad argument #2 to 'Observable.any' (function expected, got"..type(fn)..")")
     end
 end

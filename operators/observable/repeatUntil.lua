@@ -84,10 +84,13 @@ local function subscribeActual(self, observer)
     return disposable
 end
 
+local Assert = require "RxLua.utils.assert"
 return function (self, untilFunction)
-    local observable = new()
-    observable._source = self
-    observable._untilFunction = untilFunction
-    observable.subscribe = subscribeActual 
-    return observable
+    if(Assert(type(untilFunction) == "function", "bad argument #2 to 'Observable.repeatUntil' (function expected, got "..type(untilFunction)..")")) then 
+        local observable = new()
+        observable._source = self
+        observable._untilFunction = untilFunction
+        observable.subscribe = subscribeActual 
+        return observable
+    end
 end

@@ -88,10 +88,13 @@ local function subscribeActual(self, observer)
     return disposable
 end
 
+local Assert = require "RxLua.utils.assert"
 return function (self, amount)
-    local observable = new()
-    observable._source = self
-    observable._amount = amount
-    observable.subscribe = subscribeActual 
-    return observable
+    if(Assert(type(amount) == "number", "bad argument #2 to 'Observable.repeatFor' (number expected, got "..type(amount)..")")) then 
+        local observable = new()
+        observable._source = self
+        observable._amount = amount
+        observable.subscribe = subscribeActual 
+        return observable
+    end
 end

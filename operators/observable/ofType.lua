@@ -21,8 +21,11 @@
 --]] 
 local filter = require "RxLua.operators.observable.filter"
 
+local Assert = require "RxLua.utils.assert"
 return function (self, typeof)
-    return filter(self, function (x)
-        return type(x) == typeof
-    end)
+    if(Assert(type(typeof) == "string", "bad argument #2 to Observable.ofType (string expected, got "..type(typeof)..")")) then 
+        return filter(self, function (x)
+            return type(x) == typeof
+        end)
+    end
 end

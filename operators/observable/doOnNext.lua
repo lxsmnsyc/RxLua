@@ -20,11 +20,9 @@
     SOFTWARE.
 --]] 
 local doOnEach = require "RxLua.operators.observable.doOnEach"
-local HostError = require "RxLua.utils.hostError"
+local Assert = require "RxLua.utils.assert"
 return function (self, doOnNext)
-    if(type(doOnNext) == "function")then
+    if(Assert(type(doOnNext) == "function", "bad argument #2 to 'Observable.doOnNext' (function expected, got"..type(fn)..")")) then 
         return doOnEach(self, doOnNext, nil, nil)
-    else 
-        HostError("bad argument #2 to 'Observable.doOnNext' (function expected, got"..type(fn)..")")
     end
 end

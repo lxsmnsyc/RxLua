@@ -21,16 +21,22 @@
 --]] 
 local new = require "RxLua.observable.new"
 
-local HostError = require "RxLua.utils.hostError"
+local Disposable = require "RxLua.disposable"
 
 local function subscribeActual(self, observer)
+    local disposable = Disposable()
+    pcall(observer.onSubscribe, disposable)
     pcall(observer.onNext, self._value)
     pcall(observer.onComplete)
+    return disposable
 end
 
+local Assert = require "RxLua.utils.assert"
 return function (value)
-    local observable = new()
-    observable._value = value
-    observable.subscribe = subscribeActual
-    return observable
+    if(Assert(value ~= nil, "bad argument #1 to 'Observable.just' (expected a non-nil value)")) then 
+        local observable = new()
+        observable._value = value
+        observable.subscribe = subscribeActual
+        return observable
+    end
 end

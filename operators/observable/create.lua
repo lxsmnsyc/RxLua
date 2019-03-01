@@ -26,8 +26,6 @@ local Emitter = require "RxLua.emitter.observable"
 local dispose = require "RxLua.disposable.dispose"
 local isDisposed = require "RxLua.disposable.isDisposed"
 
-local HostError = require "RxLua.utils.hostError"
-
 local function subscribeActual(self, observer)
     local emitter = Emitter(observer.onNext, observer.onError, observer.onComplete)
     local try, catch = pcall(observer.onSubscribe, emitter)
@@ -41,16 +39,15 @@ local function subscribeActual(self, observer)
     end
 end
 
+local Assert = require "RxLua.utils.assert"
 
 return function (subscriber)
-    if(type(subscriber) == "function") then 
+    if(Assert(type(subscriber) == "function", "bad argument #1 to 'Observable.create' (function expected, got"..type(subscriber)..")")) then 
         local observable = new()
     
         observable._createSubscriber = subscriber
         observable.subscribe = subscribeActual
     
         return observable
-    else 
-        HostError("bad argument #1 to 'Observable.create' (function expected, got"..type(subscriber)..")")
     end
 end

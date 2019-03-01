@@ -21,10 +21,9 @@
 --]] 
 local blockingIterable = require "RxLua.operators.observable.blockingIterable"
 
-local HostError = require "RxLua.utils.hostError"
-
+local Assert = require "RxLua.utils.assert"
 return function (self, consumer)
-    if(type(consumer) == "function") then 
+    if(Assert(type(consumer) == "function", "bad argument #2 to 'Observable.blockingForEach' (function expected, got"..type(fn)..")")) then 
         local result = blockingIterable(self)
 
         for i = 1, #result do 
@@ -33,7 +32,5 @@ return function (self, consumer)
                 return 
             end
         end 
-    else 
-        HostError("bad argument #2 to 'Observable.blockingForEach' (function expected, got"..type(fn)..")")
     end
 end

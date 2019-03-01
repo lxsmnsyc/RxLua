@@ -29,22 +29,14 @@ local HostError = require "RxLua.utils.hostError"
 local function subscribeActual(self, observer)
     local index = self._targetIndex
 
-    local done 
     local upstream
 
     return self._source:subscribe({
         onSubscribe = function (d)
-            if(upstream) then 
-                dispose(d)
-            else 
-                upstream = d
-                pcall(observer.onSubscribe, d)
-            end
+            upstream = d
+            pcall(observer.onSubscribe, d)
         end,
         onNext = function (x)
-            if(done) then 
-                return 
-            end
             if(not isDisposed(upstream)) then 
                 index = index - 1
                 if(index == 0) then 
@@ -55,40 +47,24 @@ local function subscribeActual(self, observer)
             end
         end,
         onError = function (x)
-            if(done) then 
-                return 
-            end
-            if(not isDisposed(upstream)) then 
-                pcall(observer.onError, x)
-                dispose(upstream)
-                done = true 
-            end
+            pcall(observer.onError, x)
         end,
         onComplete = function ()
-            if(done) then 
-                return 
-            end
-            if(not isDisposed(upstream)) then 
-                pcall(observer.onComplete)
-                dispose(upstream)
-                done = true 
-            end
+            pcall(observer.onComplete)
         end
     })
 end
 
+local Assert = require "RxLua.utils.assert"
 return function (self, index)
-    if(type(index) == "number") then
-        if(index >= 1) then  
-            local maybe = new()
-            maybe._source = self
-            maybe._targetIndex = index
-            maybe.subscribe = subscribeActual
-            return maybe
-        else 
-            HostError("'Observable.elementAt': index out of bounds (index: "..index..")")
-        end
-    else 
-        HostError("bad argument #2 to 'Observable.elementAt' (number expected, got"..type(fn)..")")
+    if
+        Assert(type(index) == "number", "bad argument #2 to 'Observable.elementAt' (number expected, got"..type(fn)..")") and
+        Assert(index >= 1, "'Observable.elementAt': index out of bounds (index: "..index..")")
+    then 
+        local maybe = new()
+        maybe._source = self
+        maybe._targetIndex = index
+        maybe.subscribe = subscribeActual
+        return maybe
     end
 end

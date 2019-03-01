@@ -23,9 +23,6 @@ local new = require "RxLua.observable.new"
 
 local dispose = require "RxLua.disposable.dispose"
 local isDisposed = require "RxLua.disposable.isDisposed"
-
-local HostError = require "RxLua.utils.hostError"
-
 return function (self, default)
     local upstream
     local value = default

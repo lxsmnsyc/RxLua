@@ -20,11 +20,9 @@
     SOFTWARE.
 --]] 
 local doOnLifecycle = require "RxLua.operators.observable.doOnLifecycle"
-local HostError = require "RxLua.utils.hostError"
+local Assert = require "RxLua.utils.assert"
 return function (self, doOnDispose)
-    if(type(doOnDispose) == "function")then
+    if(Assert(type(doOnDispose) == "function", "bad argument #2 to 'Observable.doOnDispose' (function expected, got"..type(fn)..")")) then 
         return doOnLifecycle(self, nil, doOnDispose)
-    else 
-        HostError("bad argument #2 to 'Observable.doOnDispose' (function expected, got"..type(fn)..")")
     end
 end

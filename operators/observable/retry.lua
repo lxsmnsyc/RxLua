@@ -93,10 +93,14 @@ local function subscribeActual(self, observer)
     return disposable
 end
 
+local Assert = require "RxLua.utils.assert"
 return function (self, predicate)
-    local observable = new()
-    observable._source = self
-    observable._predicate = predicate
-    observable.subscribe = subscribeActual 
-    return observable
+    local typeof = type(predicate)
+    if(Assert(typeof == "function" or typeof == "number", "bad argument #2 to 'Observable.retry' (function or number expected, got "..typeof..")")) then 
+        local observable = new()
+        observable._source = self
+        observable._predicate = predicate
+        observable.subscribe = subscribeActual 
+        return observable
+    end
 end
