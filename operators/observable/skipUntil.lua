@@ -18,46 +18,61 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
---]] 
-local new = require "RxLua.single.new"
+--]]
+local is = require "RxLua.observable.is" 
+local new = require "RxLua.observable.new"
 
 local dispose = require "RxLua.disposable.dispose"
+local isDisposed = require "RxLua.disposable.isDisposed"
 
 local function subscribeActual(self, observer)
-    local last
-    local upstream 
-    return self._source:subscribe{
-        onSubscribe = function (d)
-            upstream = d 
-            pcall(observer.onSubscribe, d)
-        end,
-        onNext = function (x)
-            if(last ~= nil) then 
-                pcall(observer.onError, "Observable.singleElement: Observable emitted more than one item.")
-                dispose(upstream)
-            else 
-                last = x
-            end 
-        end,
-        onError = function (x)
-            pcall(observer.onError, x)
-        end,
-        onComplete = function ()
-            if(last == nil) then 
-                last = self._default
-            end
-            pcall(observer.onSuccess, last)
-        end 
+    
+    local disposed 
+    local upstreamA
+    local upstreamB 
+
+    local function disposeBoth()
+        disposed = true 
+        dispose(upstreamA)
+        dispose(upstreamB)
+    end
+
+    local function isDisposedBoth()
+        return disposed or (isDisposed(upstreamA) and isDisposed(upstreamB))
+    end 
+
+    local disposable = {
+        dispose = dispose,
+        isDisposed = isDisposed
     }
+
+    local source = self._source 
+    local other = self._other
+
+    local emitted = false 
+
+    other:subscribe{
+        onSubscribe = function (d)
+            upstreamA = d 
+        end,
+
+        onNext = function (x)
+            emitted = true
+        end
+    }
+
+    return disposable
 end
 
 local Assert = require "RxLua.utils.assert"
-return function (self, default)
-    if(Assert(default ~= nil, "bad argument #2 to 'Observable.singleElementOrDefault' (expected a non-nil value)")) then 
-        local single = new()
-        single._source = self 
-        single._default = default
-        single.subscribe = subscribeActual
-        return single 
+return function (self, other)
+    if(Assert(is(other), "bad argument #2 to 'Observable.skipUntil' (Observable expected)")) then 
+        local observable = new()
+
+        observable._source = self 
+        observable._other = other 
+        observable.subscribe = subscribeActual 
+
+        return observable
     end
 end

@@ -51,6 +51,14 @@ local function subscribeActual(self, observer)
         return disposed and isDisposed(winner)
     end
 
+
+    local disposable = {
+        dispose = disposeAll,
+        isDisposed = isDisposedAll
+    }
+
+    pcall(observer.onSubscribe, disposable)
+
     local onNext = observer.onNext 
     local onComplete = observer.onComplete 
     local onError = observer.onError
@@ -62,7 +70,7 @@ local function subscribeActual(self, observer)
                 onSubscribe = function (d)
                     if(upstream) then 
                         dispose(d)
-                    else 
+                    elseif(not disposed) then 
                         upstream = d
                         disposables[#disposables + 1] = d 
                     end
@@ -97,13 +105,6 @@ local function subscribeActual(self, observer)
             })
         end
     end
-
-    local disposable = {
-        dispose = disposeAll,
-        isDisposed = isDisposedAll
-    }
-
-    pcall(observer.onSubscribe, disposable)
 
     return disposable
 end

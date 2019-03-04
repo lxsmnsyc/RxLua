@@ -29,6 +29,7 @@ local function subscribeActual(self, observer)
     return self._source:subscribe{
         onSubscribe = function (d)
             upstream = d 
+            pcall(observer.onSubscribe, d)
         end,
         onNext = function (x)
             if(last ~= nil) then 

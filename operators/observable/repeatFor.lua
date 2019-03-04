@@ -28,16 +28,20 @@ local function subscribeActual(self, observer)
     local source = self._source 
     local amount = self._amount 
 
+    local disposed
     local upstream 
 
     local disposable = {
         dispose = function ()
+            disposed = true 
             dispose(upstream)
         end,
         isDisposed = function ()
-            return isDisposed(upstream)
+            return disposed or isDisposed(upstream)
         end
     }
+
+    pcall(observer.onSubscribe, disposable)
 
     local onNext = observer.onNext
     local onError = observer.onError 
@@ -46,7 +50,11 @@ local function subscribeActual(self, observer)
     local function resub()
         source:subscribe{
             onSubscribe = function (d)
-                upstream = d
+                if(not disposed) then 
+                    upstream = d
+                else 
+                    dispose(upstream)
+                end
             end,
             onNext = function (x)
                 pcall(onNext, x)
@@ -82,8 +90,9 @@ local function subscribeActual(self, observer)
         }
     end
 
-    pcall(observer.onSubscribe, disposable)
-    resub()
+    if(not disposed) then 
+        resub()
+    end
 
     return disposable
 end
