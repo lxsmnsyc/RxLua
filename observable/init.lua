@@ -89,7 +89,8 @@ M.__index = {
     skip = operator("skip"),
     skipLast = operator("skipLast"),
     skipUntil = operator("skipUntil"),
-    skipWhile = operator("skipWhile")
+    skipWhile = operator("skipWhile"),
+    startWith = operator("startWith")
 }
 
 return setmetatable({}, M)
