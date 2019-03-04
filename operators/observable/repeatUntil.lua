@@ -55,7 +55,7 @@ local function subscribeActual(self, observer)
                 if(not disposed) then 
                     upstream = d
                 else 
-                    dispose(upstream)
+                    dispose(d)
                 end
             end,
             onNext = function (x)

@@ -46,6 +46,8 @@ local function subscribeActual(self, observer)
         isDisposed = isDisposed
     }
 
+    pcall(observer.onSubscribe, disposable)
+
     local source = self._source 
     local other = self._other
 
@@ -53,11 +55,51 @@ local function subscribeActual(self, observer)
 
     other:subscribe{
         onSubscribe = function (d)
-            upstreamA = d 
+            if(disposed) then 
+                dispose(d)
+            else
+                upstreamA = d 
+            end
         end,
 
         onNext = function (x)
             emitted = true
+        end,
+
+        onError = function (x)
+            disposeBoth()
+        end,
+
+        onComplete = function ()
+            emitted = true 
+        end
+    }
+
+    local onNext = observer.onNext 
+
+    source:subscribe{
+        onSubscribe = function (d)
+            if(disposed) then
+                dispose(d)
+            else
+                upstreamB = d 
+            end
+        end,
+
+        onNext = function (x)
+            if(emitted) then 
+                pcall(observer.onNext, x)
+            end
+        end,
+        
+        onError = function (x)
+            pcall(observer.onError, x)
+            disposeBoth()
+        end,
+
+        onComplete = function ()
+            pcall(observer.onComplete)
+            disposeBoth()
         end
     }
 
