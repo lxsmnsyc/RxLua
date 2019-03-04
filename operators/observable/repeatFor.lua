@@ -56,9 +56,7 @@ local function subscribeActual(self, observer)
                     dispose(d)
                 end
             end,
-            onNext = function (x)
-                pcall(onNext, x)
-            end,
+            onNext = onNext,
             onError = function (x)
                 pcall(onError, x)
                 

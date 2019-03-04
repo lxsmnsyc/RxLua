@@ -46,12 +46,8 @@ local function subscribeActual(self, observer)
                 end
             end
         end,
-        onError = function (x)
-            pcall(observer.onError, x)
-        end,
-        onComplete = function ()
-            pcall(observer.onComplete)
-        end
+        onError = observer.onError,
+        onComplete = observer.onComplete
     })
 end
 

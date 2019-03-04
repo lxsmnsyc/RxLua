@@ -23,7 +23,11 @@ local new = require "RxLua.completable.new"
 
 local function subscribeActual(self, observer)
     observer.onNext = nil
-    return self._source:subscribe(observer)
+    return self._source:subscribe{
+        onSubscribe = observer.onSubscribe,
+        onError = observer.onError,
+        onComplete = observer.onComplete
+    }
 end
 
 return function (self)

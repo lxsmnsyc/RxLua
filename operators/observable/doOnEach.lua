@@ -29,21 +29,22 @@ local function subscribeActual(self, observer)
     local doOnNext = self._doOnNext
     local doOnError = self._doOnError
     local doOnComplete = self._doOnComplete
-    
-    observer.onNext = function (x)
-        pcall(doOnNext, x)
-        pcall(onNext, x)
-    end
-    observer.onError = function (x)
-        pcall(doOnError, x)
-        pcall(onError, x)
-    end
-    observer.onComplete = function ()
-        pcall(doOnComplete)
-        pcall(onComplete)
-    end
 
-    return self._source:subscribe(observer)
+    return self._source:subscribe{
+        onSubscribe = observer.onSubscribe,
+        onNext = function (x)
+            pcall(doOnNext, x)
+            pcall(onNext, x)
+        end,
+        onError = function (x)
+            pcall(doOnError, x)
+            pcall(onError, x)
+        end,
+        onComplete = function ()
+            pcall(doOnComplete)
+            pcall(onComplete)
+        end
+    }
 end
 
 return function (self, doOnNext, doOnError, doOnComplete)

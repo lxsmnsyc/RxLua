@@ -38,12 +38,8 @@ local function subscribeActual(self, observer)
                 pcall(onNext, buffer[count - amount])
             end 
         end,
-        onError = function (x)
-            pcall(observable.onError, x)
-        end,
-        onComplete = function ()
-            pcall(observable.onComplete)
-        end
+        onError = observable.onError,
+        onComplete = observable.onComplete
     }
 end
 

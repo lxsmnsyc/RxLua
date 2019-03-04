@@ -27,16 +27,19 @@ local function subscribeActual(self, observer)
 
     local afterTerminate = self._afterTerminate
     
-    observer.onComplete = function (x)
-        pcall(onComplete)
-        pcall(afterTerminate)
-    end
+    return self._source:subscribe{
+        onSubscribe = observer.onSubscribe,
+        onNext = observer.onNext,
 
-    observer.onError = function (x)
-        pcall(onError, x)
-        pcall(afterTerminate)
-    end
-    return self._source:subscribe(observer)
+        onError = function (x)
+            pcall(onError, x)
+            pcall(afterTerminate)
+        end,
+        onComplete = function ()
+            pcall(onComplete)
+            pcall(afterTerminate)
+        end 
+    }
 end
 
 local Assert = require "RxLua.utils.assert"

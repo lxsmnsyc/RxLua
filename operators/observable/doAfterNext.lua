@@ -27,12 +27,17 @@ local function subscribeActual(self, observer)
 
     local afterNext = self._afterNext
     
-    observer.onNext = function (x)
-        pcall(onNext, x)
-        pcall(afterNext, x)
-    end
+    return self._source:subscribe{
+        onSubscribe = observer.onSubscribe,
+        
+        onNext = function (x)
+            pcall(onNext, x)
+            pcall(afterNext, x)
+        end,
 
-    return self._source:subscribe(observer)
+        onError = observer.onError,
+        onComplete = observer.onComplete 
+    }
 end
 
 

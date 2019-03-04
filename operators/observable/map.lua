@@ -28,17 +28,20 @@ local function subscribeActual(self, observer)
     local onError = observer.onError
 
     local mapper = self._mapperFunction
-    
-    observer.onNext = function (x)
-        local try, catch = pcall(mapper, x)
-        if(try) then
-            pcall(onNext, catch)
-        else 
-            pcall(onError, catch)
-        end
-    end
 
-    return self._source:subscribe(observer)
+    return self._source:subscribe{
+        onSubscribe = observer.onSubscribe,
+        onNext = function (x)
+            local try, catch = pcall(mapper, x)
+            if(try) then
+                pcall(onNext, catch)
+            else 
+                pcall(onError, catch)
+            end
+        end,
+        onError = onError,
+        onComplete = observer.onComplete
+    }
 end
 
 local Assert = require "RxLua.utils.assert"

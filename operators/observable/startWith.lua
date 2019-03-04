@@ -18,84 +18,87 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
---]] 
+--]]
 local new = require "RxLua.observable.new"
+local is = require "RxLua.observable.is"
 
 local dispose = require "RxLua.disposable.dispose"
 local isDisposed = require "RxLua.disposable.isDisposed"
 
 local function subscribeActual(self, observer)
     local source = self._source 
-    local untilFunction = self._untilFunction 
+    local value = self._value 
 
     local disposed
     local upstream 
 
+    local function disposeAll()
+        disposed = true 
+        dispose(upstream)
+    end 
+
+    local function isDisposedAll()
+        return disposed
+    end
+
     local disposable = {
-        dispose = function ()
-            disposed = true 
-            dispose(upstream)
-        end,
-        isDisposed = function ()
-            return disposed or isDisposed(upstream)
-        end
+        dispose = disposeAll,
+        isDisposed = isDisposedAll 
     }
 
     pcall(observer.onSubscribe, disposable)
 
-    local onNext = observer.onNext
-    local onError = observer.onError 
-    local onComplete = observer.onComplete
+    local onNext = observer.onNext 
 
-    local untilFunction = self._untilFunction
+    local function coreSubscribe()
+        if(not disposed) then 
+            source:subscribe{
+                onSubscribe = function (d)
+                    upstream = d 
+                end,
+                onNext = onNext,
+                onError = observer.onError,
+                onComplete = observer.onComplete
+            }
+        end
+    end
 
-    local function resub()
-        source:subscribe{
+    if(is(value)) then 
+        value:subscribe{
             onSubscribe = function (d)
-                if(not disposed) then 
-                    upstream = d
-                else 
-                    dispose(d)
-                end
+                upstream = d
             end,
-            onNext = onNext,
-            onError = function (x)
-                pcall(onError, x)
-                
-                if(not isDisposed(upstream)) then 
-                    local try, catch = pcall(untilFunction)
-
-                    if(try and not catch) then 
-                        resub()
-                    end
-                end
+            onNext = function (x)
+                pcall(observer.onNext, x)
             end,
+            onError = observer.onError,
             onComplete = function ()
-                pcall(onComplete)
-                
-                if(not isDisposed(upstream)) then 
-                    local try, catch = pcall(untilFunction)
-
-                    if(try and not catch) then 
-                        resub()
-                    end
-                end
+                coreSubscribe()
             end,
         }
-    end
-
-    resub()
+    elseif(type(value) == "table") then 
+        for k, v in pairs(value) do 
+            pcall(observer.onNext, v)
+            if(disposed) then 
+                return disposable
+            end
+        end 
+        coreSubscribe()
+    else 
+        pcall(observer.onNext, value)
+        coreSubscribe()
+    end 
 
     return disposable
-end
+end 
 
 local Assert = require "RxLua.utils.assert"
-return function (self, untilFunction)
-    if(Assert(type(untilFunction) == "function", "bad argument #2 to 'Observable.repeatUntil' (function expected, got "..type(untilFunction)..")")) then 
+return function (self, value)
+    if(Assert(value ~= nil, "bad argument #2 to 'Observable.startWith' (non-nil expected)")) then 
         local observable = new()
-        observable._source = self
-        observable._untilFunction = untilFunction
-        observable.subscribe = subscribeActual 
-        return observable
-    end
+        observable._source = self 
+        observable._value = value
+        observable.subscribe = subscribeActual
+        return observable 
+    end 
 end

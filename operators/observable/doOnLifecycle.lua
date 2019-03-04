@@ -24,15 +24,15 @@ local new = require "RxLua.observable.new"
 local function subscribeActual(self, observer)
     local onDispose = self._onDispose
     local onSubscribe = self._onSubscribe
-
-    local oldSubscribe = observer.onSubscribe
-    
-    observer.onSubscribe = function (d)
-        pcall(onSubscribe, d)
-        pcall(oldSubscribe, d)
-    end
-
-    local disposable = self._source:subscribe(observer)
+    local disposable = self._source:subscribe{
+        onSubscribe = function (d)
+            pcall(onSubscribe, d)
+            pcall(observer.onSubscribe, d)
+        end,
+        onNext = observer.onNext,
+        onError = observer.onError,
+        onComplete = observer.onComplete
+    }
     local dispose = disposable.dispose
 
     disposable.dispose = function (self)

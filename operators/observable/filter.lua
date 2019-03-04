@@ -29,18 +29,21 @@ local function subscribeActual(self, observer)
 
     local filter = self._filterFunction
     
-    observer.onNext = function (x)
-        local try, catch = pcall(filter, x)
-        if(try) then
-            if(catch) then 
-                pcall(onNext, x)
+    return self._source:subscribe{
+        onSubscribe = observer.onSubscribe,
+        onNext = function (x)
+            local try, catch = pcall(filter, x)
+            if(try) then
+                if(catch) then 
+                    pcall(onNext, x)
+                end
+            else 
+                pcall(onError, catch)
             end
-        else 
-            pcall(onError, catch)
-        end
-    end
-
-    return self._source:subscribe(observer)
+        end,
+        onError = onError,
+        onComplete = observer.onComplete
+    }
 end
 
 local Assert = require "RxLua.utils.assert"

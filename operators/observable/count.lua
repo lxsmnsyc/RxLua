@@ -25,6 +25,7 @@ local function subscribeActual(self, observer)
     local count = 0
 
     return self._source:subscribe{
+        onSubscribe = observer.onSubscribe,
         onNext = function (x)
             count = count + 1
         end,

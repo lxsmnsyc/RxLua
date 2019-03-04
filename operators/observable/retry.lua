@@ -59,9 +59,7 @@ local function subscribeActual(self, observer)
                     dispose(d)
                 end
             end,
-            onNext = function (x)
-                pcall(onNext, x)
-            end,
+            onNext = onNext,
             onError = function (x)
                 if(not isDisposed(upstream)) then 
                     if(predicate) then 

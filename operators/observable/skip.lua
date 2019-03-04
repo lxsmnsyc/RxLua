@@ -34,12 +34,8 @@ local function subscribeActual(self, observer)
                 amount = amount - 1
             end 
         end,
-        onError = function (x)
-            pcall(observable.onError, x)
-        end,
-        onComplete = function ()
-            pcall(observable.onComplete)
-        end
+        onError = observable.onError,
+        onComplete = observable.onComplete
     }
 end
 

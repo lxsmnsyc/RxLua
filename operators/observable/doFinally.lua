@@ -23,21 +23,21 @@ local new = require "RxLua.observable.new"
 local HostError = require "RxLua.utils.hostError"
 
 local function subscribeActual(self, observer)
-    local onComplete = observer.onComplete
-    local onError = observer.onError
 
     local onFinally = self._onFinally
     
-    observer.onComplete = function (x)
-        pcall(onComplete)
-        pcall(onFinally)
-    end
-
-    observer.onError = function (x)
-        pcall(onError, x)
-        pcall(onFinally)
-    end
-    
+    local disposable = self._source:subscribe{
+        onSubscribe = observer.onSubscribe,
+        onNext = observer.onNext,
+        onError = function (x)
+            pcall(observer.onError, x)
+            pcall(onFinally)
+        end,
+        onComplete = function ()
+            pcall(observer.onComplete)
+            pcall(onFinally)
+        end
+    }
     local disposable = self._source:subscribe(observer)
     local dispose = disposable.dispose
 
