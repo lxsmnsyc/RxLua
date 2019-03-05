@@ -40,7 +40,7 @@ local function subscribeActual(self, observer)
                 if(try) then 
                     flag = not catch
                 else 
-                    dispose(upstream)
+                    upstream:dispose()
                     pcall(observer.onError, catch)
                 end
             end 

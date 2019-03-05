@@ -41,14 +41,14 @@ local function subscribeActual(self, observer)
     local function disposeAll()
         for k, v in pairs(disposables) do 
             if(v ~= winner) then 
-                dispose(v)
+                v:dispose()
             end
         end
         disposed = true
     end
 
     local function isDisposedAll()
-        return disposed and isDisposed(winner)
+        return disposed and winner:isDisposed()
     end
 
 

@@ -36,10 +36,10 @@ local function subscribeActual(self, observer)
     local disposable = {
         dispose = function ()
             disposed = true 
-            dispose(upstream)
+            upstream:dispose()
         end,
         isDisposed = function ()
-            return disposed or isDisposed(upstream)
+            return disposed or upstream:isDisposed()
         end,
     }
 

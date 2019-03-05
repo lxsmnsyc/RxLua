@@ -29,7 +29,7 @@ local function subscribeActual(self, observer)
     pcall(observer.onSubscribe, disposable)
     pcall(observer.onNext, self._value)
     pcall(observer.onComplete)
-    dispose(disposable)
+    disposable:dispose()
     return disposable
 end
 

@@ -34,7 +34,7 @@ local function subscribeActual(self, observer)
         onNext = function (x)
             if(last ~= nil) then 
                 pcall(observer.onError, "Observable.singleElement: Observable emitted more than one item.")
-                dispose(upstream)
+                upstream:dispose()
             else 
                 last = x
             end 

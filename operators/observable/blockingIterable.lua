@@ -37,9 +37,7 @@ return function (self)
             upstream = d
         end,
         onNext = function (x)
-            if(not isDisposed(upstream)) then 
-                iterable[#iterable + 1] = x
-            end
+            iterable[#iterable + 1] = x
         end,
         onError = function (t)
             done = true 
@@ -48,7 +46,7 @@ return function (self)
             done = true 
         end
     })
-    while(not done) do
+    while(not (done or upstream:isDisposed())) do
     end
     return iterable
 end

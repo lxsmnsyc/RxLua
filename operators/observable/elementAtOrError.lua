@@ -36,13 +36,11 @@ local function subscribeActual(self, observer)
             pcall(observer.onSubscribe, d)
         end,
         onNext = function (x)
-            if(not isDisposed(upstream)) then 
-                index = index - 1
-                if(index == 0) then 
-                    pcall(observer.onSuccess, x)
-                    dispose(upstream)
-                    done = true 
-                end
+            index = index - 1
+            if(index == 0) then 
+                pcall(observer.onSuccess, x)
+                upstream:dispose()
+                done = true 
             end
         end,
         onError = observer.onError,

@@ -25,20 +25,11 @@ local dispose = require "RxLua.disposable.dispose"
 local isDisposed = require "RxLua.disposable.isDisposed"
 
 local function subscribeActual(self, observer)
-    local last
-
-    local done 
-    local upstream
-
+    local last 
     return self._source:subscribe({
-        onSubscribe = function (d)
-            upstream = d
-            pcall(observer.onSubscribe, d)
-        end,
+        onSubscribe = observer.onSubscribe,
         onNext = function (x)
-            if(not isDisposed(upstream)) then 
-                last = x 
-            end
+            last = x 
         end,
         onError = observer.onError,
         onComplete = function ()

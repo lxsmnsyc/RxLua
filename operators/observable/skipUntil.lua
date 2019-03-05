@@ -33,17 +33,17 @@ local function subscribeActual(self, observer)
 
     local function disposeBoth()
         disposed = true 
-        dispose(upstreamA)
-        dispose(upstreamB)
+        upstreamA:dispose()
+        upstreamB:dispose()
     end
 
     local function isDisposedBoth()
-        return disposed or (isDisposed(upstreamA) and isDisposed(upstreamB))
+        return disposed or (upstreamA:isDisposed() and upstreamB:isDisposed())
     end 
 
     local disposable = {
-        dispose = dispose,
-        isDisposed = isDisposed
+        dispose = disposeBoth,
+        isDisposed = isDisposedBoth
     }
 
     pcall(observer.onSubscribe, disposable)
@@ -56,7 +56,7 @@ local function subscribeActual(self, observer)
     other:subscribe{
         onSubscribe = function (d)
             if(disposed) then 
-                dispose(d)
+                d:dispose()
             else
                 upstreamA = d 
             end
@@ -80,7 +80,7 @@ local function subscribeActual(self, observer)
     source:subscribe{
         onSubscribe = function (d)
             if(disposed) then
-                dispose(d)
+                d:dispose()
             else
                 upstreamB = d 
             end

@@ -60,7 +60,7 @@ local function subscribeActual(self, observer)
                     if(catch) then
                         done = true
                         pcall(onSuccess, true)
-                        dispose(upstream)
+                        upstream:dispose()
                     end
                 else 
                     newError(catch)

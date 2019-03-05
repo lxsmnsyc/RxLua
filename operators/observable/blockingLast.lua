@@ -37,14 +37,12 @@ return function (self, default)
             upstream = d
         end,
         onNext = function (x)
-            if(not isDisposed(upstream)) then 
-                value = x
-            end
+            value = x
         end,
         onError = endSub,
         onComplete = endSub,
     })
-    while(not done) do
+    while(not (done or upstream:isDisposed())) do
     end
     return value
 end

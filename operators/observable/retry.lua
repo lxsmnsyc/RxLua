@@ -87,9 +87,7 @@ local function subscribeActual(self, observer)
                     end
                 end
             end,
-            onComplete = function ()
-                pcall(onComplete)
-            end,
+            onComplete = onComplete,
         }
     end
 

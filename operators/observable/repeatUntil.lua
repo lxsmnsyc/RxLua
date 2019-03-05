@@ -34,10 +34,10 @@ local function subscribeActual(self, observer)
     local disposable = {
         dispose = function ()
             disposed = true 
-            dispose(upstream)
+            upstream:dispose()
         end,
         isDisposed = function ()
-            return disposed or isDisposed(upstream)
+            return disposed or upstream:isDisposed()
         end
     }
 
@@ -62,7 +62,7 @@ local function subscribeActual(self, observer)
             onError = function (x)
                 pcall(onError, x)
                 
-                if(not isDisposed(upstream)) then 
+                if(not upstream:isDisposed()) then 
                     local try, catch = pcall(untilFunction)
 
                     if(try and not catch) then 
@@ -73,7 +73,7 @@ local function subscribeActual(self, observer)
             onComplete = function ()
                 pcall(onComplete)
                 
-                if(not isDisposed(upstream)) then 
+                if(not upstream:isDisposed()) then 
                     local try, catch = pcall(untilFunction)
 
                     if(try and not catch) then 

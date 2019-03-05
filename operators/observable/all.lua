@@ -45,7 +45,7 @@ local function subscribeActual(self, observer)
     return self._source:subscribe{
         onSubscribe = function (d)
             if(upstream) then 
-                dispose(d)
+                d:dispose()
             else
                 upstream = d 
                 pcall(onSubscribe, d)
@@ -55,13 +55,13 @@ local function subscribeActual(self, observer)
             if(done) then 
                 return 
             end
-            if(not isDisposed(upstream)) then 
+            if(not upstream:isDisposed()) then 
                 local try, catch = pcall(self._predicate, x)
                 if(try) then 
                     if(not catch) then
                         done = true
                         pcall(onSuccess, false)
-                        dispose(upstream)
+                        upstream:dispose()
                     end
                 else 
                     newError(catch)

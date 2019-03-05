@@ -25,7 +25,8 @@ return function (observer, error)
     if(type(observer) == "table" and (observer.onComplete and type(observer.onComplete) == "function")) then 
         local disposable = Disposable()
         pcall(observer.onSubscribe, disposable)
-        observer.onComplete(error)
+        pcall(observer.onComplete, error)
+        disposable:dispose()
         return disposable
     end 
 end
