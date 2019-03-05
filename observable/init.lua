@@ -94,7 +94,8 @@ M.__index = {
     switchIfEmpty = operator("switchIfEmpty"),
 
     take = operator("take"),
-    takeLast = operator("takeLast")
+    takeLast = operator("takeLast"),
+    takeUntil = operator("takeUntil")
 }
 
 return setmetatable({}, M)
