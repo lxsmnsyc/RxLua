@@ -24,19 +24,13 @@ local new = require "RxLua.observable.new"
 local function subscribeActual(self, observer)
     local amount = self._amount 
 
-    local count = 0
-    local buffer = {}
-
     local onNext = observer.onNext 
 
     return self._source:subscribe{
-        onSubscribe = observer.onSubscribe,
         onNext = function (x)
-            count = count + 1
-            buffer[count] = x
-
-            if(count > amount) then 
-                pcall(onNext, buffer[count - amount])
+            if(amount > 0) then 
+                pcall(onNext, x)
+                amount = amount - 1
             end 
         end,
         onError = observer.onError,
@@ -47,8 +41,8 @@ end
 local Assert = require "RxLua.utils.assert"
 return function (self, amount)
     if
-        Assert(type(amount) == "number", "bad argument #2 to 'Observable.skipLast' (number expected, got "..type(amount)..")") and 
-        Assert(amount >= 0, "Observable.skipLast: amount must be greater than or equal to 0")
+        Assert(type(amount) == "number", "bad argument #2 to 'Observable.skip' (number expected, got "..type(amount)..")") and 
+        Assert(amount >= 0, "Observable.skip: amount must be greater than or equal to 0")
     then 
         local observable = new()
 

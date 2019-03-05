@@ -27,6 +27,7 @@ local function subscribeActual(self, observer)
     local onNext = observer.onNext 
 
     return self._source:subscribe{
+        onSubscribe = observer.onSubscribe,
         onNext = function (x)
             if(amount == 0) then 
                 pcall(onNext, x)
