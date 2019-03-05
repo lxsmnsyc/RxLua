@@ -32,12 +32,13 @@ local function subscribeActual(self, observer)
     return self._source:subscribe{
         onSubscribe = observer.onSubscribe,
         onNext = function (x)
-            count = count + 1
-            buffer[count] = x
-
             if(count > amount) then 
-                pcall(onNext, buffer[count - amount])
+                pcall(onNext, buffer[1])
+                table.remove(buffer, 1)
+            else 
+                count = count + 1
             end 
+            buffer[count] = x
         end,
         onError = observer.onError,
         onComplete = observer.onComplete

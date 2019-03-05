@@ -93,7 +93,8 @@ M.__index = {
     startWith = operator("startWith"),
     switchIfEmpty = operator("switchIfEmpty"),
 
-    take = operator("take")
+    take = operator("take"),
+    takeLast = operator("takeLast")
 }
 
 return setmetatable({}, M)
