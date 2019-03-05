@@ -22,6 +22,8 @@
 local new = require "RxLua.observable.new"
 local is = require "RxLua.observable.is"
 
+local HostError = require "RxLua.utils.hostError"
+
 local function subscribeActual(self, observer)
     local sources = self._sources 
 

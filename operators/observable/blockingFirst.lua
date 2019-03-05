@@ -21,9 +21,6 @@
 --]] 
 local new = require "RxLua.observable.new"
 
-local dispose = require "RxLua.disposable.dispose"
-local isDisposed = require "RxLua.disposable.isDisposed"
-
 return function (self, default)
     local value = default
 

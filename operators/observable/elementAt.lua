@@ -21,10 +21,6 @@
 --]] 
 local new = require "RxLua.maybe.new"
 
-local dispose = require "RxLua.disposable.dispose"
-local isDisposed = require "RxLua.disposable.isDisposed"
-
-local HostError = require "RxLua.utils.hostError"
 
 local function subscribeActual(self, observer)
     local index = self._targetIndex

@@ -23,9 +23,6 @@ local new = require "RxLua.observable.new"
 
 local Emitter = require "RxLua.emitter.observable"
 
-local dispose = require "RxLua.disposable.dispose"
-local isDisposed = require "RxLua.disposable.isDisposed"
-
 local function subscribeActual(self, observer)
     local emitter = Emitter(observer.onNext, observer.onError, observer.onComplete)
     local try, catch = pcall(observer.onSubscribe, emitter)

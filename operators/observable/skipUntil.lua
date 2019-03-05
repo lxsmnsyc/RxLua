@@ -22,9 +22,6 @@
 local is = require "RxLua.observable.is" 
 local new = require "RxLua.observable.new"
 
-local dispose = require "RxLua.disposable.dispose"
-local isDisposed = require "RxLua.disposable.isDisposed"
-
 local function subscribeActual(self, observer)
     
     local disposed 

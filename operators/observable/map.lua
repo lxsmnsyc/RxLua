@@ -21,8 +21,6 @@
 --]] 
 local new = require "RxLua.observable.new"
 
-local HostError = require "RxLua.utils.hostError"
-
 local function subscribeActual(self, observer)
     local onNext = observer.onNext
     local onError = observer.onError

@@ -20,7 +20,7 @@
     SOFTWARE.
 --]] 
 local new = require "RxLua.observable.new"
-local M = require "RxLua.observable.M"
+local is = require "RxLua.observable.is"
 
 local Error = require "RxLua.disposable.error"
 
@@ -29,7 +29,7 @@ local function subscribeActual(self, observer)
 
     if(try) then 
         if(catch) then 
-            if(getmetatable(catch) == M) then 
+            if(is(catch)) then 
                 return catch:subscribe(observer)
             end
         else 

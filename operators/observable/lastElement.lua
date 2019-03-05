@@ -21,9 +21,6 @@
 --]] 
 local new = require "RxLua.maybe.new"
 
-local dispose = require "RxLua.disposable.dispose"
-local isDisposed = require "RxLua.disposable.isDisposed"
-
 local function subscribeActual(self, observer)
     local last 
     return self._source:subscribe({

@@ -21,9 +21,6 @@
 --]] 
 local new = require "RxLua.single.new"
 
-local dispose = require "RxLua.disposable.dispose"
-local isDisposed = require "RxLua.disposable.isDisposed"
-
 local function subscribeActual(self, observer)
     local last = self._defaultValue
 
