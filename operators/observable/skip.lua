@@ -26,6 +26,8 @@ local function subscribeActual(self, observer)
 
     local onNext = observer.onNext 
 
+    local upstream
+
     return self._source:subscribe{
         onSubscribe = observer.onSubscribe,
         onNext = function (x)

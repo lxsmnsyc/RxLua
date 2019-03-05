@@ -22,9 +22,6 @@
 local new = require "RxLua.observable.new"
 local is = require "RxLua.observable.is"
 
-local dispose = require "RxLua.disposable.dispose"
-local isDisposed = require "RxLua.disposable.isDisposed"
-
 local function subscribeActual(self, observer)
     local sources = self._sources 
 
@@ -69,7 +66,7 @@ local function subscribeActual(self, observer)
             v:subscribe({
                 onSubscribe = function (d)
                     if(upstream) then 
-                        dispose(d)
+                        d:dispose()
                     elseif(not disposed) then 
                         upstream = d
                         disposables[#disposables + 1] = d 
