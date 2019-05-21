@@ -1,5 +1,7 @@
 # RxLua
 
+!!!PROJECT IS ON HIATUS!!!
+
 Reactive Extensions for Lua
 
 ![reactivex](https://img.shields.io/badge/reactivex-lua-brightgreen.svg?style=for-the-badge&logo=lua)
