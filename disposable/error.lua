@@ -20,13 +20,17 @@
     SOFTWARE.
 --]] 
 local Disposable = require "RxLua.disposable"
+local isDisposed = require "RxLua.disposable.isDisposed"
+local isErrorObserver = require "RxLua.is.observer.error"
 
 return function (observer, error)
-    if(type(observer) == "table" and (observer.onError and type(observer.onError) == "function")) then 
-        local disposable = Disposable()
-        pcall(observer.onSubscribe, disposable)
-        pcall(observer.onError, error)
-        disposable:dispose()
-        return disposable
-    end 
+  if(isErrorObserver(observer)) then 
+    local disposable = Disposable()
+    pcall(observer.onSubscribe, disposable)
+    if (not isDisposed(disposable)) then
+      pcall(observer.onError, error)
+      disposable:dispose()
+    end
+    return disposable
+  end
 end
