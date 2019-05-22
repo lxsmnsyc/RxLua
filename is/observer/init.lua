@@ -1,5 +1,5 @@
-local isTable = require "RxLua.utils.isTable"
-local isFunction = require "RxLua.utils.isFunction"
+local isTable = require "RxLua.is.isTable"
+local isFunction = require "RxLua.is.isFunction"
 
 return function (observer)
   return isTable(observer)
