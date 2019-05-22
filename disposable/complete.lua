@@ -20,13 +20,17 @@
     SOFTWARE.
 --]] 
 local Disposable = require "RxLua.disposable"
+local isDisposed = require "RxLua.disposable.isDisposed"
+local isCompletableObserver = require "RxLua.is.observer.completable"
 
 return function (observer, error)
-    if(type(observer) == "table" and (observer.onComplete and type(observer.onComplete) == "function")) then 
-        local disposable = Disposable()
-        pcall(observer.onSubscribe, disposable)
-        pcall(observer.onComplete, error)
-        disposable:dispose()
-        return disposable
-    end 
+  if(isCompletableObserver(observer)) then 
+    local disposable = Disposable()
+    pcall(observer.onSubscribe, disposable)
+    if (not isDisposed(disposable)) then
+      pcall(observer.onComplete, error)
+      disposable:dispose()
+    end
+    return disposable
+  end
 end
