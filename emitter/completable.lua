@@ -39,7 +39,7 @@ local function emitOnError(self, t)
     end
 
     if(not isDisposed(self)) then 
-        local try, catch = pcall(self._onError, t)
+        pcall(self._onError, t)
         dispose(self)
     else 
         HostError(t)
@@ -48,7 +48,7 @@ end
 
 local function emitOnComplete(self)
     if(not isDisposed(self)) then 
-        local try, catch = pcall(self._onComplete)
+        pcall(self._onComplete)
         dispose(self)
     end
 end
