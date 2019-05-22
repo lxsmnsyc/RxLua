@@ -40,7 +40,7 @@ local function emitOnError(self, t)
     end
 
     if(not isDisposed(self)) then 
-        local try, catch = pcall(self._onError, t)
+        pcall(self._onError, t)
         dispose(self)
     else 
         HostError(t)
@@ -50,20 +50,18 @@ end
 
 local function emitOnSuccess(self, x)
     if(not isDisposed(self)) then 
-        local try, catch = pcall(function ()
-            if(x == nil) then 
-                pcall(self._onError, "Emitter onSuccess received a nil value. Nil values are not allowed.")
-            else 
-                pcall(self._onSuccess, x)
-            end
-        end)
+        if(x == nil) then 
+            pcall(self._onError, "Emitter onSuccess received a nil value. Nil values are not allowed.")
+        else 
+            pcall(self._onSuccess, x)
+        end
         dispose(self)
     end
 end
 
 local function emitOnComplete(self)
     if(not isDisposed(self)) then 
-        local try, catch = pcall(self._onComplete)
+        pcall(self._onComplete)
         dispose(self)
     end
 end
