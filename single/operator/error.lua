@@ -31,9 +31,9 @@ local SingleObserver = require "RxLua.single.observer"
 
 local SimpleSubscription = require "RxLua.subscription.simple"
 
-local SingleJust = extend(Single)
+local SingleError = extend(Single)
 
-function SingleJust:subscribeActual(observer)
+function SingleError:subscribeActual(observer)
   assert(typeof(observer, SingleObserver))
   local subscription = SimpleSubscription.new()
   observer:onSubscribe(subscription)
@@ -45,7 +45,7 @@ end
 return function (err)
   assert(err ~= nil)
 
-  local instance = create(SingleJust)
+  local instance = create(SingleError)
   instance.err = err
 
   return instance
