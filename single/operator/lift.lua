@@ -49,6 +49,8 @@ function SingleLift:subscribeActual(observer)
       if (subscription.alive) then
         observer:onError(e)
       end
+
+      result = nil
     end
   )
 
