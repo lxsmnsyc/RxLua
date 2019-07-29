@@ -19,14 +19,8 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
 --]]
-local typeof = require "RxLua.utils.typeof"
-
 local just = require "RxLua.single.operator.just"
 
-local Single = require "RxLua.single"
-
-local single = just("Hello World")
-
-print(typeof(single, Single))
-
-single:subscribe(print)
+print(os.clock())
+local single = just("Hello World"):subscribe(print)
+print(os.clock())
