@@ -23,6 +23,7 @@ local extend = require "RxLua.utils.extend"
 local typeof = require "RxLua.utils.typeof"
 
 local SingleSource = require "RxLua.single.source"
+local SingleObserver = require "RxLua.single.observer"
 
 local LambdaSingleObserver = require "RxLua.single.observer.lambda"
 
@@ -46,6 +47,7 @@ function Single:pipe(...)
 end
 
 function Single:subscribeWith(observer)
+  assert(typeof(observer, SingleObserver))
   self:subscribeActual(observer)
   return observer
 end
