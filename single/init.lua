@@ -18,22 +18,43 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
---]] 
-local M = require "RxLua.single.M"
+--]]
+local extend = require "RxLua.utils.extend"
+local typeof = require "RxLua.utils.typeof"
 
-M.__call = require "RxLua.single.new"
+local SingleSource = require "RxLua.single.source"
 
-local function operator(name)
-    return require("RxLua.operators.single."..name)
-end 
+local LambdaSingleObserver = require "RxLua.single.observer.lambda"
 
-M.__index = {
-    create = operator("create"),
-    defer = operator("defer"),
-    error = operator("error"),
+local WrapperSubscription = require "RxLua.subscription.wrapper"
 
-    contains = operator("contains"),
-    map = operator("map")
-}
+local Single = extend(SingleSource)
 
-return setmetatable({}, M)
+
+function Single:pipe(...)
+  -- get the transformers
+  local transformers = {...}
+
+  -- iterate the transformers
+  for _, transformer in ipairs(transformers) do
+    assert(type(transformer) == "function")
+    self = transformer(self)
+    assert(typeof(self, Single))
+  end
+
+  return self
+end
+
+function Single:subscribeWith(observer)
+  self:subscribeActual(observer)
+  return observer
+end
+
+function Single:subscribe(onSuccess, onError)
+  return WrapperSubscription.new(self:subscribeWith(LambdaSingleObserver.new(onSuccess, onError)))
+end
+
+function Single:subscribeActual(observer)
+end
+
+return Single
